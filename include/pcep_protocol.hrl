@@ -3,8 +3,8 @@
 %% @doc Common header file for all protocol versions.
 
 
-%% 32bits TODO
--define(PCEP_COMMON_HEADER_SIZE, 32).
+%% 4bytes
+-define(PCEP_COMMON_HEADER_SIZE, 4).
 
 -define(MOD(Version), case Version of
                           1 -> pcep_v1;
@@ -55,11 +55,12 @@
 -type pcep_open() :: #pcep_open{}.
 
 %% Parser ----------------------------------------------------------------------
+%% TODO it seems used to parse binary to pcep message in gen_server. I think it is necessary, but I don't know module and stack's meaning.
 
 -record(pcep_parser, {
-%%          version :: integer(),
-%%          module :: atom(),
-%%          stack = <<>> :: binary() TODO
+          version :: integer(),
+          module :: atom(),
+          stack = <<>> :: binary()
          }).
 -type pcep_parser() :: #pcep_parser{}.
 
