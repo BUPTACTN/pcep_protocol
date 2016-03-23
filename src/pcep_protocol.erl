@@ -1,4 +1,4 @@
--module(pcep_protocol_app).
+-module(pcep_protocol).
 
 -behaviour(application).
 

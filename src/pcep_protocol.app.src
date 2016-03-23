@@ -1,12 +1,14 @@
 {application, pcep_protocol,
  [
-  {description, ""},
-  {vsn, "1"},
+  {description, "Pcep Protocol Library"},
+  {vsn, "1.0"},
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib
+                  stdlib,
+                  lager,
+                  eenum
                  ]},
-  {mod, { pcep_protocol_app, []}},
+  {mod, {pcep_protocol, []}},
   {env, []}
  ]}.
