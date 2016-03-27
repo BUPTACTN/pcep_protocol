@@ -5,6 +5,18 @@
 %% -include("pcep_protocol.hrl").
 %% -include("pcep_ls_v2.hrl").
 
+-define(MESSAGETYPEMOD(MessageType), case MessageType of
+                                       1 -> open_msg;
+                                       2 -> keepalive_msg;
+                                       3 -> path_computation_reqest_msg;
+                                       4 -> path_computation_reply_msg;
+                                       5 -> notification_msg;
+                                       6 -> error_msg;
+                                       7 -> close_msg;
+                                       %% TODO for fxf
+                                       _ -> unsupported_msg
+                                     end).
+
 
 -define(CLASSTYPEMOD(ObjectClass, ObjectType), case ObjectClass of
                                              1 -> open_ob_type;
@@ -34,14 +46,16 @@
 
 
 %% Common TLV format ---------------------------------------------------------------
--record(tlv, {
-  name::atom(),  %% the name of this tlv's type
-  type::integer(),
-  length::integer(),
-  value::any()
-}).
+%% TODO error
+%%-record(tlv, {
+%%  name::atom(),  %% the name of this tlv's type
+%%  type::integer(),
+%%  length::integer(),
+%%  value::any()
+%%}).
+%%
+%%-type tlv()::#tlv{}.
 
--type tlv()::#tlv{}.
 
 
 %% Open Message ---------------------------------------------------------------
@@ -108,9 +122,10 @@
   keepAlive::integer(), %% 8bits maximum period of time in seconds between two consecutive PCEP messages
   deadTimer::integer(), %%
   sid::integer(),
-  open_object_tlv_gmpls_cap_tlv::gmpls_cap_tlv(),
-  open_object_tlv_stateful_pec_cap_tlv::stateful_pec_cap_tlv(),
-  open_object_tlv_pcecc_cap_tlv::pcecc_cap_tlv()
+  tlvs::list()
+%%  open_object_tlv_gmpls_cap_tlv::gmpls_cap_tlv(),
+%%  open_object_tlv_stateful_pec_cap_tlv::stateful_pec_cap_tlv(),
+%%  open_object_tlv_pcecc_cap_tlv::pcecc_cap_tlv()
 }).
 
 -type open_object()::#open_object{}.

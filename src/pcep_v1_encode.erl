@@ -30,6 +30,8 @@ do(#pcep_message{message_length=MessageLength}=msg)
 
 
 %% encode tlvs' list -------------------------------------------------------------------
+
+%% TODO ERROR, tlv !!!
 -spec encode_tlv(Tlv::tlv()) -> binary().
 encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
   <<Type:16, Length:16, Value:Length/bytes>>.

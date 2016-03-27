@@ -20,7 +20,7 @@
 -type tlv()::#tlv{}.
 
 %% API
--export([encode_tlvs/1, test/0, encode_tlv/1, other/0]).
+-export([encode_tlvs/1, test/0, encode_tlv/1, other/0, testList/0]).
 
 
 -spec encode_tlv(Tlv::tlv()) -> binary().
@@ -48,3 +48,17 @@ test() ->
 other()->
   Bin1 = <<1,2,3>>,
   <<5,6,Bin1/bytes>>.
+
+
+-record(open_object, {
+%%   open_object_header::pcep_object_message(),
+  version::integer(), %% 3bits
+  flags::integer(), %% 5bits
+  keepAlive::integer(), %% 8bits maximum period of time in seconds between two consecutive PCEP messages
+  deadTimer::integer(), %%
+  sid::integer(),
+  tlvs::list()
+}).
+
+testList()->
+   #open_object{tlvs = [{1,2,3}, 2#111, "hahaha"]}.
