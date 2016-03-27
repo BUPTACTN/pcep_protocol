@@ -6,23 +6,85 @@
 %% -include("pcep_ls_v2.hrl").
 
 
--define(CLASSTYPEMOD(ObjectClass, ObjectType), case ObjectClass of
-                                             1 -> open_ob_type;
-                                             2 -> rp_ob_type;
-                                             3 -> no_path_ob_type;
-                                             4 -> case ObjectType of
-                                                    1 -> end_points_v4_ob_type;
-                                                    2 -> end_points_v6_ob_type
-                                                  end;
-                                             5 -> case ObjectType of
-                                                    1 -> bdwidth_req_ob_type;
-                                                    2 -> bdwidth_lsp_ob_type
-                                                  end;
-                                                 %% TODO for fxf
-                                             _ -> unsupported_class
+-define(CLASSTYPEMOD(ObjectClass, ObjectType),
+  case ObjectClass of
+    1 -> open_ob_type;
+    2 -> rp_ob_type;
+    3 -> no_path_ob_type;
+    4 -> case ObjectType of
+           1 -> end_points_v4_ob_type;
+           2 -> end_points_v6_ob_type
+         end;
+    5 -> case ObjectType of
+           1 -> bdwidth_req_ob_type;
+           2 -> bdwidth_lsp_ob_type
+         end;
+    6 -> metric_ob_type;
+    7 -> ero_ob_type;
+    8 -> rro_ob_type;
+    9 -> lspa_ob_type;
+    10 -> iro_ob_type;
+    11 -> svec_ob_type;
+    12 -> notification_ob_type;
+    13 ->pcep_error_ob_type;
+    14 -> load_balancing_ob_type;
+    15 -> close_ob_type;
 
-                                           end).
+    _ -> unsupported_class
 
+  end).
+-define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
+  case ErrorType of
+    1 -> case ErrorValue of
+           1 -> io:format("reception of an invalid Open message or a non Open message");
+           2 -> io:format("no Open message received before the expiration of the OpenWait timer");
+           3 -> io:format("unacceptable and non-negotiable session characteristics");
+           4 -> io:format("unacceptable but negotiable session characteristics");
+           5 -> io:format("reception of a second Open message with still unacceptable session characteristics");
+           6 -> io:format("reception of a PCErr message proposing unacceptable session characteristics");
+           7 -> io:format("No Keepalive or PCErr message received before the expiration of the KeepWait timer");
+           8 -> io:format("PCEP version not supported")
+         end;
+    2 -> io:format("Capability not supported");
+    3 -> case ErrorValue of
+           1 -> io:format("Unrecognized object class");
+           2 -> io:format("Unrecognized object Type");
+           _ -> unsupported_error_value
+         end;
+    4 -> case ErrorValue of
+           1 -> io:format("Not supported object class");
+           2 -> io:format("Not supported object Type");
+           _ -> unsupported_error_value
+         end;
+    5 -> case ErrorValue of
+           1 -> io:format("C bit of the METRIC object set (request rejected)");
+           2 -> io:format("O bit of the RP object cleared (request rejected)");
+           _ -> unsupported_error_value
+         end;
+    6 -> case ErrorValue of
+           1 -> io:format("RP object missing");
+           2 -> io:format("RRO missing for a reoptimization request (R bit of the RP object set)");
+           3 -> io:format("END-POINTS object missing");
+           _ -> unsupported_error_value
+         end;
+    7 -> io:format("Synchronized path computation request missing");
+    8 -> io:format("Unknown request reference");
+    9 -> io:format("Attempt to establish a second PCEP session");
+    10 -> case ErrorValue of
+            1 -> io:format("reception of an object with P flag not set although the P flag must be set according to this specification.");
+            _ -> unsupported_error_value
+          end
+  end
+).
+-define(Close_Object_REASONS(CloseReasons),
+case CloseReasons of
+  1 -> io:format("No explanation provided");
+  2 -> io:format("DeadTimer expired");
+  3 -> io:format("Reception of a malformed PCEP message");
+  4 -> io:format("Reception of an unacceptable number of unknown requests/replies");
+  5 -> io:format("Reception of an unacceptable number of unrecognized PCEP messages")
+end
+).
 % Message-Type (8 bits):
 % 1     Open
 % 2     Keepalive
