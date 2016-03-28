@@ -9,6 +9,7 @@
 -module(test).
 -author("root").
 
+
 %% Common TLV format ---------------------------------------------------------------
 -record(tlv, {
   name::atom(),  %% the name of this tlv's type
@@ -20,7 +21,7 @@
 -type tlv()::#tlv{}.
 
 %% API
--export([encode_tlvs/1, test/0, encode_tlv/1, other/0, testList/0]).
+-export([encode_tlvs/1, test/0, encode_tlv/1, other/0, testList/0, decode_tlvs/1]).
 
 
 -spec encode_tlv(Tlv::tlv()) -> binary().
@@ -62,3 +63,27 @@ other()->
 
 testList()->
    #open_object{tlvs = [{1,2,3}, 2#111, "hahaha"]}.
+
+
+%% @doc decode the list of tlvs from binary format to object format
+-spec decode_tlvs(binary()) -> list().
+decode_tlvs(Binary) ->
+  <<Type:16/integer, Length:16/integer,RstTlvs/bytes>> = Binary,
+  M = Length*8,
+  <<Value:M, Tlvs/bytes>> = RstTlvs,
+  if
+    byte_size(Tlvs)>0 ->
+      Tlv = decode_tlv(Type, Length, Value),
+      [Tlv, decode_tlvs(Tlvs)];
+    true ->
+      Tlv = decode_tlv(Type, Length, Value),
+      [Tlv]
+  end.
+
+
+
+-spec decode_tlv(Type, Length, Value) -> Rtn when Type::integer(),Length::integer(),Value::binary(),Rtn::any().
+decode_tlv(Type, Length, Value) ->
+%%  io:format(Value),
+  %% TODO for fxf 2016-03-28
+  {Type, Length, Value}.
