@@ -25,7 +25,7 @@
 -define(DEFAULT_TIMEOUT, timer:seconds(3)). %% TODO
 
 %% API
--export([start_link/0]).
+-export([start_link/4, start_link/5]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -48,7 +48,7 @@
   generation_id :: integer(),
 %%  filter = #async_config{},
   socket :: inet:socket(),
-  parser :: ofp_parser(),
+  parser :: pcep_parser(),
   timeout :: integer(),
   supervisor :: pid(),
   ets :: ets:tid(),
@@ -74,16 +74,14 @@ start_link(Tid, ResourceId, ControllerHandle, Opts) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec start_link(Tid :: ets:tid(), ResourceId :: string(),
-    ControllerHandle ::
-    {remote_peer, inet:ip_address(), inet:port_number(), Proto} |
-    {socket, inet:socket(), Proto},
+    ControllerHandle ::{remote_peer, inet:ip_address(), inet:port_number(), Proto} | {socket, inet:socket(), Proto},
     Opts :: proplists:proplist(),
     Type :: main | {aux, integer(), pid()}) ->
   {ok, Pid :: pid()} | ignore |
   {error, Error :: term()} when
   Proto :: tcp | tls.
 start_link(Tid, ResourceId, ControllerHandle, Opts, Type) ->
-  Parent = get_opt(controlling_process, Opts, self()),
+  Parent = get_opt(controlling_process, Opts, self()),%% self() returns pid.
   gen_server:start_link(?MODULE, {Tid, ResourceId, ControllerHandle, Parent,
     Opts, Type, self()}, []).
 
@@ -190,3 +188,12 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+
+get_opt(Opt, Opts, Default) ->
+  case lists:keyfind(Opt, 1, Opts) of
+    false ->
+      Default;
+    {Opt, Value} ->
+      Value
+  end.

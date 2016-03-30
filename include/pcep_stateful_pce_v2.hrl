@@ -20,7 +20,8 @@
 -record(srp_object,{
   flags = <<0:32>> ::integer(),   %% 32bits
   srp_id_number::integer(),  %% 32bits
-  srp_object_tlv_symbolic_path_name_tlv::symbolic_path_name_tlv()
+%%  srp_object_tlv_symbolic_path_name_tlv::symbolic_path_name_tlv()
+  tlvs::list()
 }).
 
 -type srp_object()::#srp_object{}.
@@ -49,13 +50,13 @@
 
 -type rsvp_error_spec_tlv_value()::#rsvp_error_spec_tlv_value{}.
 
--record(lsp_object_optional_tlv,{
-  lsp_object_tlv_ipv4_lsp_identifiers_tlv::ipv4_lsp_identifiers_tlv(),
-  lsp_object_tlv_lsp_error_code_tlv::lsp_error_code_tlv(),
-  lsp_object_tlv_rsvp_error_spec_tlv::rsvp_error_spec_tlv()
-}).
+%%-record(lsp_object_optional_tlv,{
+%%  lsp_object_tlv_ipv4_lsp_identifiers_tlv::ipv4_lsp_identifiers_tlv(),
+%%  lsp_object_tlv_lsp_error_code_tlv::lsp_error_code_tlv(),
+%%  lsp_object_tlv_rsvp_error_spec_tlv::rsvp_error_spec_tlv()
+%%}).
 
--type lsp_object_optional_tlv()::#lsp_object_optional_tlv{}.
+%%-type lsp_object_optional_tlv()::#lsp_object_optional_tlv{}.
 -record(lsp_object,{
   plsp_id::integer(),
   flag::integer(),
@@ -64,7 +65,7 @@
   r::boolean(),
   s::boolean(),
   d::boolean(),
-  tlvs
+  tlvs::list()
 }).
 
 -type lsp_object()::#lsp_object{}.

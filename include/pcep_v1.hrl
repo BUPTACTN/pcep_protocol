@@ -9,12 +9,12 @@
 %% TODO for fxf
 -define(ISLEGAL(MessageType, Object), case MessageType of
                                         open_msg -> case Object of
-                                                      open_ob_type -> true;
+                                                      open_ob_type -> true
                                                     end;
                                         keepalive_msg -> case Object of
-
+                                                           fxf -> false
                                                          end
-                                      end )
+                                      end ).
 
 -define(MESSAGETYPEMOD(MessageType), case MessageType of
                                        1 -> open_msg;

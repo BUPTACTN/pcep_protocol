@@ -12,7 +12,7 @@
 -include("pcep_protocol.hrl").
 -include("pcep_v1.hrl").
 -include("pcep_ls_v2.hrl").
--include("pcep_logger.hrl").
+%%-include("pcep_logger.hrl").
 -include("pcep_stateful_pce_v2.hrl").
 
 %% API
@@ -22,13 +22,14 @@
 -export([encode_object_msg/1]).
 -export([encode_object_body/2]).
 -export([encode_objects/1]).
--export([encode_rro_object_body/3]).
+%%-export([encode_rro_object_body/3]).
 
--spec encode_objects(_) ->binary().
+%%-spec encode_objects(list()) ->binary().
 
 encode_objects([#pcep_object_message{} = Object | H]) ->
   H2 = encode_objects(H),
-  <<encode_object_msg(Object),H2/bytes>>;
+  H3 = encode_object_msg(Object),
+  <<H3/bytes,H2/bytes>>;
 encode_objects([]) ->
   <<>>.
 %% encode pcep_message -------------------------------------------------------------------
@@ -51,7 +52,7 @@ encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
   case Type of
     14 -> #gmpls_cap_tlv_value{gmpls_cap_flag = Gm} = Value,
       Value_14 = << <<Value14/bytes>> || Value14 <- [<<Gm:32>>]>>,
-      list_to_binary([<<Type:16, Length:16>>, Value_14]);
+      erlang:list_to_binary([<<Type:16, Length:16>>, Value_14]);
     16 -> #stateful_pec_cap_tlv_value{stateful_pce_cap_tlv_flag = Flag1,
       stateful_pce_cap_tlv_d = D_flag,
       stateful_pce_cap_tlv_t = T_flag,
@@ -59,53 +60,53 @@ encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
       stateful_pce_cap_tlv_s = S_flag,
       stateful_pce_cap_tlv_u = U_flag} = Value,
       Value_16 = << <<Value16/bytes>> || Value16 <- [<<Flag1:27,D_flag:1,T_flag:1,I_flag:1,S_flag:1,U_flag:1>>]>>,
-      list_to_binary([<<Type:16, Length:16>>, Value_16]);
+      erlang:list_to_binary([<<Type:16, Length:16>>, Value_16]);
     32 -> #pcecc_cap_tlv_value{pcecc_cap_tlv_flag = Flag2,
       pcecc_cap_tlv_g = G_flag,
       pcecc_cap_tlv_l = L_flag} = Value,
       Value_32 = << <<Value32/bytes>> || Value32 <- [<<Flag2:30,G_flag:1,L_flag:1>>]>>,
-      list_to_binary([<<Type:16, Length:16, Value_32>>]);
+      erlang:list_to_binary([<<Type:16, Length:16, Value_32>>]);
     23 -> #label_db_version_tlv_value{label_db_version_tlv_ver = Version1} = Value,
       Value23 = <<Version1:64>>,
       <<Type:16, Length:16, Value23:Length/bytes>>;
     132 -> #ted_cap_tlv_value{ted_cap_tlv_flag = Flag3,
       ted_cap_tlv_r = R_flag} = Value,
       Value_132 = << <<Value132/bytes>> || Value132 <- [<<Flag3:31,R_flag:1>>]>>,
-      list_to_binary([<<Type:16, Length:16>>, Value_132]);
+      erlang:list_to_binary([<<Type:16, Length:16>>, Value_132]);
 %%     %% ls
     65280 -> #ls_cap_tlv_value{ls_cap_tlv_flag = Flag4,
       ls_cap_tlv_r = R_flag1}=Value,
       Value_65280 = << <<Value65280/bytes>> || Value65280 <- [<<Flag4:31,R_flag1:1>>]>>,
-      list_to_binary([<<Type:16, Length:16>>, Value_65280]);
+      erlang:list_to_binary([<<Type:16, Length:16>>, Value_65280]);
 %%       Length = 4;
     65281 -> #routing_universe_tlv_value{routing_universe_tlv_identifier = Identifier} = Value,
       Value_65281 = << <<Value65281/bytes>> || Value65281 <- [<<Identifier:64>>]>>,
-      list_to_binary([<<Type:16, Length:16, Value_65281>>]);
+      erlang:list_to_binary([<<Type:16, Length:16, Value_65281>>]);
 %%       Length = size(Value);
     65282 -> #local_node_descriptor_tlv_value{local_node_descriptor_tlv_sub_tlv = Sub_tlv1} = Value,
       Value_65282 = << <<Value65282/bytes>> || Value65282 <- [<<Sub_tlv1:(Length*8)>>]>>,
-      list_to_binary([<<Type:16, Length:16>>, Value_65282]);
+      erlang:list_to_binary([<<Type:16, Length:16>>, Value_65282]);
 %%       Length = size(Value);
     65283 -> #remote_node_descriptor_tlv_value{remote_node_descriptor_tlv_sub_tlv = Sub_tlv2} =Value,
       Value_65283 = << <<Value65283/bytes>> || Value65283 <- [<<Sub_tlv2:(Length*8)>>]>>,
-      list_to_binary([<<Type:16, Length:16>>,Value_65283]);
+      erlang:list_to_binary([<<Type:16, Length:16>>,Value_65283]);
 %%       Length = size(Value);
     65284 -> #link_descriptors_tlv_value{link_descriptors_tlv_sub_tlv = Sub_tlv3} = Value,
       Value_65284 = << <<Value65284/bytes>> || Value65284 <- [<<Sub_tlv3:(Length*8)>>]>>,
-      list_to_binary([<<Type:16,Length:16>>,Value_65284]);
+      erlang:list_to_binary([<<Type:16,Length:16>>,Value_65284]);
 %%       Length = size(Value);
     65285 -> #node_attributes_tlv_value{node_attributes_tlv_sub_tlv = Sub_tlv4} = Value,
       Value_65285 = << <<Value65285/bytes>> || Value65285 <- [<<Sub_tlv4:(Length*8)>>]>>,
-      list_to_binary([<<Type:16,Length:16>>,Value_65285]);
+      erlang:list_to_binary([<<Type:16,Length:16>>,Value_65285]);
 %%       Length = size(Value);
     65286 -> #link_attributes_tlv_value{link_attributes_tlv_sub_tlv = Sub_tlv5} = Value,
       Value_65286 = << <<Value65286/bytes>> || Value65286 <- [<<Sub_tlv5:(Length*8)>>]>>,
-      list_to_binary([<<Type:16,Length:16>>,Value_65286]);
+      erlang:list_to_binary([<<Type:16,Length:16>>,Value_65286]);
 %%       Length = size(Value);
 %%     %% stateful pce
     17 -> #symbolic_path_name_tlv_value{symbolic_path_name = Name} = Value,
       Value_17 = << <<Value17/bytes>> || Value17 <- [<<Name:(Length*8)>>]>>,
-      list_to_binary([<<Type:16,Length:16>>,Value_17]);
+      erlang:list_to_binary([<<Type:16,Length:16>>,Value_17]);
 %%       Length = size(Value);
     18 -> #ipv4_lsp_identifiers_tlv_value{ipv4_lsp_identifiers_tlv_tunnel_sender_add = Sender_add,
       ipv4_lsp_identifiers_tlv_lsp_id = Lsp_id,
@@ -113,28 +114,26 @@ encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
       ipv4_lsp_identifiers_tlv_exrended_tunnel_id = Exrended_tunnel_id,
       ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = Endpoint_add} =Value,
       Value_18 = << <<Value18/bytes>> || Value18 <- [<<Sender_add:32,Lsp_id:16,Tunnel_id:16,Exrended_tunnel_id:32,Endpoint_add:32>>]>>,
-      list_to_binary([<<Type:16,Length:16>>,Value_18]);
+      erlang:list_to_binary([<<Type:16,Length:16>>,Value_18]);
 %%       Length = 16;
     20 -> #lsp_error_code_tlv_value{lsp_error_code = Code} = Value,
       Value_20 = << <<Value20/bytes>> || Value20 <- [<<Code:32>>]>>,
-      list_to_binary([<<Type:16,Length:16>>,Value_20]);
+      erlang:list_to_binary([<<Type:16,Length:16>>,Value_20]);
 %%       Length = 4;
-    21 -> #rsvp_error_spec_tlv_value{rsvp_error_spec_tlv_body1 = Body1,
-    rsvp_error_spec_tlv_body2 = Body2} = Value;   %%TODO when encode the object
+    21 -> #rsvp_error_spec_tlv_value{} = Value;   %%TODO when encode the object
 
 %%       Length = size(Value);
-    _ -> io:format("Unrecognized TLV Type")
+    _ -> ?ERROR("Unrecognized TLV Type")
   end.
 
 %%   Tlv_value = term_to_binary(Value),
 %%   <<Type:16, Length:16, Va:Length/bytes>>.
 
--spec encode_tlvs([_]) ->binary().
-
+%%-spec encode_tlvs(list()) ->binary().
 encode_tlvs([#tlv{}=Tlv | T]) ->
-
   T2 = encode_tlvs(T),
-  <<encode_tlv(Tlv), T2/bytes>>;
+  T3 = encode_tlv(Tlv),
+  <<T3/bytes, T2/bytes>>;
 encode_tlvs([]) ->
   <<>>.
 
@@ -261,17 +260,18 @@ encode_object_body(lsp_ob_type,#lsp_object{
   <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,TlvsBin/bytes>>.
 
 %% encode rro object
-encode_rro_object_body(rro_ob_type,Subobject_type,#rro_object{
-  subobjects = Subobjects
-}) ->
-  case Subobject_type of
-    1 ->
-      encode_ipv4_subobject();
-    2 ->
-      encode_ipv6_subobject();
-    3 ->
-      encode_label_subobject()
-  end.
+%% TODO for fxf 2016-03-30
+%%encode_rro_object_body(rro_ob_type,Subobject_type,#rro_object{
+%%  subobjects = Subobjects
+%%}) ->
+%%  case Subobject_type of
+%%    1 ->
+%%      encode_ipv4_subobject();
+%%    2 ->
+%%      encode_ipv6_subobject();
+%%    3 ->
+%%      encode_label_subobject()
+%%  end.
 
 %%TODO for fxf
 %% encode_tlvs([#tlv{}=Tlv | T]) ->

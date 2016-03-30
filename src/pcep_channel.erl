@@ -28,6 +28,12 @@
   ControllerHandle::{remote_peer, inet:ip_address(), inet:port_number(), Proto} |  {socket, inet:socket(), Proto},
   Proto :: tcp | tls. %% there is only tcp now.
 open(Pid, Id, ControllerHandle, Opts) ->
+  %% In the case of a simple_one_for_one supervisor, the child specification defined in Module:init/1 will be used,
+  %% and ChildSpec shall instead be an arbitrary list of terms List. The child process will then be started by
+  %% appending List to the existing start function arguments, i.e. by calling apply(M, F, A++List) where {M,F,A}
+  %% is the start function defined in the child specification.
+  %% 因此，此时调用的start_child最终会调用pcep_channel_sup:init([SwitchId])中去，并且ClientSpec的启动参数[Tid]会变为
+  %% [Tid, Id, ControllerHandle, Opts]，这样正好符合pcep_client:start_link/4的函数定义。
   supervisor:start_child(Pid, [Id, ControllerHandle, Opts]).
 
 send(SwitchId, Message) when is_integer(SwitchId) ->
