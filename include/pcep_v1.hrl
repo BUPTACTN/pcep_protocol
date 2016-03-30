@@ -4,7 +4,19 @@
 
 %% -include("pcep_protocol.hrl").
 %% -include("pcep_ls_v2.hrl").
+
 -include("pcep_logger.hrl").
+
+%% TODO for fxf
+-define(ISLEGAL(MessageType, Object), case MessageType of
+                                        open_msg -> case Object of
+                                                      open_ob_type -> true;
+                                                    end;
+                                        keepalive_msg -> case Object of
+
+                                                         end
+                                      end )
+
 -define(MESSAGETYPEMOD(MessageType), case MessageType of
                                        1 -> open_msg;
                                        2 -> keepalive_msg;
