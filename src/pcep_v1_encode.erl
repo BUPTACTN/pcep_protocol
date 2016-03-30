@@ -12,7 +12,7 @@
 -include("pcep_protocol.hrl").
 -include("pcep_v1.hrl").
 -include("pcep_ls_v2.hrl").
--include("pcep_logger.hrl").
+%%-include("pcep_logger.hrl").
 -include("pcep_stateful_pce_v2.hrl").
 
 %% API
@@ -22,13 +22,14 @@
 -export([encode_object_msg/1]).
 -export([encode_object_body/2]).
 -export([encode_objects/1]).
--export([encode_rro_object_body/3]).
+%%-export([encode_rro_object_body/3]).
 
--spec encode_objects(_) ->binary().
+%%-spec encode_objects(list()) ->binary().
 
 encode_objects([#pcep_object_message{} = Object | H]) ->
   H2 = encode_objects(H),
-  <<encode_object_msg(Object),H2/bytes>>;
+  H3 = encode_object_msg(Object),
+  <<H3/bytes,H2/bytes>>;
 encode_objects([]) ->
   <<>>.
 %% encode pcep_message -------------------------------------------------------------------
@@ -129,12 +130,11 @@ encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   Tlv_value = term_to_binary(Value),
 %%   <<Type:16, Length:16, Va:Length/bytes>>.
 
--spec encode_tlvs([_]) ->binary().
-
+%%-spec encode_tlvs(list()) ->binary().
 encode_tlvs([#tlv{}=Tlv | T]) ->
-
   T2 = encode_tlvs(T),
-  <<encode_tlv(Tlv), T2/bytes>>;
+  T3 = encode_tlv(Tlv),
+  <<T3/bytes, T2/bytes>>;
 encode_tlvs([]) ->
   <<>>.
 
@@ -261,17 +261,18 @@ encode_object_body(lsp_ob_type,#lsp_object{
   <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,TlvsBin/bytes>>.
 
 %% encode rro object
-encode_rro_object_body(rro_ob_type,Subobject_type,#rro_object{
-  subobjects = Subobjects
-}) ->
-  case Subobject_type of
-    1 ->
-      encode_ipv4_subobject();
-    2 ->
-      encode_ipv6_subobject();
-    3 ->
-      encode_label_subobject()
-  end.
+%% TODO for fxf 2016-03-30
+%%encode_rro_object_body(rro_ob_type,Subobject_type,#rro_object{
+%%  subobjects = Subobjects
+%%}) ->
+%%  case Subobject_type of
+%%    1 ->
+%%      encode_ipv4_subobject();
+%%    2 ->
+%%      encode_ipv6_subobject();
+%%    3 ->
+%%      encode_label_subobject()
+%%  end.
 
 %%TODO for fxf
 %% encode_tlvs([#tlv{}=Tlv | T]) ->
