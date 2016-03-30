@@ -12,7 +12,7 @@
 
 
 %% @doc encode pcep_message to binary
--spec encode(pcep_message()) -> {ok, binary()} | {error, any()}
+-spec encode(pcep_message()) -> {ok, binary()} | {error, any()}.
 encode(#pcep_message{version = Version} = Message) ->
   case ?MOD(Version) of
     unsupported ->

@@ -37,6 +37,7 @@
   ipv4_lsp_identifiers_tlv_tunnel_endpoint_add :: integer()%%32bits
   %%ipv4_lsp_identifiers_tlv仅在IPv4使用
 }).
+-type ipv4_lsp_identifiers_tlv()::#ipv4_lsp_identifiers_tlv{}.
 
 -record(lsp_error_code_tlv,{
   lsp_error_code_tlv_type::integer(), %%16bits

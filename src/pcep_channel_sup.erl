@@ -65,6 +65,7 @@ init([SwitchId]) ->
   ets:new(Tid, [named_table, public, bag, {read_concurrency, true}]),
   %% http://erlang.org/doc/man/supervisor.html
   %% Page 350
+  %% TODO call pcep_client:start_link(Tid), but I cannot find this function in pcep_client
   ClientSpec = {pcep_client, {pcep_client, start_link, [Tid]}, transient, 1000, worker, [pcep_client]},
   %% 10秒内重启超过5次，就关掉全部进程然后退出
   {ok, {{simple_one_for_one, 5, 10}, [ClientSpec]}}.
