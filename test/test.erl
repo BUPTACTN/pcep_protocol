@@ -11,16 +11,20 @@
 
 %% Common TLV format ---------------------------------------------------------------
 -record(tlv, {
-  name::atom(),  %% the name of this tlv's type
+%%   name::atom(),  %% the name of this tlv's type
   type::integer(),
   length::integer(),
   value::any()
 }).
 
 -type tlv()::#tlv{}.
+-record(tlvs, {
+  value::any()
+}).
 
+-type tlvs()::#tlvs{}.
 %% API
--export([encode_tlvs/1, test/0, encode_tlv/1, other/0, testList/0]).
+-export([encode_tlvs/1, test/0, encode_tlv/1, other/0, testList/1]).
 
 
 -spec encode_tlv(Tlv::tlv()) -> binary().
@@ -60,5 +64,8 @@ other()->
   tlvs::list()
 }).
 
-testList()->
-   #open_object{tlvs = [{1,2,3}, 2#111, "hahaha"]}.
+testList(#tlv{type = Type, length = Length, value = Value})->
+ %%  #open_object{tlvs = [{1,2,3}, 2#111, "hahaha"]},
+  Tlv = <<1:20>>,
+#open_object{tlvs = Tlv} = Value,
+  <<Type:16, Length:16, Value/bytes>>.
