@@ -55,8 +55,7 @@
 %%-type pcep_open() :: #pcep_open{}.
 
 %% Parser ----------------------------------------------------------------------
-%% TODO it seems used to parse binary to pcep message in gen_server. I think it is necessary, but I don't know module and stack's meaning.
-
+%% 其用处在于通过module来调用不同协议版本的实现函数。而module的定义则需要使用？MOD(version)来得到。后面的stack暂时不知有何用处。
 -record(pcep_parser, {
           version :: integer(),
           module :: atom(),
