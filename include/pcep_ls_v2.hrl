@@ -1,70 +1,54 @@
 
 -include("pcep_protocol.hrl").
 %% open message tlvs
--record(open_object_tlv_ls_cap_tlv_type, {
-  ls_cap_tlv_type::integer(),%%16bits
-  ls_cap_tlv_len::integer(),%%16bits
-  ls_cap_tlv_flag::integer(),%%31bits
-  ls_cap_tlv_r::boolean()%%1bit
+-record(ls_cap_tlv_value, {
+  ls_cap_tlv_flag = <<0:31>> ::integer(),%%31bits
+  ls_cap_tlv_r = true ::boolean()%%1bit
 }).
 
--type open_object_tlv_ls_cap_tlv_type()::#open_object_tlv_ls_cap_tlv_type{}.
+-type ls_cap_tlv_value()::#ls_cap_tlv_value{}.
 
--record(routing_universe_tlv,{
-  routing_universe_tlv_type::integer(),
-  routing_universe_tlv_len::integer(),
+-record(routing_universe_tlv_value,{
   routing_universe_tlv_identifier::integer()
 }).
 
--type routing_universe_tlv()::#routing_universe_tlv{}.
+-type routing_universe_tlv_value()::#routing_universe_tlv_value{}.
 
--record(local_node_descriptor_tlv,{
-  local_node_descriptor_tlv_type::integer(),
-  local_node_descriptor_tlv_len::integer(),
+-record(local_node_descriptor_tlv_value,{
   local_node_descriptor_tlv_sub_tlv::integer()
 }).
 
--type local_node_descriptor_tlv()::#local_node_descriptor_tlv{}.
+-type local_node_descriptor_tlv_value()::#local_node_descriptor_tlv_value{}.
 
--record(remote_node_descriptor_tlv,{
-  remote_node_descriptor_tlv_type::integer(),
-  remote_node_descriptor_tlv_len::integer(),
+-record(remote_node_descriptor_tlv_value,{
   remote_node_descriptor_tlv_sub_tlv::integer()
 }).
 
--type remote_node_descriptor_tlv()::#remote_node_descriptor_tlv{}.
+-type remote_node_descriptor_tlv_value()::#remote_node_descriptor_tlv_value{}.
 
--record(node_descriptors_tlv,{
-  node_descriptors_tlv_type::integer(),
-  node_descriptors_tlv_len::integer(),
+-record(node_descriptors_tlv_value,{
   node_descriptors_tlv_sub_tlv::integer()
 }).
 
--type node_descriptors_tlv()::#node_descriptors_tlv{}.
+-type node_descriptors_tlv_value()::#node_descriptors_tlv_value{}.
 
--record(link_descriptors_tlv,{
-  link_descriptors_tlv_type::integer(),
-  link_descriptors_tlv_len::integer(),
+-record(link_descriptors_tlv_value,{
   link_descriptors_tlv_sub_tlv::integer()
 }).
 
--type link_descriptors_tlv()::#link_descriptors_tlv{}.
+-type link_descriptors_tlv_value()::#link_descriptors_tlv_value{}.
 
--record(node_attributes_tlv,{
-  node_attributes_tlv_type::integer(),
-  node_attributes_tlv_len::integer(),
+-record(node_attributes_tlv_value,{
   node_attributes_tlv_sub_tlv::integer()
 }).
 
--type node_attributes_tlv()::#node_attributes_tlv{}.
+-type node_attributes_tlv_value()::#node_attributes_tlv_value{}.
 
--record(link_attributes_tlv,{
-  link_attributes_tlv_type::integer(),
-  link_attributes_tlv_len::integer(),
+-record(link_attributes_tlv_value,{
   link_attributes_tlv_sub_tlv::integer()
 }).
 
--type link_attributes_tlv()::#link_attributes_tlv{}.
+-type link_attributes_tlv_value()::#link_attributes_tlv_value{}.
 
 -record(ls_object,{
   ls_object_protocol_id::integer(),%%8bits
@@ -72,7 +56,7 @@
   ls_object_r::boolean(),
   ls_object_s::boolean(),
   ls_object_ls_id::integer(),
-  body
+  tlvs
 }).
 
 -type ls_object()::#ls_object{}.

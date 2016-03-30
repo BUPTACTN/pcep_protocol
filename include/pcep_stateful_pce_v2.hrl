@@ -11,25 +11,21 @@
 
 %% Path report ---------------------------------------------------------------
 
--record(symbolic_path_name_tlv,{
-  symbolic_path_name_type::integer(),   %%16bits   17
-  symbolic_path_name_len::integer(),    %%16bits
+-record(symbolic_path_name_tlv_value,{
   symbolic_path_name::integer()          %%variable
 }).
 
--type symbolic_path_name_tlv()::#symbolic_path_name_tlv{}.
+-type symbolic_path_name_tlv_value()::#symbolic_path_name_tlv_value{}.
 
 -record(srp_object,{
-  flags::integer(),   %% 32bits
+  flags = <<0:32>> ::integer(),   %% 32bits
   srp_id_number::integer(),  %% 32bits
   srp_object_tlv_symbolic_path_name_tlv::symbolic_path_name_tlv()
 }).
 
 -type srp_object()::#srp_object{}.
 
--record(ipv4_lsp_identifiers_tlv, {
-  ipv4_lsp_identifiers_tlv_type :: integer(),      %%16bits
-  ipv4_lsp_identifiers_tlv_len :: integer(),      %%16bits
+-record(ipv4_lsp_identifiers_tlv_value, {
   ipv4_lsp_identifiers_tlv_tunnel_sender_add :: integer(),%%32bits
   ipv4_lsp_identifiers_tlv_lsp_id :: integer(),%%16bits
   ipv4_lsp_identifiers_tlv_tunnel_id :: integer(),%%16bits
@@ -39,22 +35,20 @@
 }).
 -type ipv4_lsp_identifiers_tlv()::#ipv4_lsp_identifiers_tlv{}.
 
--record(lsp_error_code_tlv,{
-  lsp_error_code_tlv_type::integer(), %%16bits
-  lsp_error_code_tlv_len::integer(),  %%16bits
+-type ipv4_lsp_identifiers_tlv_value()::#ipv4_lsp_identifiers_tlv_value{}.
+
+-record(lsp_error_code_tlv_value,{
   lsp_error_code::integer()           %%32bits
 }).
 
--type lsp_error_code_tlv()::#lsp_error_code_tlv{}.
+-type lsp_error_code_tlv_value()::#lsp_error_code_tlv_value{}.
 
--record(rsvp_error_spec_tlv,{
-  rsvp_error_spec_tlv_type::integer(),  %%16bits
-  rsvp_error_spec_tlv_len::integer(),  %%16bits
+-record(rsvp_error_spec_tlv_value,{
   rsvp_error_spec_tlv_body1,  %%RSVP ERROR_SPEC object
   rsvp_error_spec_tlv_body2   %%USER_ERROR_SPEC Object
 }).
 
--type rsvp_error_spec_tlv()::#rsvp_error_spec_tlv{}.
+-type rsvp_error_spec_tlv_value()::#rsvp_error_spec_tlv_value{}.
 
 -record(lsp_object_optional_tlv,{
   lsp_object_tlv_ipv4_lsp_identifiers_tlv::ipv4_lsp_identifiers_tlv(),
@@ -71,14 +65,15 @@
   r::boolean(),
   s::boolean(),
   d::boolean(),
-  lsp_object_optional_tlv
+  tlvs
 }).
 
 -type lsp_object()::#lsp_object{}.
 
+%% subobject, not tlvs,
 -record(ipv4_subobject,{
-  ipv4_subobject_type::integer(),%%8bits
-  ipv4_subobject_len::integer(),%%8bits
+  ipv4_subobject_type=1 ::integer(),%%8bits
+  ipv4_subobject_len = 8 ::integer(),%%8bits
   ipv4_subobject_add::integer(),%%32bits
   ipv4_subobject_prefix_len::integer(),%%8bits
   ipv4_subobject_flags::integer() %%8bits
@@ -87,8 +82,8 @@
 -type ipv4_subobject()::#ipv4_subobject{}.
 
 -record(ipv6_subobject,{
-  ipv6_subobject_type::integer(),%%8bits
-  ipv6_subobject_len::integer(),%%8bits
+  ipv6_subobject_type = 2 ::integer(),%%8bits
+  ipv6_subobject_len= 20 ::integer(),%%8bits
   ipv6_subobject_add::integer(),%%128bits
   ipv6_subobject_prefix_len::integer(),%%8bits
   ipv6_subobject_flags::integer() %%8bits
@@ -97,8 +92,8 @@
 -type ipv6_subobject()::#ipv6_subobject{}.
 
 -record(label_subobject,{
-  label_subobject_type::integer(),%%8bits
-  label_subobject_len::integer(),%%8bits
+  label_subobject_type = 3 ::integer(),%%8bits
+  label_subobject_len = 8::integer(),%%8bits
   label_subobject_flags::integer(),%%8bits
   label_subobject_c_type::integer(),%%8bits
   label_subobject_contents::integer()%%32bits
@@ -107,9 +102,7 @@
 -type label_subobject()::#label_subobject{}.
 
 -record(rro_object,{
-  rro_object_ipv4_subobject::ipv4_subobject(),
-  rro_object_ipv6_subobject::ipv6_subobject(),
-  rro_object_label_subobject::label_subobject()
+  subobjects
 }).
 
 -type rro_object()::#rro_object{}.

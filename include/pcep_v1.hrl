@@ -5,6 +5,8 @@
 %% -include("pcep_protocol.hrl").
 %% -include("pcep_ls_v2.hrl").
 
+-include("pcep_logger.hrl").
+
 %% TODO for fxf
 -define(ISLEGAL(MessageType, Object), case MessageType of
                                         open_msg -> case Object of
@@ -28,23 +30,91 @@
                                      end).
 
 
--define(CLASSTYPEMOD(ObjectClass, ObjectType), case ObjectClass of
-                                             1 -> open_ob_type;
-                                             2 -> rp_ob_type;
-                                             3 -> no_path_ob_type;
-                                             4 -> case ObjectType of
-                                                    1 -> end_points_v4_ob_type;
-                                                    2 -> end_points_v6_ob_type
-                                                  end;
-                                             5 -> case ObjectType of
-                                                    1 -> bdwidth_req_ob_type;
-                                                    2 -> bdwidth_lsp_ob_type
-                                                  end;
-                                                 %% TODO for fxf
-                                             _ -> unsupported_class
+-define(CLASSTYPEMOD(ObjectClass, ObjectType),
+  case ObjectClass of
+    1 -> open_ob_type;
+    2 -> rp_ob_type;
+    3 -> no_path_ob_type;
+    4 -> case ObjectType of
+           1 -> end_points_v4_ob_type;
+           2 -> end_points_v6_ob_type
+         end;
+    5 -> case ObjectType of
+           1 -> bdwidth_req_ob_type;
+           2 -> bdwidth_lsp_ob_type
+         end;
+    6 -> metric_ob_type;
+    7 -> ero_ob_type;
+    8 -> rro_ob_type;
+    9 -> lspa_ob_type;
+    10 -> iro_ob_type;
+    11 -> svec_ob_type;
+    12 -> notification_ob_type;
+    13 ->pcep_error_ob_type;
+    14 -> load_balancing_ob_type;
+    15 -> close_ob_type;
+    32 -> lsp_ob_type;
+    224 -> case ObjectType of
+             1 -> ls_link_ob_type;
+             2 -> ls_node_ob_type;
+             3 -> ls_ipv4_topo_prefix_ob_type;
+             4 -> ls_ipv6_topo_prefix_ob_type
+           end;
+    _ -> unsupported_class
 
-                                           end).
-
+  end).
+-define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
+  case ErrorType of
+    1 -> case ErrorValue of
+           1 -> ?ERROR("reception of an invalid Open message or a non Open message");
+           2 -> ?ERROR("no Open message received before the expiration of the OpenWait timer");
+           3 -> ?ERROR("unacceptable and non-negotiable session characteristics");
+           4 -> ?ERROR("unacceptable but negotiable session characteristics");
+           5 -> ?ERROR("reception of a second Open message with still unacceptable session characteristics");
+           6 -> ?ERROR("reception of a PCErr message proposing unacceptable session characteristics");
+           7 -> ?ERROR("No Keepalive or PCErr message received before the expiration of the KeepWait timer");
+           8 -> ?ERROR("PCEP version not supported")
+         end;
+    2 -> ?ERROR("Capability not supported");
+    3 -> case ErrorValue of
+           1 -> ?ERROR("Unrecognized object class");
+           2 -> ?ERROR("Unrecognized object Type");
+           _ -> unsupported_error_value
+         end;
+    4 -> case ErrorValue of
+           1 -> ?ERROR("Not supported object class");
+           2 -> ?ERROR("Not supported object Type");
+           _ -> unsupported_error_value
+         end;
+    5 -> case ErrorValue of
+           1 -> ?ERROR("C bit of the METRIC object set (request rejected)");
+           2 -> ?ERROR("O bit of the RP object cleared (request rejected)");
+           _ -> unsupported_error_value
+         end;
+    6 -> case ErrorValue of
+           1 -> ?ERROR("RP object missing");
+           2 -> ?ERROR("RRO missing for a reoptimization request (R bit of the RP object set)");
+           3 -> ?ERROR("END-POINTS object missing");
+           _ -> unsupported_error_value
+         end;
+    7 -> ?ERROR("Synchronized path computation request missing");
+    8 -> ?ERROR("Unknown request reference");
+    9 -> ?ERROR("Attempt to establish a second PCEP session");
+    10 -> case ErrorValue of
+            1 -> ?ERROR("reception of an object with P flag not set although the P flag must be set according to this specification.");
+            _ -> unsupported_error_value
+          end
+  end
+).
+-define(Close_Object_REASONS(CloseReasons),
+case CloseReasons of
+  1 -> io:format("No explanation provided");
+  2 -> io:format("DeadTimer expired");
+  3 -> io:format("Reception of a malformed PCEP message");
+  4 -> io:format("Reception of an unacceptable number of unknown requests/replies");
+  5 -> io:format("Reception of an unacceptable number of unrecognized PCEP messages")
+end
+).
 % Message-Type (8 bits):
 % 1     Open
 % 2     Keepalive
@@ -57,73 +127,61 @@
 
 %% Common TLV format ---------------------------------------------------------------
 %% TODO error
-%%-record(tlv, {
-%%  name::atom(),  %% the name of this tlv's type
-%%  type::integer(),
-%%  length::integer(),
-%%  value::any()
-%%}).
-%%
-%%-type tlv()::#tlv{}.
+-record(tlv, {
+ type::integer(),
+ length::integer(),
+ value::any()
+}).
+
+-type tlv()::#tlv{}.
 
 
 
 %% Open Message ---------------------------------------------------------------
 %% open message tlvs
--record(gmpls_cap_tlv, {
-  gmpls_cap_tlv_type :: integer(),
-  gmpls_cap_tlv_len :: integer(),
-  gmpls_cap_flag :: integer()
+-record(gmpls_cap_tlv_value, {
+  gmpls_cap_flag = <<0:32>> :: integer()
 }).
 
--type gmpls_cap_tlv()::#gmpls_cap_tlv{}.
+-type gmpls_cap_tlv_value()::#gmpls_cap_tlv_value{}.
 
--record(stateful_pec_cap_tlv,{
-  stateful_pce_cap_tlv_type::integer(),
-  stateful_pce_cap_tlv_len::integer(),
-  stateful_pce_cap_tlv_flag::integer(),
-  stateful_pce_cap_tlv_d::boolean(),
-  stateful_pce_cap_tlv_t::boolean(),
-  stateful_pce_cap_tlv_i::boolean(),
-  stateful_pce_cap_tlv_s::boolean(),
-  stateful_pce_cap_tlv_u::boolean()
+-record(stateful_pec_cap_tlv_value,{
+  stateful_pce_cap_tlv_flag = <<0:27>> ::integer(),
+  stateful_pce_cap_tlv_d = true::boolean(),
+  stateful_pce_cap_tlv_t = true::boolean(),
+  stateful_pce_cap_tlv_i = true::boolean(),
+  stateful_pce_cap_tlv_s = true::boolean(),
+  stateful_pce_cap_tlv_u = true::boolean()
 }).
 
--type stateful_pec_cap_tlv()::#stateful_pec_cap_tlv{}.
+-type stateful_pec_cap_tlv_value()::#stateful_pec_cap_tlv_value{}.
 
--record(pcecc_cap_tlv,{
-  pcecc_cap_tlv_type::integer(),
-  pcecc_cap_tlv_len::integer(),
-  pcecc_cap_tlv_flag::integer(),
-  pcecc_cap_tlv_g::boolean(),
-  pcecc_cap_tlv_l::boolean()
+-record(pcecc_cap_tlv_value,{
+  pcecc_cap_tlv_flag = <<0:30>>::integer(),
+  pcecc_cap_tlv_g = true ::boolean(),
+  pcecc_cap_tlv_l = true ::boolean()
 }).
 
--type pcecc_cap_tlv()::#pcecc_cap_tlv{}.
+-type pcecc_cap_tlv_value()::#pcecc_cap_tlv_value{}.
 
--record(lsp_db_version_tlv,{
-  lsp_db_version_tlv_type::integer(),
-  lsp_db_version_tlv_len::integer(),
-  lsp_db_version_tlv_ver::integer()
+-record(lsp_db_version_tlv_value,{
+  lsp_db_version_tlv_ver = <<0:24>> ::integer()
 }).
 
--type lsp_db_version_tlv()::#lsp_db_version_tlv{}.
+-type lsp_db_version_tlv_value()::#lsp_db_version_tlv_value{}.
 
--record(ted_cap_tlv,{
-  ted_cap_tlv_type::integer(),
-  ted_cap_tlv_flag::integer(),
-  ted_cap_tlv_r::boolean()
+-record(ted_cap_tlv_value,{
+  ted_cap_tlv_flag = <<0:31>> ::integer(),
+  ted_cap_tlv_r = true ::boolean()
 }).
 
--type ted_cap_tlv()::#ted_cap_tlv{}.
+-type ted_cap_tlv_value()::#ted_cap_tlv_value{}.
 
--record(label_db_version_tlv,{
-  label_db_version_tlv_type::integer(),
-  label_db_version_tlv_len::integer(),
-  lsp_db_version_tlv_ver::integer()
+-record(label_db_version_tlv_value,{
+  label_db_version_tlv_ver = <<0:64>>::integer()
 }).
 
--type label_db_version_tlv()::#label_db_version_tlv{}.
+-type label_db_version_tlv_value()::#label_db_version_tlv_value{}.
 
 -record(open_object, {
 %%   open_object_header::pcep_object_message(),
@@ -217,7 +275,7 @@
   r::boolean(),      %%1bit
   pri::integer(),    %%3bits
   request_id_num::integer(),  %%32bits
-  body
+  tlvs
 }).
 
 -type rp_object()::#rp_object{}.
@@ -265,7 +323,7 @@
   flags::integer(),%%8bits
   error_type::integer(),%%8bits
   error_value::integer(),%%8bits
-  body
+  tlvs
 }).
 
 -type error_object()::#error_object{}.
@@ -283,7 +341,7 @@
   reserved::integer(),%%16bits
   flags::integer(),%%8bits
   reason::integer(),%%8bits
-  body
+  tlvs
 }).
 
 -type close_object()::#close_object{}.
