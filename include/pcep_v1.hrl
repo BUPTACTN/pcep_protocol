@@ -2,8 +2,6 @@
 %%Protocol Version
 -define(VERSION, 1).
 
-%% -include("pcep_protocol.hrl").
-%% -include("pcep_ls_v2.hrl").
 
 -include("pcep_logger.hrl").
 
@@ -12,20 +10,91 @@
                                         open_msg -> case Object of
                                                       open_ob_type -> true
                                                     end;
-                                        keepalive_msg -> case Object of
-                                                           fxf -> false
-                                                         end
+                                        keepalive_msg -> true;
+                                        path_computation_request_msg -> case Object of
+                                                                          rp_ob_type -> true;
+                                                                          end_points_v4_ob_type -> true;
+                                                                          end_points_v6_ob_type -> true;
+                                                                          lspa_ob_type -> true;
+                                                                          bdwidth_req_ob_type ->true;
+                                                                          bdwidth_lsp_ob_type ->true;
+                                                                          metric_ob_type -> true;
+                                                                          iro_ob_type -> true;
+                                                                          load_balancing_ob_type -> true
+                                                                        end;
+                                        path_computation_reply_msg -> case Object of
+                                                                        rp_ob_type -> true
+                                                                      end;
+                                        notification_msg -> case Object of
+                                                              rp_ob_type -> true;
+                                                              notification_ob_type -> true
+                                                            end;
+                                        error_msg -> case Object of
+                                                       open_ob_type -> true;
+                                                       pcep_error_ob_type -> true
+                                                     end;
+                                        close_msg -> case Object of
+                                                       close_ob_type -> true
+                                                     end;
+                                        pcinitiate_msg -> case Object of
+                                                            srp_ob_type -> true;
+                                                            lsp_ob_type -> true;
+                                                            end_points_v4_ob_type -> true;
+                                                            end_points_v6_ob_type -> true;
+                                                            ero_ob_type -> true;
+                                                            bdwidth_req_ob_type -> true;
+                                                            bdwidth_lsp_ob_type -> true
+                                                          end;
+                                        pcupd_msg -> case Object of
+                                                       srp_ob_type -> true;
+                                                       lsp_ob_type -> true;
+                                                       ero_ob_type -> true;
+                                                       bdwidth_req_ob_type -> true;
+                                                       bdwidth_lsp_ob_type -> true
+                                                     end;
+                                        pcrpt_msg -> case Object of
+                                                       srp_ob_type -> true;
+                                                       lsp_ob_type -> true;
+                                                       rro_ob_type -> true;
+                                                       bdwidth_req_ob_type -> true;
+                                                       bdwidth_lsp_ob_type -> true
+                                                     end;
+                                        pclabelupd_msg -> case Object of
+                                                            srp_ob_type -> true;
+                                                            label_ob_type -> true;
+                                                            fec_ipv4_ob_type -> true;
+                                                            fec_ipv6_ob_type -> true;
+                                                            fec_ipv4_adjacency_ob_type -> true;
+                                                            fec_ipv6_adjacency_ob_type -> true;
+                                                            fec_ipv4_unnumbered_ob_type -> true
+                                                          end;
+                                        lsrpt_msg -> case Object of
+                                                       ls_link_ob_type -> true;
+                                                       ls_node_ob_type -> true;
+                                                       ls_ipv4_topo_prefix_ob_type -> true;
+                                                       ls_ipv6_topo_prefix_ob_type -> true
+                                                     end;
+                                        pclrresv_msg -> case Object of
+                                                          srp_ob_type -> true;
+                                                          label_range_ob_type -> true
+                                                        end
                                       end ).
 
 -define(MESSAGETYPEMOD(MessageType), case MessageType of
                                        1 -> open_msg;
                                        2 -> keepalive_msg;
-                                       3 -> path_computation_reqest_msg;
+                                       3 -> path_computation_request_msg;
                                        4 -> path_computation_reply_msg;
                                        5 -> notification_msg;
                                        6 -> error_msg;
                                        7 -> close_msg;
                                        %% TODO for fxf
+                                       10 -> pcrpt_msg;%% TODO draft-ietf-pce-stateful-pce-12
+                                       11 -> pcupd_msg; %% TODO draft-ietf-pce-stateful-pce-12
+                                       12 -> pcinitiate_msg; %% TODO PCE initiated tunnel setup draft-ietf-pce-pce-initiated-lsp-03, section 5.1
+                                       224 -> lsrpt_msg; %% TODO draft-dhodylee-pce-pcep-ls-02
+                                       225 -> pclrresv_msg;
+                                       226 -> pclabelupd_msg;
                                        _ -> unsupported_msg
                                      end).
 
@@ -54,12 +123,22 @@
     14 -> load_balancing_ob_type;
     15 -> close_ob_type;
     32 -> lsp_ob_type;
+    33 -> srp_ob_type;
+    60 -> label_range_ob_type;
     224 -> case ObjectType of
-             1 -> ls_link_ob_type;
+             1 -> ls_link_ob_type; %% TODO draft-dhodylee-pce-pcep-ls-02
              2 -> ls_node_ob_type;
              3 -> ls_ipv4_topo_prefix_ob_type;
              4 -> ls_ipv6_topo_prefix_ob_type
            end;
+    225 -> label_ob_type;
+    226 -> case ObjectType of
+             1 -> fec_ipv4_ob_type;  %%TODO draft-zhao-pce-pcep-extension-for-pce-controller-01 , section : 7.5
+             2 -> fec_ipv6_ob_type;
+             3 -> fec_ipv4_adjacency_ob_type;
+             4 -> fec_ipv6_adjacency_ob_type;
+             5 -> fec_ipv4_unnumbered_ob_type
+             end;
     _ -> unsupported_class
 
   end).

@@ -143,6 +143,8 @@ init({Tid, ResourceId, ControllerHandle, Parent, Opts, Sup}) ->
 %% @private
 %% @doc
 %% Handling call messages
+%% Whenever a gen_server receives a request sent using gen_server:call/2,3
+%% or gen_server:multi_call/2,3,4, this function is called to handle the request.
 %%
 %% @end
 %%--------------------------------------------------------------------
@@ -159,27 +161,23 @@ handle_call({send, _Message}, _From, #state{socket = undefined} = State) ->
 handle_call({send, _Message}, _From, #state{parser = undefined} = State) ->
   {reply, {error, parser_not_ready}, State};
 %% @doc
-handle_call({send, Message}, _From, #state{version = Version} = State) ->
+handle_call({send, Message}, _From, #state{} = State) ->
+  %% see pcep_v1.hrl
   case ?MESSAGETYPEMOD(Message#pcep_message.message_type) of
-    Type when Type == error;
-      Type == experimenter;
-      Type == echo_reply;
-      Type == features_reply;
-      Type == get_config_reply;
-      Type == packet_in;
-      Type == flow_removed;
-      Type == port_status;
-      Type == stats_reply;
-      Type == multipart_reply;
-      Type == barrier_reply;
-      Type == queue_get_config_reply;
-      Type == role_reply;
-      Type == get_async_reply;
-      Type == bundle_ctrl_msg,
-      %% LINC-OE
-      %% Port descripton in LINC-OE uses Open Flow 1.5 format
-      Type == port_desc_reply_v6 ->
-      {reply, handle_send(Message, State), State};
+    Type when Type == open_msg;
+      Type ==  keepalive_msg;
+      Type == path_computation_request_msg;
+      Type == path_computation_reply_msg;
+      Type == notification_msg;
+      Type == error_msg;
+      Type == close_msg;
+      Type == pcrpt_msg;
+      Type == pcupd_msg;
+      Type == pcinitiate_msg;
+      Type == lsrpt_msg;
+      Type == pclrresv_msg;
+      Type == pclabelupd_msg ->
+      {reply, do_send(Message, State), State};
     _Else ->
       {reply, {error, {bad_message, Message}}, State}
   end;
@@ -211,6 +209,8 @@ handle_call(_Request, _From, State) ->
 %% @private
 %% @doc
 %% Handling cast messages
+%% Whenever a gen_server receives a request sent using gen_server:cast/2
+%% or gen_server:abcast/2,3, this function is called to handle the request.
 %%
 %% @end
 %%--------------------------------------------------------------------
@@ -218,13 +218,24 @@ handle_call(_Request, _From, State) ->
   {noreply, NewState :: #state{}} |
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
+%% when need to call this? TODO
+handle_cast({update_connection_config, Config},
+    #state{controller = {IP, Port, Protocol}} = State) ->
+  NewController = {proplists:get_value(ip, Config, IP),
+    proplists:get_value(port, Config, Port),
+    proplists:get_value(protocol, Config, Protocol)},
+  NewState1 = reestablish_connection_if_required(NewController, State),
+  {noreply, NewState1};
 handle_cast(_Request, State) ->
   {noreply, State}.
 
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
-%% Handling all non call/cast messages
+%% Handling all non call/cast messages.
+%% This function is called by a gen_server when a timeout occurs or when
+%% it receives any other message than a synchronous or asynchronous request (or a system message).
+%% Info is either the atom timeout, if a timeout has occurred, or the received message.
 %%
 %% @spec handle_info(Info, State) -> {noreply, State} |
 %%                                   {noreply, State, Timeout} |
@@ -235,6 +246,7 @@ handle_cast(_Request, State) ->
   {noreply, NewState :: #state{}} |
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
+
 handle_info(_Info, State) ->
   {noreply, State}.
 
@@ -337,3 +349,73 @@ controller_state(ConfigControllerIP, ConfigControllerPort, ResourceId,
     connection_state = ConnectionState,
     current_version = CurrentVersion,
     supported_versions = SupportedVersions}.
+
+
+%% @doc handle_send all pcep message. But I wonder why there is no checkout about tcp connection
+do_send(#pcep_message{version = Vsn}=Message,
+    #state{controller = {_, _, Proto},
+      socket = Socket,
+      parser = Parser,
+      version = Version} = State) when Vsn=:= Version ->
+  case pcep_parser:encode(Parser, Message) of
+    {ok, Binary} ->
+      Size = erlang:byte_size(Binary),
+      case Size > (?PCEP_COMMON_HEADER_SIZE+?PCEP_OBJECT_MESSAGE_HEADER_SIZE) of
+        false ->
+          {error, message_too_short};
+        true ->
+          send(Proto, Socket, Binary)
+      end
+  end.
+
+
+
+
+
+%% @doc send tcp binary data to remote
+send(tcp, Socket, Data) ->
+  gen_tcp:send(Socket, Data);
+%% @doc send tls binary data to remote.
+%% TODO there is no tls connection now.
+send(tls, Socket, Data) ->
+  ssl:send(Socket, Data).
+%% @doc close connection to remote node.
+close(_, undefined) ->
+  ok;
+close(tcp, Socket) ->
+  gen_tcp:close(Socket);
+close(tls, Socket) ->
+  ssl:close(Socket).
+
+
+%% @doc reestablish connection to controller if necessary.
+reestablish_connection_if_required(NewController, State) ->
+  case NewController /= State#state.controller of
+    true when erlang:is_port(State#state.socket) ->
+      %% The client is connected to the controller
+      NewState = terminate_connection(State,
+        external_connection_config_update),
+      reconnect(NewState#state.timeout),
+      NewState#state{controller = NewController};
+    true ->
+      State#state{controller = NewController};
+    false ->
+      State
+  end.
+
+
+terminate_connection(#state{
+  controller = {Host, Port, Proto},
+  socket = Socket,
+  parent = Parent,
+  supervisor = Sup,
+  ets = Tid} = State, Reason) ->
+  close(Proto, Socket),
+  ets:delete(Tid, erlang:self()),
+  %% Pid ! Msg 语法的意思是发送消息 Msg 到进程 Pid 。大括号里的 self() 参数标明了发送消息的进程
+  %% TODO Parent可以使self()，那么往gen_server进程发送消息是如何处理的？
+  Parent ! {pcep_closed, erlang:self(), {Host, Port, Reason}},
+  State#state{socket = undefined, parser = undefined, version = undefined}.
+
+reconnect(Timeout) ->
+  erlang:send_after(Timeout, erlang:self(), timeout).

@@ -5,6 +5,7 @@
 
 %% 4bytes
 -define(PCEP_COMMON_HEADER_SIZE, 4).
+-define(PCEP_OBJECT_MESSAGE_HEADER_SIZE, 4).
 
 -define(MOD(Version), case Version of
                           1 -> pcep_v1;
@@ -12,13 +13,13 @@
                       end).
 %% PCEP Common Object Header ----------------------------------------------------------------------
 -record(pcep_object_message, {
-  object_class::integer(),
-  object_type::integer(),
-  res_flags::integer(),
-  p::integer(),
-  i::integer(),
-  object_length::integer(),
-  body
+  object_class::integer(), %% 8bits
+  object_type::integer(), %% 4bits
+  res_flags::integer(), %% 2bits
+  p::integer(), %% 1 bit
+  i::integer(), %% 1 bit
+  object_length::integer(), %% 16 bits
+  body::any()
 }).
 
 -type pcep_object_message()::#pcep_object_message{}.
