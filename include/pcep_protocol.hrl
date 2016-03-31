@@ -56,7 +56,7 @@
 %%-type pcep_open() :: #pcep_open{}.
 
 %% Parser ----------------------------------------------------------------------
-%% 其用处在于通过module来调用不同协议版本的实现函数。而module的定义则需要使用？MOD(version)来得到。后面的stack暂时不知有何用处。
+
 -record(pcep_parser, {
           version :: integer(),
           module :: atom(),
