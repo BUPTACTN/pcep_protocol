@@ -5,6 +5,7 @@
 
 %% 4bytes
 -define(PCEP_COMMON_HEADER_SIZE, 4).
+-define(PCEP_OBJECT_MESSAGE_HEADER_SIZE, 4).
 
 -define(MOD(Version), case Version of
                           1 -> pcep_v1;
@@ -12,13 +13,13 @@
                       end).
 %% PCEP Common Object Header ----------------------------------------------------------------------
 -record(pcep_object_message, {
-  object_class::integer(),
-  object_type::integer(),
-  res_flags::integer(),
-  p::integer(),
-  i::integer(),
-  object_length::integer(),
-  body
+  object_class::integer(), %% 8bits
+  object_type::integer(), %% 4bits
+  res_flags::integer(), %% 2bits
+  p::integer(), %% 1 bit
+  i::integer(), %% 1 bit
+  object_length::integer(), %% 16 bits
+  body::any()
 }).
 
 -type pcep_object_message()::#pcep_object_message{}.
@@ -29,7 +30,7 @@
 -record(pcep_message, {
           version=1 :: integer(), %% 3 bits
           flags=0 :: integer(), %% 5bits
-          message_type :: atom(), %% 8bits 
+          message_type :: integer(), %% 8bits
           message_length = 4 :: integer(), %% 16btis, total length of the PCEP message including the common header, expressed in bytes.
           body::pcep_object_message() %%
          }).
@@ -70,7 +71,6 @@
 
 -record(controller_status, {
           resource_id        :: string(),
-          role               :: controller_role(),
           controller_ip      :: string(),
           controller_port    :: integer(),
           local_ip           :: string(),
@@ -95,3 +95,13 @@
 %%          slave_port_status = [add, delete, modify],
 %%          slave_flow_removed = []
 %%         }).
+
+
+-record(hostent,
+{
+  h_name		  :: inet:hostname(),	%% offical name of host
+  h_aliases = []   :: [inet:hostname()],	%% alias list
+  h_addrtype	  :: 'inet' | 'inet6',	%% host address type
+  h_length	  :: non_neg_integer(),	%% length of address
+  h_addr_list = [] :: [inet:ip_address()]%% list of addresses from name server
+}).

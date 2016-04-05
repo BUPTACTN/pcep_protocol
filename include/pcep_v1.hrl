@@ -2,8 +2,7 @@
 %%Protocol Version
 -define(VERSION, 1).
 
-%% -include("pcep_protocol.hrl").
-%% -include("pcep_ls_v2.hrl").
+
 -include("pcep_logger.hrl").
 
 %% TODO for fxf
