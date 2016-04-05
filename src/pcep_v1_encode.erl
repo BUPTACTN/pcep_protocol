@@ -32,6 +32,7 @@ encode_objects([#pcep_object_message{} = Object | H]) ->
   <<H3/bytes,H2/bytes>>;
 encode_objects([]) ->
   <<>>.
+
 %% encode pcep_message -------------------------------------------------------------------
 -spec do(Message ::pcep_message()) ->binary().
 do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, message_length=MessageLength, body=Body}=msg)
@@ -45,7 +46,28 @@ do(#pcep_message{message_length=MessageLength}=msg)
 
 
 %% encode tlvs' list -------------------------------------------------------------------
-
+%% encode subobject
+-spec encode_subobject(Subobject::subobject()) -> binary().
+encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subobject_value = Value}) ->
+  case Type of
+    1 -> #ipv4_subobject_value{ipv4_subobject_add = Ipv4_add,
+    ipv4_subobject_prefix_len = Ipv4_prefix_len,
+    ipv4_subobject_flags = Ipv4_flags} = Value,
+      Value_1 = << <<Value1/bytes>> || Value1 <- [<<Ipv4_add:32,Ipv4_prefix_len:8,Ipv4_flags:8>>]>>,
+      erlang:list_to_binary([<<Type:8, Length:8>>, Value_1]);
+    2 -> #ipv6_subobject_value{ipv6_subobject_add = Ipv6_add,
+    ipv6_subobject_prefix_len = Ipv6_prefix_len,
+    ipv6_subobject_flags = Ipv6_flags} = Value,
+      Value_2 = << <<Value2/bytes>> || Value2 <- [<<Ipv6_add:128,Ipv6_prefix_len:8,Ipv6_flags:8>>]>>,
+      erlang:list_to_binary([<<Type:8, Length:8>>, Value_2]);
+    3 -> #label_subobject_value{label_subobject_flags =Label_flags,
+    label_subobject_c_type = Label_c_type,
+    label_subobject_contents = Label_contents} = Value,
+      Value_3 = << <<Value3/bytes>> || Value3 <- [<<Label_flags:8,Label_c_type:8,Label_contents:32>>]>>,
+      erlang:list_to_binary([<<Type:8, Length:8>>, Value_3]);
+    _ ->
+      ?ERROR("Other Subobject Type,but cannot be recognized")
+  end.
 %% TODO ERROR, tlv !!!
 -spec encode_tlv(Tlv::tlv()) -> binary().
 encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
@@ -137,6 +159,12 @@ encode_tlvs([#tlv{}=Tlv | T]) ->
 encode_tlvs([]) ->
   <<>>.
 
+encode_subobjects([#subobject{}=Subobject | T]) ->
+  T2 =encode_subobjects(T),
+  T3 = encode_subobject(Subobject),
+  <<T3/bytes,T2/bytes>>;
+encode_subobjects([]) ->
+  <<>>.
 
 
 %% encode common body, which is object related message -------------------------------------------------------------------
@@ -158,31 +186,7 @@ encode_object_msg(#pcep_object_message{object_length=Ob_length}=object_msg)
   <<>>.
 
 
-%% encode subobject
-encode_ipv4_subobject(#ipv4_subobject{
-  ipv4_subobject_type = Type,
-  ipv4_subobject_len = Len,
-  ipv4_subobject_add = Add,
-  ipv4_subobject_prefix_len = Prefix_len,
-  ipv4_subobject_flags = Flags
-}) ->
-  <<Type:8,Len:8,Add:32,Prefix_len:8,Flags:8>>.
-encode_ipv6_subobject(#ipv6_subobject{
-  ipv6_subobject_type = Type,
-  ipv6_subobject_len = Len,
-  ipv6_subobject_add = Add,
-  ipv6_subobject_prefix_len = Prefix_len,
-  ipv6_subobject_flags = Flags
-}) ->
-  <<Type:8,Len:8,Add:128,Prefix_len:8,Flags:8>>.
-encode_label_subobject(#label_subobject{
-  label_subobject_type = Type,
-label_subobject_len = Len,
-label_subobject_flags = Flags,
-label_subobject_c_type = C_type,
-label_subobject_contents = Contents
-}) ->
-  <<Type:8,Len:8,Flags:8,C_type:8,Contents:32>>.
+
 %% encode open object -------------------------------------------------------------------
 encode_object_body(open_ob_type, #open_object{
   version=Version, flags = Flags, keepAlive = KeepAlive, deadTimer=DeadTimer, sid = Sid, tlvs = Tlvs
@@ -257,21 +261,16 @@ encode_object_body(lsp_ob_type,#lsp_object{
   plsp_id = Plsp_id,flag = Flag,o = O,a = A,r = R,s = S,d =D,tlvs = Tlvs
 }) ->
   TlvsBin=encode_tlvs(Tlvs),
-  <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,TlvsBin/bytes>>.
+  <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,TlvsBin/bytes>>;
 
 %% encode rro object
 %% TODO for fxf 2016-03-30
-%%encode_rro_object_body(rro_ob_type,Subobject_type,#rro_object{
-%%  subobjects = Subobjects
-%%}) ->
-%%  case Subobject_type of
-%%    1 ->
-%%      encode_ipv4_subobject();
-%%    2 ->
-%%      encode_ipv6_subobject();
-%%    3 ->
-%%      encode_label_subobject()
-%%  end.
+encode_object_body(rro_ob_type,#rro_object{
+  rro_subobjects = Subobjects
+}) ->
+  SubobjectsBin = encode_objects(Subobjects),
+  <<SubobjectsBin/bytes>>.
+
 
 %%TODO for fxf
 %% encode_tlvs([#tlv{}=Tlv | T]) ->

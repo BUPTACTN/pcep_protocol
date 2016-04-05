@@ -66,8 +66,8 @@
                                                             fec_ipv4_ob_type -> true;
                                                             fec_ipv6_ob_type -> true;
                                                             fec_ipv4_adjacency_ob_type -> true;
-                                                            fec_ipv6_adjacency_ob_type -> true;
-                                                            fec_ipv4_unnumbered_ob_type -> true
+                                                            fec_ipv6_adjacency_ob_type -> true
+                                                           %% fec_ipv4_unnumbered_ob_type -> true
                                                           end;
                                         lsrpt_msg -> case Object of
                                                        ls_link_ob_type -> true;
@@ -114,7 +114,7 @@
            2 -> bdwidth_lsp_ob_type
          end;
     6 -> metric_ob_type;
-    7 -> ero_ob_type;
+    7 -> ero_ob_type; %% TODO EXPLICIT_ROUTE object,Only the first one is meaningful
     8 -> rro_ob_type;
     9 -> lspa_ob_type;
     10 -> iro_ob_type;
@@ -137,12 +137,42 @@
              1 -> fec_ipv4_ob_type;  %%TODO draft-zhao-pce-pcep-extension-for-pce-controller-01 , section : 7.5
              2 -> fec_ipv6_ob_type;
              3 -> fec_ipv4_adjacency_ob_type;
-             4 -> fec_ipv6_adjacency_ob_type;
-             5 -> fec_ipv4_unnumbered_ob_type
+             4 -> fec_ipv6_adjacency_ob_type
+          %%   5 -> fec_ipv4_unnumbered_ob_type
              end;
     _ -> unsupported_class
-
   end).
+
+-define(TLV_Type(Type),
+  case Type of
+    14 -> gmpls_cap_tlv_type;
+    16 -> stateful_pce_cap_tlv_type;
+    32 -> pcecc_cap_tlv_type;
+    23 -> label_db_version_tlv_type;
+    132 -> ted_cap_tlv_type;
+    65280 -> ls_cap_tlv_type;
+    65281 -> routing_universe_tlv_type;
+    65282 -> local_node_descriptor_tlv_type;
+    65283 -> remote_node_descriptor_tlv_type;
+    65284 -> link_descriptors_tlv_type;
+    65285 -> node_attributes_tlv_type;
+    17 -> symbolic_path_name_tlv_type;
+    18 -> ipv4_lsp_identifiers_tlv_type;
+    20 -> lsp_error_code_tlv_type;
+    21 -> rsvp_error_spec_tlv_type;
+    2 -> next_hop_ipv4_add_tlv_type;
+    1 -> next_hop_unnumbered_ipv4_id_tlv_type;
+    _ -> unsupported_tlv_type
+end).
+-define(Subobject_Type(SubObjectType),  %% TODO RRO Object and ERO Object
+case SubObjectType of
+  1 -> ipv4_subobject_type; %% TODO RFC 4874:3.1.1
+  2 -> ipv6_subobject_type;%% TODO RFC 4874
+  3 -> label_subobject_type;%% TODO RFC 3209
+  96 -> sr_ero_subobject_type; %% TODO draft-ietf-pce-segment-routing-00
+  64 -> path_key_subobject_type; %% TODO RFC 5520
+  _ -> unsupported_subobject_type
+end).
 -define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
   case ErrorType of
     1 -> case ErrorValue of
@@ -175,6 +205,10 @@
            1 -> ?ERROR("RP object missing");
            2 -> ?ERROR("RRO missing for a reoptimization request (R bit of the RP object set)");
            3 -> ?ERROR("END-POINTS object missing");
+           8 -> ?ERROR("LSP Object missing");  %% TODO 8~11 draft-ietf-pce-stateful-pce-12
+           9 -> ?ERROR("ERO Object missing");
+           10 -> ?ERROR("SRP Object missing");
+           11 -> ?ERROR("LSP-IDENTIFIERS TLV missing");
            _ -> unsupported_error_value
          end;
     7 -> ?ERROR("Synchronized path computation request missing");
@@ -183,16 +217,28 @@
     10 -> case ErrorValue of
             1 -> ?ERROR("reception of an object with P flag not set although the P flag must be set according to this specification.");
             _ -> unsupported_error_value
+          end;
+    19 ->case ErrorValue of
+           1 -> ?ERROR("Attempted LSP Update Request for a nondelegated LSP.");
+           2 -> ?ERROR("Attempted LSP Update Request if the stateful PCE capability was not advertised.");
+           3 -> ?ERROR("Attempted LSP Update Request for an LSP identified by an unknown PLSP-ID.");
+           4 -> ?ERROR("A PCE indicates to a PCC that it has exceeded the resource limit allocated for its state, and thus it cannot accept and process its LSP State Report message.");
+           5 -> ?ERROR("Attempted LSP State Report if active stateful PCE capability was not advertised.");
+           _ -> unsupported_error_value
+    end;
+    20 -> case ErrorValue of
+            1 -> ?ERROR("A PCE indicates to a PCC that it can not process (an otherwise valid) LSP State Report. The PCEP-ERROR Object is followed by the LSP Object that identifies the LSP.");
+            5 -> ?ERROR("A PCC indicates to a PCE that it can not complete the state synchronization,")
           end
   end
 ).
 -define(Close_Object_REASONS(CloseReasons),
 case CloseReasons of
-  1 -> io:format("No explanation provided");
-  2 -> io:format("DeadTimer expired");
-  3 -> io:format("Reception of a malformed PCEP message");
-  4 -> io:format("Reception of an unacceptable number of unknown requests/replies");
-  5 -> io:format("Reception of an unacceptable number of unrecognized PCEP messages")
+  1 -> erlang:io:format("No explanation provided");
+  2 -> erlang:io:format("DeadTimer expired");
+  3 -> erlang:io:format("Reception of a malformed PCEP message");
+  4 -> erlang:io:format("Reception of an unacceptable number of unknown requests/replies");
+  5 -> erlang:io:format("Reception of an unacceptable number of unrecognized PCEP messages")
 end
 ).
 % Message-Type (8 bits):
@@ -215,7 +261,14 @@ end
 
 -type tlv()::#tlv{}.
 
+%% Common Subobject format ---------------------------------------------------------------
+-record(subobject, {
+  subobject_type::integer(), %%8bits
+  subobject_length::integer(),%%8bits
+  subobject_value::any()
+}).
 
+-type subobject()::#subobject{}.
 
 %% Open Message ---------------------------------------------------------------
 %% open message tlvs
@@ -342,10 +395,17 @@ end
 %%
 %% -type error_object()::#error_object{}.
 %%
-%% -record(bandwidth_object,{
-%%   bandwidth::integer()
-%% }).
+-record(bandwidth_req_object,{
+  bandwidth::integer()
+}).
 
+-record(bandwidth_lsp_object,{
+  bandwidth::integer()
+}).
+
+-type bandwidth_req_object()::#bandwidth_req_object{}.
+
+-type bandwidth_lsp_object()::#bandwidth_lsp_object{}.
 %% Path Computation Request ---------------------------------------------------------------
 
 -record(rp_object,{
