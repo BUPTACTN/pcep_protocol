@@ -108,6 +108,7 @@ encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
     65282 -> #local_node_descriptor_tlv_value{local_node_descriptor_tlv_sub_tlv = Sub_tlv1} = Value,
       Value_65282 = << <<Value65282/bytes>> || Value65282 <- [<<Sub_tlv1:(Length*8)>>]>>,
       erlang:list_to_binary([<<Type:16, Length:16>>, Value_65282]);
+    %% TODO subtlv
 %%       Length = size(Value);
     65283 -> #remote_node_descriptor_tlv_value{remote_node_descriptor_tlv_sub_tlv = Sub_tlv2} =Value,
       Value_65283 = << <<Value65283/bytes>> || Value65283 <- [<<Sub_tlv2:(Length*8)>>]>>,
@@ -237,7 +238,14 @@ encode_object_body(ls_link_ob_type,#ls_object{
 }) ->
   TlvsBin=encode_tlvs(Tlvs),
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
-
+%% TODO ls object protocol id
+%%| 1 | IS-IS Level 1
+%%| 2 | IS-IS Level 2
+%%| 3 | OSPFv2
+%%| 4 | Direct
+%%| 5 | Static configuration
+%%| 6 | OSPFv3
+%%| 7 | BGP-LS
 encode_object_body(ls_node_ob_type,#ls_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
 }) ->
@@ -268,7 +276,7 @@ encode_object_body(lsp_ob_type,#lsp_object{
 encode_object_body(rro_ob_type,#rro_object{
   rro_subobjects = Subobjects
 }) ->
-  SubobjectsBin = encode_objects(Subobjects),
+  SubobjectsBin = encode_subobjects(Subobjects),
   <<SubobjectsBin/bytes>>.
 
 

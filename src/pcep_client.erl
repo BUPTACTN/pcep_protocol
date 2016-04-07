@@ -309,7 +309,7 @@ init_controller_handle({socket, Socket, Proto}, #state{} = State) ->
 %% @doc get hostname from net address
 retrieve_hostname_from_address(Address) ->
   case inet:gethostbyaddr(Address) of
-    {ok, Hostent} when Hostent#hostent.h_name =/= undefined ->
+    {ok, Hostent} when Hostent#hostent.h_name =/= undefined ->   %% TODO hostent type finished  ???
       Hostent#hostent.h_name;
     _ ->
       inet_parse:ntoa(Address)
@@ -367,7 +367,6 @@ do_send(#pcep_message{version = Vsn}=Message,
           send(Proto, Socket, Binary)
       end
   end.
-
 
 
 
