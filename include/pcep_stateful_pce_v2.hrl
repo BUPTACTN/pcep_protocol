@@ -4,7 +4,7 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 25. ÈýÔÂ 2016 9:56
+%%% Created : 25. ï¿½ï¿½ï¿½ï¿½ 2016 9:56
 %%%-------------------------------------------------------------------
 -author("Xinfeng").
 
@@ -32,7 +32,7 @@
   ipv4_lsp_identifiers_tlv_tunnel_id :: integer(),%%16bits
   ipv4_lsp_identifiers_tlv_exrended_tunnel_id :: integer(),%%32bits
   ipv4_lsp_identifiers_tlv_tunnel_endpoint_add :: integer()%%32bits
-  %%ipv4_lsp_identifiers_tlv½öÔÚIPv4Ê¹ÓÃ
+  %%ipv4_lsp_identifiers_tlvï¿½ï¿½ï¿½ï¿½IPv4Ê¹ï¿½ï¿½
 }).
 
 -type ipv4_lsp_identifiers_tlv_value()::#ipv4_lsp_identifiers_tlv_value{}.
@@ -71,38 +71,38 @@
 -type lsp_object()::#lsp_object{}.
 
 %% subobject, not tlvs,
--record(ipv4_subobject,{
-  ipv4_subobject_type=1 ::integer(),%%8bits
-  ipv4_subobject_len = 8 ::integer(),%%8bits
+-record(ipv4_subobject_value,{
+%%   ipv4_subobject_type=1 ::integer(),%%8bits
+%%   ipv4_subobject_len = 8 ::integer(),%%8bits
   ipv4_subobject_add::integer(),%%32bits
   ipv4_subobject_prefix_len::integer(),%%8bits
   ipv4_subobject_flags::integer() %%8bits
 }).
 
--type ipv4_subobject()::#ipv4_subobject{}.
+-type ipv4_subobject_value()::#ipv4_subobject_value{}.
 
--record(ipv6_subobject,{
-  ipv6_subobject_type = 2 ::integer(),%%8bits
-  ipv6_subobject_len= 20 ::integer(),%%8bits
+-record(ipv6_subobject_value,{
+%%   ipv6_subobject_type = 2 ::integer(),%%8bits
+%%   ipv6_subobject_len= 20 ::integer(),%%8bits
   ipv6_subobject_add::integer(),%%128bits
   ipv6_subobject_prefix_len::integer(),%%8bits
   ipv6_subobject_flags::integer() %%8bits
 }).
 
--type ipv6_subobject()::#ipv6_subobject{}.
+-type ipv6_subobject_value()::#ipv6_subobject_value{}.
 
--record(label_subobject,{
-  label_subobject_type = 3 ::integer(),%%8bits
-  label_subobject_len = 8::integer(),%%8bits
+-record(label_subobject_value,{
+%%   label_subobject_type = 3 ::integer(),%%8bits
+%%   label_subobject_len = 8::integer(),%%8bits
   label_subobject_flags::integer(),%%8bits
   label_subobject_c_type::integer(),%%8bits
   label_subobject_contents::integer()%%32bits
 }).
 
--type label_subobject()::#label_subobject{}.
+-type label_subobject_value()::#label_subobject_value{}.
 
 -record(rro_object,{
-  subobjects
+  rro_subobjects::list()
 }).
 
 -type rro_object()::#rro_object{}.
