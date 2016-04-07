@@ -84,7 +84,7 @@ client_module(1) -> pcep_client_v1.
     Opts :: proplists:proplist()) ->
   {ok, Pid :: pid()} | ignore |
   {error, Error :: term()} when
-  Proto :: tcp | tls.
+  Proto :: tcp. %% no tls now TODO
 start_link(Tid, ResourceId, ControllerHandle, Opts) ->
   Parent = get_opt(controlling_process, Opts, erlang:self()),%% self() returns pid.
   gen_server:start_link(?MODULE, {Tid, ResourceId, ControllerHandle, Parent,
@@ -117,6 +117,8 @@ start_link(Tid, ResourceId, ControllerHandle, Opts) ->
   {stop, Reason :: term()} | ignore).
 %% @doc Initializes the ofp_client.
 %%
+
+
 
 init({Tid, ResourceId, ControllerHandle, Parent, Opts, Sup}) ->
   %% The current implementation of TCP sockets in LING throws exceptions on
@@ -247,8 +249,123 @@ handle_cast(_Request, State) ->
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
 
+
+%%（1）start_link（ServerName，M，Args，[{timeout,Time}].
+%%  允许gen_server在Time毫秒内完成初始化。
+%%（2）call（ServerRef，Request，Timeout）
+%%  允许客户端进程在Timeout内等到返回结果，默认5s，如果在Timeout内没有结果返回，则客户端进程会因timeout事件而退出，
+%%  因此当handle_call中有大任务要执行时，通常将该参数设为infinity，允许客户端无限等待结果返回。
+%%（3）Module：init（Args）->Result={ok,State,Timeout},
+%%  Module:handle_call(Request,From,State)—>Result={reply，Reply，NewState，Timeout}.
+%%  此处的返回结果的timeout是指gen_server在Timeout时间内没有收到一个请求或一条消息时，gen_server会抛出timeout事件退出，
+%%  此时需要handle_info（timeout，State）来捕获此timeout事件。
+
+%% @doc timeout event due to socket undefined
+%% 在of协议的实现中，此处会重新发送hello消息表示重新连接的，也不知此处应不应该发送open消息。
+%% 这要取决于open消息在协议栈中能否直接拼出来，另外，也要注意发送了这个之后会不会进入相应的状态机。
+%% 不知哪里调用了handle_info方法 TODO
+handle_info(timeout, #state{resource_id = ResourceId,
+  controller = {Host, Port, Proto},
+  parent = ControllingProcess,
+  versions = Versions,
+  socket = undefined,
+  timeout = Timeout,
+  supervisor = Sup,
+  ets = Tid} = State) ->
+  case connect(Proto, Host, Port) of
+    {ok, Socket}->
+      {ok, OpenBin} = pcep_protocol:encode(pcep_open_message_default:create_open_message(1)),
+      {noreply, State#state{socket = Socket}};
+    {error, _Reason} ->
+      erlang:send_after(Timeout, erlang:self(), timeout),
+      {noreply, State}
+  end;
+%% @doc timeout event, I don't know if necessary to reconnected
+handle_info(timeout, #state{controller = {_Host, _Port, Proto},
+  versions = Versions,
+  socket = Socket}  = State) ->
+%%  {ok, HelloBin} = pcep_protocol:encode(create_hello(Versions)),
+%%  send(Proto, Socket, HelloBin),
+  ?ERROR("timeout in pcep_client."),
+  setopts(Proto, Socket, opts(tcp)),
+  {noreply, State};
+
+
+%%handle_info({Type, Socket, Data}, #state{id = Id,
+%%  controller = {Host, Port, Proto},
+%%  socket = Socket,
+%%  parent = Parent,
+%%  parser = undefined,
+%%  version = undefined,
+%%  versions = Versions,
+%%  hello_buffer = Buffer} = State)
+%%  when Type == tcp orelse Type == ssl ->
+%%  setopts(Proto, Socket, [{active, once}]),
+%%  %% Wait for hello  PCC一直是主动连接PCE，因此不需要等待连接 TODO
+%%  case of_protocol:decode(<<Buffer/binary, Data/binary>>) of
+%%    {ok, #ofp_message{xid = Xid, body = #ofp_hello{}} = Hello, Leftovers} ->
+%%      case decide_on_version(Versions, Hello) of
+%%        {failed, Reason} ->
+%%          handle_failed_negotiation(Xid, Reason, State);
+%%        Version ->
+%%          Parent ! {ofp_connected, self(),
+%%            {Host, Port, Id, Version}},
+%%          {ok, Parser} = ofp_parser:new(Version),
+%%          self() ! {tcp, Socket, Leftovers},
+%%          {noreply, State#state{parser = Parser,
+%%            version = Version}}
+%%      end;
+%%    {error, binary_too_small} ->
+%%      {noreply, State#state{hello_buffer = <<Buffer/binary,
+%%        Data/binary>>}};
+%%    {error, unsupported_version, Xid} ->
+%%      handle_failed_negotiation(Xid, unsupported_version_or_bad_message,
+%%        State)
+%%  end;
+
+handle_info({Type, Socket, Data}, #state{controller = {_, _, Proto},
+  socket = Socket,
+  parser = Parser} = State)
+  when Type == tcp orelse Type == ssl ->
+  setopts(Proto, Socket, [{active, once}]),
+
+  case pcep_parser:parse(Parser, Data) of
+    {ok, NewParser, Messages} ->
+      Handle = fun(Message, Acc) ->
+        handle_message(Message, Acc)
+               end,
+      NewState = lists:foldl(Handle, State, Messages),
+      {noreply, NewState#state{parser = NewParser}};
+    {error, Exception} ->
+      ?ERROR("Exception occurred while parsing data ~p", [Exception]),
+      {noreply, State}
+  end;
+
+
+handle_info({Type, Socket}, #state{socket = Socket} = State)
+  when Type == tcp_closed orelse Type == ssl_closed ->
+  terminate_connection_then_reconnect_or_stop(State, Type);
+handle_info({Type, Socket, Reason}, #state{socket = Socket} = State)
+  when Type == tcp_error orelse Type == ssl_error ->
+  terminate_connection_then_reconnect_or_stop(State, {Type, Reason});
+handle_info({'EXIT', Socket, Reason}, #state{socket = Socket} = State) ->
+  %% LING-specific. We have caught an asynchronous error from the socket.
+  %% It is time to terminate gracefully.
+  terminate_connection_then_reconnect_or_stop(State, Reason);
 handle_info(_Info, State) ->
   {noreply, State}.
+
+%% TODO
+%% TODO
+%% TODO for fxf
+%%handle_message(#ofp_message{type = role_request, version = Version,
+%%  body = RoleRequest} = Message, State) ->
+%%  {Role, GenId} = extract_role(Version, RoleRequest),
+%%  {Reply, NewState} = change_role(Version, Role, GenId, State),
+%%  do_send(Message#ofp_message{body = Reply}, State),
+%%  NewState;
+
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -368,24 +485,29 @@ do_send(#pcep_message{version = Vsn}=Message,
       end
   end.
 
+%% -------------------------------------------------
+%% tcp connection func
+%% -------------------------------------------------
+connect(tcp, Host, Port) ->
+  gen_tcp:connect(Host, Port, opts(tcp), 5000). %% 5s timeout
 
+opts(tcp) ->
+  [binary, {reuseaddr, true}, {active, once}].
 
-
+setopts(tcp, Socket, Opts) ->
+  inet:setopts(Socket, Opts).
 
 %% @doc send tcp binary data to remote
 send(tcp, Socket, Data) ->
-  gen_tcp:send(Socket, Data);
-%% @doc send tls binary data to remote.
-%% TODO there is no tls connection now.
-send(tls, Socket, Data) ->
-  ssl:send(Socket, Data).
+  gen_tcp:send(Socket, Data).
 %% @doc close connection to remote node.
 close(_, undefined) ->
   ok;
 close(tcp, Socket) ->
-  gen_tcp:close(Socket);
-close(tls, Socket) ->
-  ssl:close(Socket).
+  gen_tcp:close(Socket).
+%% default options in tcp connection.
+opts(tcp) ->
+  [binary, {reuseaddr, true}, {active, once}].
 
 
 %% @doc reestablish connection to controller if necessary.
@@ -403,6 +525,15 @@ reestablish_connection_if_required(NewController, State) ->
       State
   end.
 
+terminate_connection_then_reconnect_or_stop(State, Reason) ->
+  NewState = terminate_connection(State, Reason),
+  case State#state.reconnect of
+    true ->
+      reconnect(State#state.timeout),
+      {noreply, NewState};
+    false ->
+      {stop, normal, NewState}
+  end.
 
 terminate_connection(#state{
   controller = {Host, Port, Proto},
@@ -413,7 +544,7 @@ terminate_connection(#state{
   close(Proto, Socket),
   ets:delete(Tid, erlang:self()),
   %% Pid ! Msg 语法的意思是发送消息 Msg 到进程 Pid 。大括号里的 self() 参数标明了发送消息的进程
-  %% TODO Parent可以使self()，那么往gen_server进程发送消息是如何处理的？
+  %% TODO Parent可以使self()，那么往gen_server进程发送消息是如何处理的？和send_after/4有什么区别和联系
   Parent ! {pcep_closed, erlang:self(), {Host, Port, Reason}},
   State#state{socket = undefined, parser = undefined, version = undefined}.
 
