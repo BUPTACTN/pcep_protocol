@@ -525,3 +525,64 @@
 }).
 
 -type linc_port_optical_transport_layer_stack() :: #linc_port_optical_transport_layer_stack{}.
+
+%%%-----------------------------------------------------------------------------
+%%% Common Structures (A 2)
+%%%-----------------------------------------------------------------------------
+
+%%%-----------------------------------------------------------------------------
+%%% Port Structures (A 2.1)
+%%%-----------------------------------------------------------------------------
+
+-type pcep_port_config() :: port_down
+                          | no_recv
+                          | no_fwd
+                          | no_packet_in.
+
+-type pcep_port_state() :: link_down
+                          | blocked
+                          | live.
+
+-type pcep_port_reserved() :: in_port
+                          | table
+                          | normal
+                          | flood
+                          | all
+                          | controller
+                          | local
+                          | any.
+
+-type pcep_port_no() :: integer()
+                          | pcep_port_reserved().
+
+-type pcep_port_feature() :: '10mb_hd'
+                          | '10mb_fd'
+                          | '100mb_hd'
+                          | '100mb_fd'
+                          | '1gb_hd'
+                          | '1gb_fd'
+                          | '10gb_fd'
+                          | '40gb_fd'
+                          | '100gb_fd'
+                          | '1tb_fd'
+                          | other
+                          | copper
+                          | fiber
+                          | autoneg
+                          | pause
+                          | pause_asym.
+
+-record(pcep_port, {
+  port_no :: pcep_port_no(),
+  hw_addr :: binary(),
+  name :: binary(),
+  config = [] :: [pcep_port_config()],
+  state = [] :: [pcep_port_state()],
+  curr = [] :: [pcep_port_feature()],
+  advertised = [] :: [pcep_port_feature()],
+  supported = [] :: [pcep_port_feature()],
+  peer = [] :: [pcep_port_feature()],
+  curr_speed = 0 :: integer(),
+  max_speed = 0 :: integer()
+}).
+-type pcep_port() :: #pcep_port{}.
