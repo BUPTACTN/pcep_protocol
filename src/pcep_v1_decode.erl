@@ -14,6 +14,7 @@
 -include("pcep_v1.hrl").
 -include("pcep_stateful_pce_v2.hrl").
 -include("pcep_onos.hrl").
+
 %% API
 -export([do/1]).
 
@@ -46,8 +47,10 @@ decode_object_msg(Atom, Binary) ->
   ClassType = ?CLASSTYPEMOD(Class, Type),
   IsLegal = ?ISLEGAL(Atom, ClassType),
   N = Ob_length*8-32,
+
   <<Ob_body:N,Objects/bytes>>  = RstObjects,
-  #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body},
+  Ob_body2 = decode_object_body(Type,<<Ob_body:N>>)
+  #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2},
 
 case IsLegal of
     true ->
@@ -80,7 +83,7 @@ case IsLegal of
 %% decode_objects(Binary) ->
 %%   <<>>
 %% @doc decode object body
--spec decode_object_body(atom(), binary()) -> any().
+%% -spec decode_object_body(atom(), binary()) -> any().
 decode_object_body(open_ob_type, Binary) ->
   <<Version:3, Flags:5, Keepalive:8, DeadTimer:8, SID:8, Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
@@ -197,19 +200,19 @@ decode_object_body(rro_ob_type,Binary) ->
 
 
 %% @doc decode the list of tlvs from binary format to object format
--spec decode_tlvs(Priority,binary()) -> list().
-decode_tlvs(Priority,Binary) ->    %% TODO Priority=1 indicate the TLV is normal TLV, Priority=2 indicate the TLV is Subobject
+%% -spec decode_tlvs(Priority,binary()) -> list().
+decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV, Priority=2 indicate the TLV is Subobject
   case Priority of
     1 ->
-      <<Type:16/integer, Length:16,RstTlvs/bytes>> = Binary,
+      <<Type:16/integer, Length:16/integer,RstTlvs/bytes>> = Binary,
       M = Length*8,
       <<Value:M, Tlvs/bytes>> = RstTlvs,
       if
         erlang:byte_size(Tlvs)>0 ->
-          Tlv = decode_tlv(Type, Length, Value,Binary),
+          Tlv = decode_tlv(Binary),
           [Tlv, decode_tlvs(Priority,Tlvs)];
         true ->
-          Tlv = decode_tlv(Type, Length, Value,Binary),
+          Tlv = decode_tlv(Binary),
           [Tlv]
       end;
     2 ->
@@ -217,10 +220,10 @@ decode_tlvs(Priority,Binary) ->    %% TODO Priority=1 indicate the TLV is normal
       M = (Length-2)*8,
       <<Value:M,Tlvs/bytes>> = RstTlvs,
       if erlang:byte_size(Tlvs) > 0 ->
-        Tlv = decode_subobject(Type,Length,Value,Binary),
+        Tlv = decode_subobject(Binary),
         [Tlv,decode_tlvs(Priority,Tlvs)];
         true ->
-          Tlv = decode_subobject(Type,Length,Value,Binary),
+          Tlv = decode_subobject(Binary),
           [Tlv]
       end
 
@@ -238,21 +241,24 @@ decode_tlvs(Priority,Binary) ->    %% TODO Priority=1 indicate the TLV is normal
 %%   end.
 
 
--spec decode_tlv(Type, Length, Value,Binary) -> Rtn when Type::integer(),Length::integer(),Value::binary(),Value::binary(),Rtn::any().
-decode_tlv(Type, Length, Value,Binary) ->
+%% -spec decode_tlv(Type, Length, Value,Binary) -> Rtn when Type::integer(),Length::integer(),Value::binary(),Value::binary(),Rtn::any().
+decode_tlv(Binary) ->
+  Length=erlang:byte_size(Binary)-4,
+  <<Type:16>> = erlang:binary_part(Binary,{0,2}),
+  L = Length*8,
+  <<Value:L>> = erlang:binary_part(Binary,{4,Length}),
   TlvType = ?TLV_Type(Type),
-  case TlvType of
-    gmpls_cap_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
-      Flag = erlang:binary_part(Binary,{byte_size(Binary),-4}),
-      if Flag =:= <<0,0,0,0>> ->
-        erlang:binary_to_list(Flag);
+  if <<Type:16,Length:16,Value:L>> =:= Binary ->
+    case TlvType of
+      gmpls_cap_tlv_type ->
+        Flag = erlang:binary_part(Binary,{byte_size(Binary),-4}),
+        if Flag =:= <<0,0,0,0>> ->
+          erlang:binary_to_list(Flag);
         true ->
           ?ERROR("The gmpls cap TLV is wrong")
-          end;
-    stateful_pce_cap_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
-      Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
+        end;
+      stateful_pce_cap_tlv_type ->
+        Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
 %%       Flag=erlang:binary_part(Binary,{32,27}),
 %%       D = erlang:binary_part(Binary,{59,1}),
 %%       T = erlang:binary_part(Binary,{60,1}),
@@ -266,7 +272,6 @@ decode_tlv(Type, Length, Value,Binary) ->
           ?ERROR("The stateful pce cap Tlv is wrong")
           end;
     pcecc_cap_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       <<Flag:30,G:1,L:1>> = Value1,
       if (Flag =:= 0)and(G=:=1)and(L=:=1) ->
@@ -275,7 +280,6 @@ decode_tlv(Type, Length, Value,Binary) ->
           ?ERROR("The pcecc cap tlv is wrong")
           end;
     label_db_version_tlv_type ->
-      <<Type:16,Length:16,Value:64>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-8}),
       if Value1 =:= <<0,0,0,0,0,0,0,0>> ->
         erlang:binary_to_list(Value1);
@@ -283,7 +287,6 @@ decode_tlv(Type, Length, Value,Binary) ->
           ?ERROR("The label db version tlv is wrong")
       end;
     ted_cap_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       <<Flag:31,R:1>> = Value1,
       if (Flag=:=0)and(R=:=1) ->
@@ -292,7 +295,6 @@ decode_tlv(Type, Length, Value,Binary) ->
           ?ERROR("The ted cap tlv is wrong")
           end;
     ls_cap_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       <<Flag:31,R:1>> = Value1,
       if (Flag=:=0)and(R=:=1) ->
@@ -301,7 +303,6 @@ decode_tlv(Type, Length, Value,Binary) ->
           ?ERROR("The ls cap tlv is wrong")
       end;
     routing_universe_tlv_type ->
-      <<Type:16,Length:16,Value:64>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-8}),
       if Value1 =:= <<0,0,0,0,0,0,0,0>> ->
         erlang:binary_to_list(Value1);
@@ -315,16 +316,13 @@ decode_tlv(Type, Length, Value,Binary) ->
 %%     link_descriptors_tlv_type;
 %%     node_attributes_tlv_type;
     symbolic_path_name_tlv_type ->
-      <<Type:16,Length:16,Value:(Length*8)>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-Length}),
       erlang:binary_to_list(Value1);
     ipv4_lsp_identifiers_tlv_type ->
-      <<Type:16,Length:16,Value:128>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-16}),
       <<Tunnel_sender_add:32,Lsp_id:16,Tunnel_id:16,Exrended_tunnel_id:32,Tunnel_endpoint_add:32>> = Value1,  %%T TODO address
       erlang:binary_to_list(Value1);
     lsp_error_code_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       <<Error_code:32>> = Value1,
       case Error_code of
@@ -349,16 +347,13 @@ decode_tlv(Type, Length, Value,Binary) ->
       end,
       erlang:binary_to_list(Value1);
     next_hop_ipv4_add_tlv_type ->
-      <<Type:16,Length:16,Value:32>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       erlang:binary_to_list(Value1);
     next_hop_unnumbered_ipv4_id_tlv_type ->
-      <<Type:16,Length:16,Value:64>> = Binary,
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-8}),
       <<Node_id:32,Inferface:32>> = Value1,  %%T TODO address
       erlang:binary_to_list(Value1);
     rsvp_error_spec_tlv_type ->
-      <<Type:16,Length:16,Value:(Length*8)/bytes>> = Binary,
       <<Obj_len:16,Class_num:8,C_type:8>> = erlang:binary_part(Binary,{4,4}),
       case Class_num of
         6 -> case C_type of
@@ -383,7 +378,7 @@ decode_tlv(Type, Length, Value,Binary) ->
                  end;
         194 ->
           if C_type =:= 1 ->
-            <<Enterprise_num:32,Sub_org:8,Err_desc_len:8,User_error_value:16,Error_description:((Obj_len-12)*8)>> = erlang:binary_part(Binary,{4,(Obj_len-4)}),
+            <<Enterprise_num:32,Sub_org:8,Err_desc_len:8,User_error_value:16,Error_description/bytes>> = erlang:binary_part(Binary,{4,(Obj_len-4)}),
             Value1 = erlang:binary_part(Binary,{4,(Obj_len-8)}),
             erlang:binary_to_list(Value1);
             true ->
@@ -394,9 +389,12 @@ decode_tlv(Type, Length, Value,Binary) ->
       end;
     unsupported_tlv_type ->
       ?ERROR("The TLV is unsupported")
+  end;
+    true ->
+      ?ERROR("It's not matching about tlv")
   end.
 
--spec decode_subobject(Type, Length, Value,Binary) -> Rtn when Type::integer(),Length::integer(),Value::binary(),Value::binary(),Rtn::any().
+%% -spec decode_subobject(Type, Length, Value,Binary) -> Rtn when Type::integer(),Length::integer(),Value::binary(),Value::binary(),Rtn::any().
 decode_subobject(Type, Length, Value,Binary) ->
   SubobType = ?Subobject_Type(Type),
   case SubobType of

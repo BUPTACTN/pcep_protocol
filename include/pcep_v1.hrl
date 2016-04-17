@@ -89,10 +89,10 @@
                                        6 -> error_msg;
                                        7 -> close_msg;
                                        %% TODO for fxf
-                                       10 -> pcrpt_msg;%% TODO draft-ietf-pce-stateful-pce-12
-                                       11 -> pcupd_msg; %% TODO draft-ietf-pce-stateful-pce-12
-                                       12 -> pcinitiate_msg; %% TODO PCE initiated tunnel setup draft-ietf-pce-pce-initiated-lsp-03, section 5.1
-                                       224 -> lsrpt_msg; %% TODO draft-dhodylee-pce-pcep-ls-02
+                                       10 -> pcrpt_msg;%% draft-ietf-pce-stateful-pce-12
+                                       11 -> pcupd_msg; %% draft-ietf-pce-stateful-pce-12
+                                       12 -> pcinitiate_msg; %% PCE initiated tunnel setup draft-ietf-pce-pce-initiated-lsp-03, section 5.1
+                                       224 -> lsrpt_msg; %% draft-dhodylee-pce-pcep-ls-02
                                        225 -> pclrresv_msg;
                                        226 -> pclabelupd_msg;
                                        _ -> unsupported_msg
@@ -113,7 +113,7 @@
            2 -> bdwidth_lsp_ob_type
          end;
     6 -> metric_ob_type;
-    7 -> ero_ob_type; %% TODO EXPLICIT_ROUTE object,Only the first one is meaningful
+    7 -> ero_ob_type; %% EXPLICIT_ROUTE object,Only the first one is meaningful
     8 -> rro_ob_type;
     9 -> lspa_ob_type;
     10 -> iro_ob_type;
@@ -126,14 +126,14 @@
     33 -> srp_ob_type;
     60 -> label_range_ob_type;
     224 -> case ObjectType of
-             1 -> ls_link_ob_type; %% TODO draft-dhodylee-pce-pcep-ls-02
+             1 -> ls_link_ob_type; %% draft-dhodylee-pce-pcep-ls-02
              2 -> ls_node_ob_type;
              3 -> ls_ipv4_topo_prefix_ob_type;
              4 -> ls_ipv6_topo_prefix_ob_type
            end;
     225 -> label_ob_type;
     226 -> case ObjectType of
-             1 -> fec_ipv4_ob_type;  %%TODO draft-zhao-pce-pcep-extension-for-pce-controller-01 , section : 7.5
+             1 -> fec_ipv4_ob_type;  %%draft-zhao-pce-pcep-extension-for-pce-controller-01 , section : 7.5
              2 -> fec_ipv6_ob_type;
              3 -> fec_ipv4_adjacency_ob_type;
              4 -> fec_ipv6_adjacency_ob_type
@@ -163,13 +163,13 @@
     1 -> next_hop_unnumbered_ipv4_id_tlv_type;
     _ -> unsupported_tlv_type
 end).
--define(Subobject_Type(SubObjectType),  %% TODO RRO Object and ERO Object
+-define(Subobject_Type(SubObjectType),  %% RRO Object and ERO Object
 case SubObjectType of
-  1 -> ipv4_subobject_type; %% TODO RFC 4874:3.1.1
-  2 -> ipv6_subobject_type;%% TODO RFC 4874
-  3 -> label_subobject_type;%% TODO RFC 3209
-  96 -> sr_ero_subobject_type; %% TODO draft-ietf-pce-segment-routing-00
-  64 -> path_key_subobject_type; %% TODO RFC 5520
+  1 -> ipv4_subobject_type; %% RFC 4874:3.1.1
+  2 -> ipv6_subobject_type;%% RFC 4874
+  3 -> label_subobject_type;%% RFC 3209
+  96 -> sr_ero_subobject_type; %% draft-ietf-pce-segment-routing-00
+  64 -> path_key_subobject_type; %% RFC 5520
   _ -> unsupported_subobject_type
 end).
 -define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
@@ -204,7 +204,7 @@ end).
            1 -> ?ERROR("RP object missing");
            2 -> ?ERROR("RRO missing for a reoptimization request (R bit of the RP object set)");
            3 -> ?ERROR("END-POINTS object missing");
-           8 -> ?ERROR("LSP Object missing");  %% TODO 8~11 draft-ietf-pce-stateful-pce-12
+           8 -> ?ERROR("LSP Object missing");  %% 8~11 draft-ietf-pce-stateful-pce-12
            9 -> ?ERROR("ERO Object missing");
            10 -> ?ERROR("SRP Object missing");
            11 -> ?ERROR("LSP-IDENTIFIERS TLV missing");
