@@ -16,8 +16,8 @@
                                                                           end_points_v4_ob_type -> true;
                                                                           end_points_v6_ob_type -> true;
                                                                           lspa_ob_type -> true;
-                                                                          bdwidth_req_ob_type ->true;
-                                                                          bdwidth_lsp_ob_type ->true;
+                                                                          bdwidth_req_ob_type -> true;
+                                                                          bdwidth_lsp_ob_type -> true;
                                                                           metric_ob_type -> true;
                                                                           iro_ob_type -> true;
                                                                           load_balancing_ob_type -> true
@@ -66,7 +66,7 @@
                                                             fec_ipv6_ob_type -> true;
                                                             fec_ipv4_adjacency_ob_type -> true;
                                                             fec_ipv6_adjacency_ob_type -> true
-                                                           %% fec_ipv4_unnumbered_ob_type -> true
+                                                            %% fec_ipv4_unnumbered_ob_type -> true
                                                           end;
                                         lsrpt_msg -> case Object of
                                                        ls_link_ob_type -> true;
@@ -78,7 +78,7 @@
                                                           srp_ob_type -> true;
                                                           label_range_ob_type -> true
                                                         end
-                                      end ).
+                                      end).
 
 -define(MESSAGETYPEMOD(MessageType), case MessageType of
                                        1 -> open_msg;
@@ -89,10 +89,18 @@
                                        6 -> error_msg;
                                        7 -> close_msg;
                                        %% TODO for fxf
+
                                        10 -> pcrpt_msg;%% draft-ietf-pce-stateful-pce-12
                                        11 -> pcupd_msg; %% draft-ietf-pce-stateful-pce-12
                                        12 -> pcinitiate_msg; %% PCE initiated tunnel setup draft-ietf-pce-pce-initiated-lsp-03, section 5.1
                                        224 -> lsrpt_msg; %% draft-dhodylee-pce-pcep-ls-02
+
+                                       10 -> pcrpt_msg;%% draft-ietf-pce-stateful-pce-12
+                                       11 -> pcupd_msg; %% draft-ietf-pce-stateful-pce-12
+                                       12 ->
+                                         pcinitiate_msg; %% PCE initiated tunnel setup draft-ietf-pce-pce-initiated-lsp-03, section 5.1
+                                       224 -> lsrpt_msg; %% draft-dhodylee-pce-pcep-ls-02
+
                                        225 -> pclrresv_msg;
                                        226 -> pclabelupd_msg;
                                        _ -> unsupported_msg
@@ -119,7 +127,7 @@
     10 -> iro_ob_type;
     11 -> svec_ob_type;
     12 -> notification_ob_type;
-    13 ->pcep_error_ob_type;
+    13 -> pcep_error_ob_type;
     14 -> load_balancing_ob_type;
     15 -> close_ob_type;
     32 -> lsp_ob_type;
@@ -137,8 +145,8 @@
              2 -> fec_ipv6_ob_type;
              3 -> fec_ipv4_adjacency_ob_type;
              4 -> fec_ipv6_adjacency_ob_type
-          %%   5 -> fec_ipv4_unnumbered_ob_type
-             end;
+             %%   5 -> fec_ipv4_unnumbered_ob_type
+           end;
     _ -> unsupported_class
   end).
 
@@ -162,6 +170,7 @@
     2 -> next_hop_ipv4_add_tlv_type;
     1 -> next_hop_unnumbered_ipv4_id_tlv_type;
     _ -> unsupported_tlv_type
+
 end).
 -define(Subobject_Type(SubObjectType),  %% RRO Object and ERO Object
 case SubObjectType of
@@ -172,7 +181,19 @@ case SubObjectType of
   64 -> path_key_subobject_type; %% RFC 5520
   _ -> unsupported_subobject_type
 end).
--define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
+%% -define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
+%%
+%%   end).
+-define(Subobject_Type(SubObjectType),  %% TODO RRO Object and ERO Object
+  case SubObjectType of
+    1 -> ipv4_subobject_type; %% TODO RFC 4874:3.1.1
+    2 -> ipv6_subobject_type;%% TODO RFC 4874
+    3 -> label_subobject_type;%% TODO RFC 3209
+    96 -> sr_ero_subobject_type; %% TODO draft-ietf-pce-segment-routing-00
+    64 -> path_key_subobject_type; %% TODO RFC 5520
+    _ -> unsupported_subobject_type
+  end).
+-define(Error_Object_TYPE_VALUE(ErrorType, ErrorValue),
   case ErrorType of
     1 -> case ErrorValue of
            1 -> ?ERROR("reception of an invalid Open message or a non Open message");
@@ -214,31 +235,34 @@ end).
     8 -> ?ERROR("Unknown request reference");
     9 -> ?ERROR("Attempt to establish a second PCEP session");
     10 -> case ErrorValue of
-            1 -> ?ERROR("reception of an object with P flag not set although the P flag must be set according to this specification.");
+            1 ->
+              ?ERROR("reception of an object with P flag not set although the P flag must be set according to this specification.");
             _ -> unsupported_error_value
           end;
-    19 ->case ErrorValue of
-           1 -> ?ERROR("Attempted LSP Update Request for a nondelegated LSP.");
-           2 -> ?ERROR("Attempted LSP Update Request if the stateful PCE capability was not advertised.");
-           3 -> ?ERROR("Attempted LSP Update Request for an LSP identified by an unknown PLSP-ID.");
-           4 -> ?ERROR("A PCE indicates to a PCC that it has exceeded the resource limit allocated for its state, and thus it cannot accept and process its LSP State Report message.");
-           5 -> ?ERROR("Attempted LSP State Report if active stateful PCE capability was not advertised.");
-           _ -> unsupported_error_value
-    end;
+    19 -> case ErrorValue of
+            1 -> ?ERROR("Attempted LSP Update Request for a nondelegated LSP.");
+            2 -> ?ERROR("Attempted LSP Update Request if the stateful PCE capability was not advertised.");
+            3 -> ?ERROR("Attempted LSP Update Request for an LSP identified by an unknown PLSP-ID.");
+            4 ->
+              ?ERROR("A PCE indicates to a PCC that it has exceeded the resource limit allocated for its state, and thus it cannot accept and process its LSP State Report message.");
+            5 -> ?ERROR("Attempted LSP State Report if active stateful PCE capability was not advertised.");
+            _ -> unsupported_error_value
+          end;
     20 -> case ErrorValue of
-            1 -> ?ERROR("A PCE indicates to a PCC that it can not process (an otherwise valid) LSP State Report. The PCEP-ERROR Object is followed by the LSP Object that identifies the LSP.");
+            1 ->
+              ?ERROR("A PCE indicates to a PCC that it can not process (an otherwise valid) LSP State Report. The PCEP-ERROR Object is followed by the LSP Object that identifies the LSP.");
             5 -> ?ERROR("A PCC indicates to a PCE that it can not complete the state synchronization,")
           end
   end
 ).
 -define(Close_Object_REASONS(CloseReasons),
-case CloseReasons of
-  1 -> erlang:io:format("No explanation provided");
-  2 -> erlang:io:format("DeadTimer expired");
-  3 -> erlang:io:format("Reception of a malformed PCEP message");
-  4 -> erlang:io:format("Reception of an unacceptable number of unknown requests/replies");
-  5 -> erlang:io:format("Reception of an unacceptable number of unrecognized PCEP messages")
-end
+  case CloseReasons of
+    1 -> erlang:io:format("No explanation provided");
+    2 -> erlang:io:format("DeadTimer expired");
+    3 -> erlang:io:format("Reception of a malformed PCEP message");
+    4 -> erlang:io:format("Reception of an unacceptable number of unknown requests/replies");
+    5 -> erlang:io:format("Reception of an unacceptable number of unrecognized PCEP messages")
+  end
 ).
 % Message-Type (8 bits):
 % 1     Open
@@ -253,21 +277,21 @@ end
 %% Common TLV format ---------------------------------------------------------------
 %% TODO error
 -record(tlv, {
- type::integer(),
- length::integer(),
- value::any()
+  type :: integer(),
+  length :: integer(),
+  value :: any()
 }).
 
--type tlv()::#tlv{}.
+-type tlv() :: #tlv{}.
 
 %% Common Subobject format ---------------------------------------------------------------
 -record(subobject, {
-  subobject_type::integer(), %%8bits
-  subobject_length::integer(),%%8bits
-  subobject_value::any()
+  subobject_type :: integer(), %%8bits
+  subobject_length :: integer(),%%8bits
+  subobject_value :: any()
 }).
 
--type subobject()::#subobject{}.
+-type subobject() :: #subobject{}.
 
 %% Open Message ---------------------------------------------------------------
 %% open message tlvs
@@ -275,60 +299,60 @@ end
   gmpls_cap_flag = <<0:32>> :: integer()
 }).
 
--type gmpls_cap_tlv_value()::#gmpls_cap_tlv_value{}.
+-type gmpls_cap_tlv_value() :: #gmpls_cap_tlv_value{}.
 
--record(stateful_pec_cap_tlv_value,{
-  stateful_pce_cap_tlv_flag = <<0:27>> ::integer(),
-  stateful_pce_cap_tlv_d = true::boolean(),
-  stateful_pce_cap_tlv_t = true::boolean(),
-  stateful_pce_cap_tlv_i = true::boolean(),
-  stateful_pce_cap_tlv_s = true::boolean(),
-  stateful_pce_cap_tlv_u = true::boolean()
+-record(stateful_pec_cap_tlv_value, {
+  stateful_pce_cap_tlv_flag = <<0:27>> :: integer(),
+  stateful_pce_cap_tlv_d = true :: boolean(),
+  stateful_pce_cap_tlv_t = true :: boolean(),
+  stateful_pce_cap_tlv_i = true :: boolean(),
+  stateful_pce_cap_tlv_s = true :: boolean(),
+  stateful_pce_cap_tlv_u = true :: boolean()
 }).
 
--type stateful_pec_cap_tlv_value()::#stateful_pec_cap_tlv_value{}.
+-type stateful_pec_cap_tlv_value() :: #stateful_pec_cap_tlv_value{}.
 
--record(pcecc_cap_tlv_value,{
-  pcecc_cap_tlv_flag = <<0:30>>::integer(),
-  pcecc_cap_tlv_g = true ::boolean(),
-  pcecc_cap_tlv_l = true ::boolean()
+-record(pcecc_cap_tlv_value, {
+  pcecc_cap_tlv_flag = <<0:30>> :: integer(),
+  pcecc_cap_tlv_g = true :: boolean(),
+  pcecc_cap_tlv_l = true :: boolean()
 }).
 
--type pcecc_cap_tlv_value()::#pcecc_cap_tlv_value{}.
+-type pcecc_cap_tlv_value() :: #pcecc_cap_tlv_value{}.
 
--record(lsp_db_version_tlv_value,{
-  lsp_db_version_tlv_ver = <<0:24>> ::integer()
+-record(lsp_db_version_tlv_value, {
+  lsp_db_version_tlv_ver = <<0:24>> :: integer()
 }).
 
--type lsp_db_version_tlv_value()::#lsp_db_version_tlv_value{}.
+-type lsp_db_version_tlv_value() :: #lsp_db_version_tlv_value{}.
 
--record(ted_cap_tlv_value,{
-  ted_cap_tlv_flag = <<0:31>> ::integer(),
-  ted_cap_tlv_r = true ::boolean()
+-record(ted_cap_tlv_value, {
+  ted_cap_tlv_flag = <<0:31>> :: integer(),
+  ted_cap_tlv_r = true :: boolean()
 }).
 
--type ted_cap_tlv_value()::#ted_cap_tlv_value{}.
+-type ted_cap_tlv_value() :: #ted_cap_tlv_value{}.
 
--record(label_db_version_tlv_value,{
-  label_db_version_tlv_ver = <<0:64>>::integer()
+-record(label_db_version_tlv_value, {
+  label_db_version_tlv_ver = <<0:64>> :: integer()
 }).
 
--type label_db_version_tlv_value()::#label_db_version_tlv_value{}.
+-type label_db_version_tlv_value() :: #label_db_version_tlv_value{}.
 
 -record(open_object, {
 %%   open_object_header::pcep_object_message(),
-  version::integer(), %% 3bits
-  flags::integer(), %% 5bits
-  keepAlive::integer(), %% 8bits maximum period of time in seconds between two consecutive PCEP messages
-  deadTimer::integer(), %%
-  sid::integer(),
-  tlvs::list()
+  version :: integer(), %% 3bits
+  flags :: integer(), %% 5bits
+  keepAlive :: integer(), %% 8bits maximum period of time in seconds between two consecutive PCEP messages
+  deadTimer :: integer(), %%
+  sid :: integer(),
+  tlvs :: list()
 %%  open_object_tlv_gmpls_cap_tlv::gmpls_cap_tlv(),
 %%  open_object_tlv_stateful_pec_cap_tlv::stateful_pec_cap_tlv(),
 %%  open_object_tlv_pcecc_cap_tlv::pcecc_cap_tlv()
 }).
 
--type open_object()::#open_object{}.
+-type open_object() :: #open_object{}.
 
 %% -record(open_msg,{
 %%   open_msg::pcep_message(),
@@ -394,44 +418,44 @@ end
 %%
 %% -type error_object()::#error_object{}.
 %%
--record(bandwidth_req_object,{
-  bandwidth::integer()
+-record(bandwidth_req_object, {
+  bandwidth :: integer()
 }).
 
--record(bandwidth_lsp_object,{
-  bandwidth::integer()
+-record(bandwidth_lsp_object, {
+  bandwidth :: integer()
 }).
 
--type bandwidth_req_object()::#bandwidth_req_object{}.
+-type bandwidth_req_object() :: #bandwidth_req_object{}.
 
--type bandwidth_lsp_object()::#bandwidth_lsp_object{}.
+-type bandwidth_lsp_object() :: #bandwidth_lsp_object{}.
 %% Path Computation Request ---------------------------------------------------------------
 
--record(rp_object,{
-  flags::integer(),  %%26bits
-  o::boolean(),      %%1bit
-  b::boolean(),      %%1bit
-  r::boolean(),      %%1bit
-  pri::integer(),    %%3bits
-  request_id_num::integer(),  %%32bits
+-record(rp_object, {
+  flags :: integer(),  %%26bits
+  o :: boolean(),      %%1bit
+  b :: boolean(),      %%1bit
+  r :: boolean(),      %%1bit
+  pri :: integer(),    %%3bits
+  request_id_num :: integer(),  %%32bits
   tlvs
 }).
 
--type rp_object()::#rp_object{}.
+-type rp_object() :: #rp_object{}.
 
--record(end_points_object_ipv4,{
-  source_ipv4_add::integer(),  %% 32bits
-  destination_ipv4_add::integer()  %%32bits
+-record(end_points_object_ipv4, {
+  source_ipv4_add :: integer(),  %% 32bits
+  destination_ipv4_add :: integer()  %%32bits
 }).
 
--record(end_points_object_ipv6,{
-  source_ipv6_add::integer(),  %% 128bits
-  destination_ipv6_add::integer()  %% 128bits
+-record(end_points_object_ipv6, {
+  source_ipv6_add :: integer(),  %% 128bits
+  destination_ipv6_add :: integer()  %% 128bits
 }).
 
--type end_points_object_ipv4()::#end_points_object_ipv4{}.
+-type end_points_object_ipv4() :: #end_points_object_ipv4{}.
 
--type end_points_object_ipv6()::#end_points_object_ipv6{}.
+-type end_points_object_ipv6() :: #end_points_object_ipv6{}.
 
 %% -record(pcreq_msg,{
 %%   pcreq_msg_header::pcep_message(),
@@ -449,23 +473,20 @@ end
 %% pcep_stateful_pce_v2
 
 
-
 %% Notification ---------------------------------------------------------------
 %% unused
 
 
-
-
 %% Error ---------------------------------------------------------------
--record(error_object,{
-  reserved::integer(), %%8bits
-  flags::integer(),%%8bits
-  error_type::integer(),%%8bits
-  error_value::integer(),%%8bits
+-record(error_object, {
+  reserved :: integer(), %%8bits
+  flags :: integer(),%%8bits
+  error_type :: integer(),%%8bits
+  error_value :: integer(),%%8bits
   tlvs
 }).
 
--type error_object()::#error_object{}.
+-type error_object() :: #error_object{}.
 
 %% -record(error_msg,{
 %%   error_msg_header::pcep_message(),
@@ -476,14 +497,14 @@ end
 %%
 %% -type error_msg()::#error_msg{}.
 %% Close ---------------------------------------------------------------
--record(close_object,{
-  reserved::integer(),%%16bits
-  flags::integer(),%%8bits
-  reason::integer(),%%8bits
+-record(close_object, {
+  reserved :: integer(),%%16bits
+  flags :: integer(),%%8bits
+  reason :: integer(),%%8bits
   tlvs
 }).
 
--type close_object()::#close_object{}.
+-type close_object() :: #close_object{}.
 
 %% -record(close_msg,{
 %%   close_msg_header::pcep_message(),
@@ -491,3 +512,97 @@ end
 %% }).
 %%
 %% -type close_msg()::#close_msg{}.
+
+
+%% 奇怪的结构定义，在linc_pcep_ls_oe中有使用
+%% TODO
+-record(linc_port_desc_prop_optical_transport, {
+  type :: integer(),
+  length :: integer(),
+  port_signal_type :: integer(),
+  reserved :: integer(),
+  features = [] :: [linc_port_optical_transport_feature()]
+}).
+
+-type linc_port_desc_prop_optical_transport() :: #linc_port_desc_prop_optical_transport{}.
+
+-record(linc_port_optical_transport_application_code, {
+  feature_type :: integer(),
+  length :: integer(),
+  oic_type :: integer(),
+  app_code :: binary()
+}).
+
+-type linc_port_optical_transport_application_code() :: #linc_port_optical_transport_application_code{}.
+
+-type linc_port_optical_transport_feature() :: #linc_port_optical_transport_application_code{} |
+#linc_port_optical_transport_layer_stack{}.
+
+-record(linc_port_optical_transport_layer_stack, {
+  feature_type :: integer(),
+  length :: integer(),
+  value = [] :: [ofp_port_optical_transport_layer_entry()]
+}).
+
+-type linc_port_optical_transport_layer_stack() :: #linc_port_optical_transport_layer_stack{}.
+
+%%%-----------------------------------------------------------------------------
+%%% Common Structures (A 2)
+%%%-----------------------------------------------------------------------------
+
+%%%-----------------------------------------------------------------------------
+%%% Port Structures (A 2.1)
+%%%-----------------------------------------------------------------------------
+
+-type pcep_port_config() :: port_down
+                          | no_recv
+                          | no_fwd
+                          | no_packet_in.
+
+-type pcep_port_state() :: link_down
+                          | blocked
+                          | live.
+
+-type pcep_port_reserved() :: in_port
+                          | table
+                          | normal
+                          | flood
+                          | all
+                          | controller
+                          | local
+                          | any.
+
+-type pcep_port_no() :: integer()
+                          | pcep_port_reserved().
+
+-type pcep_port_feature() :: '10mb_hd'
+                          | '10mb_fd'
+                          | '100mb_hd'
+                          | '100mb_fd'
+                          | '1gb_hd'
+                          | '1gb_fd'
+                          | '10gb_fd'
+                          | '40gb_fd'
+                          | '100gb_fd'
+                          | '1tb_fd'
+                          | other
+                          | copper
+                          | fiber
+                          | autoneg
+                          | pause
+                          | pause_asym.
+
+-record(pcep_port, {
+  port_no :: pcep_port_no(),
+  hw_addr :: binary(),
+  name :: binary(),
+  config = [] :: [pcep_port_config()],
+  state = [] :: [pcep_port_state()],
+  curr = [] :: [pcep_port_feature()],
+  advertised = [] :: [pcep_port_feature()],
+  supported = [] :: [pcep_port_feature()],
+  peer = [] :: [pcep_port_feature()],
+  curr_speed = 0 :: integer(),
+  max_speed = 0 :: integer()
+}).
+-type pcep_port() :: #pcep_port{}.
