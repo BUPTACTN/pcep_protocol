@@ -28,10 +28,10 @@
 %% PCEP Message Common Header ----------------------------------------------------------------------
 
 -record(pcep_message, {
-          version=1 :: integer(), %% 3 bits
-          flags=0 :: integer(), %% 5bits
+          version :: integer(), %% 3 bits
+          flags :: integer(), %% 5bits
           message_type :: integer(), %% 8bits
-          message_length = 4 :: integer(), %% 16btis, total length of the PCEP message including the common header, expressed in bytes.
+          message_length :: integer(), %% 16btis, total length of the PCEP message including the common header, expressed in bytes.
           body::pcep_object_message() %%
          }).
 -type pcep_message() :: #pcep_message{}.
@@ -105,3 +105,13 @@
   h_length	  :: non_neg_integer(),	%% length of address
   h_addr_list = [] :: [inet:ip_address()]%% list of addresses from name server
 }).
+
+-record(pcep_open, {
+
+}).
+-type pcep_open() :: #pcep_open{}.
+
+-record(pcep_keepalive, {
+
+}).
+-type pcep_keepalive() :: #pcep_keepalive{}.

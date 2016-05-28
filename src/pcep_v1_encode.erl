@@ -17,11 +17,11 @@
 
 %% API
 -export([do/1]).
--export([encode_tlv/1]).
--export([encode_tlvs/1]).
--export([encode_object_msg/1]).
--export([encode_object_body/2]).
--export([encode_objects/1]).
+%% -export([encode_tlv/1]).
+%% -export([encode_tlvs/1]).
+%% -export([encode_object_msg/1]).
+%% -export([encode_object_body/2]).
+%% -export([encode_objects/1]).
 %%-export([encode_rro_object_body/3]).
 
 %%-spec encode_objects(list()) ->binary().
@@ -35,14 +35,15 @@ encode_objects([]) ->
 
 %% encode pcep_message -------------------------------------------------------------------
 -spec do(Message ::pcep_message()) ->binary().
-do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, message_length=MessageLength, body=Body}=msg)
-  when MessageLength =:= erlang:byte_size(msg) ->
-  BodyBin = encode_objects(Body),  %% TODO one msg can include many objects
-  <<?VERSION:3, Flags:5, MessageType:8, MessageLength:16, BodyBin/bytes>>;
-do(#pcep_message{message_length=MessageLength}=msg)
-  when MessageLength /= erlang:byte_size(msg) ->
-  ?ERROR("message length doesn't math the field message_length"),
-  <<>>.
+do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, body=Body}=msg) ->
+%%   when MessageLength =:= erlang:byte_size(msg) ->
+  BodyBin = encode_objects(Body),  %% one msg can include many objects
+  MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
+  <<?VERSION:3, Flags:5, MessageType:8, MessageLength:16, BodyBin/bytes>>.
+%% do(#pcep_message{message_length=MessageLength}=msg)
+%%   when MessageLength /= erlang:byte_size(msg) ->
+%%   ?ERROR("message length doesn't math the field message_length"),
+%%   <<>>.
 
 
 %% encode tlvs' list -------------------------------------------------------------------
@@ -68,6 +69,26 @@ encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subo
     _ ->
       ?ERROR("Other Subobject Type,but cannot be recognized")
   end.
+
+
+%% LS Report SubTlvs encoded
+encode_sub_tlvs([#tlv{}=Sub_Tlv | T]) ->
+  T4 = encode_sub_tlvs(T),
+  T5 = encode_sub_tlv(Sub_Tlv),
+  <<T4/bytes,T5/bytes>>;
+encode_sub_tlvs([]) ->
+  <<>>.
+%% LS-Report Msg Sub_TLV
+%% encode_sub_tlv(#tlv{type=Type,length = Length,value = Value}) ->
+%%-spec encode_tlvs(list()) ->binary().
+encode_tlvs([#tlv{}=Tlv | T]) ->
+  T2 = encode_tlvs(T),
+  T3 = encode_tlv(Tlv),
+  <<T3/bytes, T2/bytes>>;
+encode_tlvs([]) ->
+  <<>>.
+
+
 %% TODO ERROR, tlv !!!
 -spec encode_tlv(Tlv::tlv()) -> binary().
 encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
@@ -152,13 +173,9 @@ encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   Tlv_value = term_to_binary(Value),
 %%   <<Type:16, Length:16, Va:Length/bytes>>.
 
-%%-spec encode_tlvs(list()) ->binary().
-encode_tlvs([#tlv{}=Tlv | T]) ->
-  T2 = encode_tlvs(T),
-  T3 = encode_tlv(Tlv),
-  <<T3/bytes, T2/bytes>>;
-encode_tlvs([]) ->
-  <<>>.
+
+
+
 
 encode_subobjects([#subobject{}=Subobject | T]) ->
   T2 =encode_subobjects(T),
@@ -238,7 +255,7 @@ encode_object_body(ls_link_ob_type,#ls_object{
 }) ->
   TlvsBin=encode_tlvs(Tlvs),
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
-%% TODO ls object protocol id
+%% ls object protocol id
 %%| 1 | IS-IS Level 1
 %%| 2 | IS-IS Level 2
 %%| 3 | OSPFv2

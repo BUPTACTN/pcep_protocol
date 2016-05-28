@@ -184,15 +184,7 @@ end).
 %% -define(Error_Object_TYPE_VALUE(ErrorType,ErrorValue),
 %%
 %%   end).
--define(Subobject_Type(SubObjectType),  %% TODO RRO Object and ERO Object
-  case SubObjectType of
-    1 -> ipv4_subobject_type; %% TODO RFC 4874:3.1.1
-    2 -> ipv6_subobject_type;%% TODO RFC 4874
-    3 -> label_subobject_type;%% TODO RFC 3209
-    96 -> sr_ero_subobject_type; %% TODO draft-ietf-pce-segment-routing-00
-    64 -> path_key_subobject_type; %% TODO RFC 5520
-    _ -> unsupported_subobject_type
-  end).
+
 -define(Error_Object_TYPE_VALUE(ErrorType, ErrorValue),
   case ErrorType of
     1 -> case ErrorValue of
@@ -264,6 +256,49 @@ end).
     5 -> erlang:io:format("Reception of an unacceptable number of unrecognized PCEP messages")
   end
 ).
+
+%% 策略一：link与Node分开定义
+-define(Link_SubTLV_Type(LinkSubTLVType),
+case LinkSubTLVType of
+  1 -> Link_type;
+  2 -> Link_ID;
+  3 -> Local_interface_IP_add;
+  4 -> Remote_interface_IP_add;
+  5 -> TE_Metric;
+  15 -> Interface_Switching_Cap_Descriptor;
+  16 -> Shared_Risk_Link_Group;
+  34 -> Port_Label_Restriction;
+  _ -> ?ERROR("Other SubTLV Type")
+end
+).
+-define(Node_SubTLV_Type(NodeSubTLVType),
+case NodeSubTLVType of
+  1 -> Node_IPv4_Local_Add;
+  _ -> ?ERROR("Other NodeSubTLV Type")
+end
+).
+%% 策略二：Link与Node一起定义，但增加参数ObjectType
+-define(SubTLV_Type(ObjectType,SubTLVType),
+case ObjectType of
+  1 -> case SubTLVType of
+         1 -> Link_type;
+         2 -> Link_ID;
+         3 -> Local_interface_IP_add;
+         4 -> Remote_interface_IP_add;
+         5 -> TE_Metric;
+         15 -> Interface_Switching_Cap_Descriptor;
+         16 -> Shared_Risk_Link_Group;
+         34 -> Port_Label_Restriction;
+         _ -> ?ERROR("Other LinkSubTLV Type")
+       end;
+  2 -> case SubTLVType of
+         1 -> Node_IPv4_Local_Add;
+         _ -> ?ERROR("Other NodeSubTLV Type")
+       end;
+  _ -> ?ERROR("Other LSObject Type")
+end
+).
+
 % Message-Type (8 bits):
 % 1     Open
 % 2     Keepalive
@@ -606,3 +641,26 @@ end).
   max_speed = 0 :: integer()
 }).
 -type pcep_port() :: #pcep_port{}.
+
+-type pcep_message_body() :: pcep_error_msg() |
+                             %% Open Message handle
+                             pcep_open_request() |
+                             pcep_open_reply() |
+                             %% Keepalive Message handle
+                             pcep_keepalive_request() |
+                             pcep_keepalive_reply() |
+                             %% PCInitiate Message handle
+                             pcep_pcinitiate_request() |
+                             pcep_pcinitiate_reply() |
+
+                             pcep_report_msg() |
+                             pcep_lsrpt_msg() |
+                             %% PCUpd Message handle
+                             pcep_pcupd_request() |
+                             pcep_pcupd_reply() |
+                             %% PCLabelUpd Message handle
+                             pcep_pclabelupd_request() |
+                             pcep_pclabelupd_reply() |
+                             %% PCLRResv Message handle
+                             pcep_pclrresv_request() |
+                             pcep_pclrresv_reply().

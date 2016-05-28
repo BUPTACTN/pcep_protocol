@@ -95,4 +95,3 @@ decode_tlv(Type, Length, Value) ->
 %%  io:format(Value),
 
   {Type, Length, Value}.
-

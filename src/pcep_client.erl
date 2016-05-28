@@ -26,7 +26,7 @@
 -define(DEFAULT_TIMEOUT, timer:seconds(3)). %% TODO
 
 %% 暂时就这么一个版本
-client_module(1) -> pcep_client_v1.
+client_module(1) -> pcep_client_v2.
 
 %% API
 -export([start_link/4]).
@@ -574,3 +574,16 @@ reconnect(Timeout) ->
   erlang:send_after(Timeout, erlang:self(), timeout).
 
 %% @doc 根据version进入处理模块（目前只有Version=1，即v2版本）
+
+
+%% create_msg 模块
+create_open() ->
+  Body = #pcep_open{},
+  #pcep_message(version = 1, flags = 0, message_type = 1, message_length, body = Body).  %% TODO open msg length
+
+%% create_keepalive 模块
+create_keepalive() ->
+  Body = #pcep_keepalive{},
+  #pcep_message(version = 1, flags = 0, message_type = 2, message_length = 4, body = Body).
+
+%% TODO Other Messages Create 模块
