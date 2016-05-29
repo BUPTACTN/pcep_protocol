@@ -4,7 +4,8 @@
 
 
 -include("pcep_logger.hrl").
-
+-include("pcep_stateful_pce_v2.hrl").
+-include("pcep_onos.hrl").
 %% TODO for fxf
 -define(ISLEGAL(MessageType, Object), case MessageType of
                                         open_msg -> case Object of
@@ -642,25 +643,95 @@ end
 }).
 -type pcep_port() :: #pcep_port{}.
 
--type pcep_message_body() :: pcep_error_msg() |
-                             %% Open Message handle
-                             pcep_open_request() |
-                             pcep_open_reply() |
-                             %% Keepalive Message handle
-                             pcep_keepalive_request() |
-                             pcep_keepalive_reply() |
-                             %% PCInitiate Message handle
-                             pcep_pcinitiate_request() |
-                             pcep_pcinitiate_reply() |
+-type pcep_messsage_body() :: pcep_open_msg() |
+                              pcep_error_msg() |
+                              pcep_keepalive_msg() |
+                              pcep_pcinitiate_msg() |
+                              pcep_pcupd_msg() |
+                              pcep_pcrpt_msg() |
+                              pcep_pclabelupd_msg() |
+                              pcep_lsrpt_msg() |
+                              pcep_pclrresv_msg().
 
-                             pcep_report_msg() |
-                             pcep_lsrpt_msg() |
-                             %% PCUpd Message handle
-                             pcep_pcupd_request() |
-                             pcep_pcupd_reply() |
-                             %% PCLabelUpd Message handle
-                             pcep_pclabelupd_request() |
-                             pcep_pclabelupd_reply() |
-                             %% PCLRResv Message handle
-                             pcep_pclrresv_request() |
-                             pcep_pclrresv_reply().
+%% -type pcep_message_body() :: pcep_error_msg() |
+%%                              %% Open Message handle
+%%                              pcep_open_request() |
+%%                              pcep_open_reply() |
+%%                              %% Keepalive Message handle
+%%                              pcep_keepalive_request() |
+%%                              pcep_keepalive_reply() |
+%%                              %% PCInitiate Message handle
+%%                              pcep_pcinitiate_request() |
+%%                              pcep_pcinitiate_reply() |
+%%
+%%                              pcep_report_msg() |
+%%                              pcep_lsrpt_msg() |
+%%                              %% PCUpd Message handle
+%%                              pcep_pcupd_request() |
+%%                              pcep_pcupd_reply() |
+%%                              %% PCLabelUpd Message handle
+%%                              pcep_pclabelupd_request() |
+%%                              pcep_pclabelupd_reply() |
+%%                              %% PCLRResv Message handle
+%%                              pcep_pclrresv_request() |
+%%                              pcep_pclrresv_reply().
+-record(pcep_error_msg, {
+  pcep_error_object :: error_object()
+}).
+
+-type pcep_error_msg() :: #pcep_error_msg{}.
+
+-record(pcep_open_msg, {
+  pcep_open_object :: open_object()
+}).
+
+-type pcep_open_msg() :: #pcep_open_msg{}.
+
+-record(pcep_keepalive_msg, {
+  %% TODO how to write null?
+}).
+
+-type pcep_keepalive_msg() :: #pcep_keepalive_msg{}.
+
+-record(pcep_pcinitiate_msg, {
+  pcep_pcinit_srp_object :: srp_object(),
+  pcep_pcinit_lsp_object :: lsp_object(),  %% TODO lsp object number of every bit
+  pcep_pcinit_end_points_object :: end_points_object_ipv4(),
+  pcep_pcinit_ero_object :: ero_object(),
+  pcep_pcinit_bandwidth_object :: bandwidth_lsp_object()   %% two bandwidth objects have been defined???!!!!
+}).
+
+-type pcep_pcinitiate_msg() :: #pcep_pcinitiate_msg{}.
+
+-record(pcep_pcupd_msg, {
+  pcep_pcupd_srp_object::srp_object(),
+  pcep_pcupd_lsp_object::lsp_object(),
+  pcep_pcupd_ero_object::ero_object(),
+  pcep_pcupd_bandwidth_object::bandwidth_lsp_object()
+}).
+
+-type pcep_pcupd_msg() :: #pcep_pcupd_msg{}.
+
+-record(pcep_pcrpt_msg, {
+  pcep_pcrpt_srp_object::srp_object(),
+  pcep_pcrpt_lsp_object::lsp_object(),
+  pcep_pcrpt_rro_object::rro_object(),
+  pcep_pcrpt_bandwidth_object::bandwidth_lsp_object()
+}).
+
+-type pcep_pcrpt_msg() :: #pcep_pcrpt_msg{}.
+%% TODO PCLabelUpd msg needed?????
+-record(pcep_pclabelupd_msg, {
+  pcep_pclabelupd_srp_object::srp_object(),
+  pcep_pclabelupd_label_object::label_object(),
+  pcep_pclabelupd_fec_object::fec_ipv4_object()
+}).
+
+-type pcep_pclaberupd_msg() :: #pcep_pclabelupd_msg{}.
+
+-record(pcep_pclrresv_msg, {
+  pcep_pclrresv_srp_object::srp_object(),
+  pcep_pclrresv_label_range_object::label_range_object()
+}).
+
+-type pcep_pclrresv_msg() :: #pcep_pclrresv_msg{}.

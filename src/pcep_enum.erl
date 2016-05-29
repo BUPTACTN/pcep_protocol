@@ -12,4 +12,4 @@
 %% API
 -export([]).
 -enum({type,[
-open]})
+open]}).

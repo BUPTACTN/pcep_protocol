@@ -15,12 +15,12 @@
 %%   name::atom(),  %% the name of this tlv's type
   type::integer(),
   length::integer(),
-  value::any()
+  value::any
 }).
 
 -type tlv()::#tlv{}.
 -record(tlvs, {
-  value::any()
+  value::tlv()
 }).
 
 -type tlvs()::#tlvs{}.
