@@ -6,6 +6,7 @@
 -include("pcep_logger.hrl").
 -include("pcep_stateful_pce_v2.hrl").
 -include("pcep_onos.hrl").
+-include("pcep_ls_v2.hrl").
 %% TODO for fxf
 -define(ISLEGAL(MessageType, Object), case MessageType of
                                         open_msg -> case Object of
@@ -579,7 +580,13 @@ end
   length :: integer(),
   value = [] :: [ofp_port_optical_transport_layer_entry()]
 }).
+-record(ofp_port_optical_transport_layer_entry, {
+  layer_class :: integer(),
+  signal_type :: integer(),
+  apaptation :: integer()
+}).
 
+-type ofp_port_optical_transport_layer_entry() :: #ofp_port_optical_transport_layer_entry{}.
 -type linc_port_optical_transport_layer_stack() :: #linc_port_optical_transport_layer_stack{}.
 
 %%%-----------------------------------------------------------------------------
@@ -727,7 +734,7 @@ end
   pcep_pclabelupd_fec_object::fec_ipv4_object()
 }).
 
--type pcep_pclaberupd_msg() :: #pcep_pclabelupd_msg{}.
+-type pcep_pclabelupd_msg() :: #pcep_pclabelupd_msg{}.
 
 -record(pcep_pclrresv_msg, {
   pcep_pclrresv_srp_object::srp_object(),
@@ -735,3 +742,9 @@ end
 }).
 
 -type pcep_pclrresv_msg() :: #pcep_pclrresv_msg{}.
+
+-record(pcep_lsrpt_msg, {
+  pcep_lsrpt_msg :: ls_object()
+}).
+
+-type pcep_lsrpt_msg() :: #pcep_lsrpt_msg{}.

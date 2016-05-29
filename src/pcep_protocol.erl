@@ -25,7 +25,7 @@ encode(#pcep_message{version = Version} = Message) ->
 -spec decode(binary()) -> {ok, pcep_message(), binary()} | {error, any()}  |{error, unsupported_version, integer()}.
 decode(Binary) when byte_size(Binary) >= ?PCEP_COMMON_HEADER_SIZE ->
   %% Flags is meaningless in pcep protocol v1.
-  <<Version:3, Flags:5, MessageType:8, MessageLength:16, _/bytes>> = Binary,
+  <<Version:3, 0:5, MessageType:8, MessageLength:16, _/bytes>> = Binary,
   case ?MOD(Version) of
     unsupported ->
       {error, unsupported_version, MessageType};
