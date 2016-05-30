@@ -571,7 +571,11 @@ end
 }).
 
 -type linc_port_optical_transport_application_code() :: #linc_port_optical_transport_application_code{}.
-
+-record(linc_port_optical_transport_layer_stack, {
+  feature_type :: integer(),
+  length :: integer(),
+  value = [] :: [ofp_port_optical_transport_layer_entry()]
+}).
 -type linc_port_optical_transport_feature() :: #linc_port_optical_transport_application_code{} |
 #linc_port_optical_transport_layer_stack{}.
 
