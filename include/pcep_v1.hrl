@@ -262,14 +262,14 @@ end).
 %% 策略一：link与Node分开定义
 -define(Link_SubTLV_Type(LinkSubTLVType),
 case LinkSubTLVType of
-  1 -> Link_type;
-  2 -> Link_ID;
-  3 -> Local_interface_IP_add;
-  4 -> Remote_interface_IP_add;
-  5 -> TE_Metric;
-  15 -> Interface_Switching_Cap_Descriptor;
-  16 -> Shared_Risk_Link_Group;
-  34 -> Port_Label_Restriction;
+  1 -> link_type;
+  2 -> link_ID;
+  3 -> local_interface_IP_add;
+  4 -> remote_interface_IP_add;
+  5 -> te_metric;
+  15 -> interface_switching_cap_descriptor;
+  16 -> shared_risk_link_group;
+  34 -> port_label_restriction;
   _ -> ?ERROR("Other SubTLV Type")
 end
 ).
@@ -283,18 +283,18 @@ end
 -define(SubTLV_Type(ObjectType,SubTLVType),
 case ObjectType of
   1 -> case SubTLVType of
-         1 -> Link_type;
-         2 -> Link_ID;
-         3 -> Local_interface_IP_add;
-         4 -> Remote_interface_IP_add;
-         5 -> TE_Metric;
-         15 -> Interface_Switching_Cap_Descriptor;
-         16 -> Shared_Risk_Link_Group;
-         34 -> Port_Label_Restriction;
+         1 -> link_type;
+         2 -> link_ID;
+         3 -> local_interface_IP_add;
+         4 -> remote_interface_IP_add;
+         5 -> te_metric;
+         15 -> interface_switching_cap_descriptor;
+         16 -> shared_risk_link_group;
+         34 -> port_label_restriction;
          _ -> ?ERROR("Other LinkSubTLV Type")
        end;
   2 -> case SubTLVType of
-         1 -> Node_IPv4_Local_Add;
+         1 -> node_IPv4_local_add;
          _ -> ?ERROR("Other NodeSubTLV Type")
        end;
   _ -> ?ERROR("Other LSObject Type")
@@ -309,7 +309,14 @@ end
 % 5     Notification
 % 6     Error
 % 7     Close
+%% Common SubTLV format ------------------------------------------------------------
+-record(sub_tlv, {
+  sub_type::integer(),
+  sub_length::integer(),
+  sub_value::any()
+}).
 
+-type sub_tlv() :: #sub_tlv{}.
 
 %% Common TLV format ---------------------------------------------------------------
 %% TODO error
@@ -320,6 +327,7 @@ end
 }).
 
 -type tlv() :: #tlv{}.
+
 
 %% Common Subobject format ---------------------------------------------------------------
 -record(subobject, {
@@ -579,11 +587,11 @@ end
 -type linc_port_optical_transport_feature() :: #linc_port_optical_transport_application_code{} |
 #linc_port_optical_transport_layer_stack{}.
 
--record(linc_port_optical_transport_layer_stack, {
-  feature_type :: integer(),
-  length :: integer(),
-  value = [] :: [ofp_port_optical_transport_layer_entry()]
-}).
+%% -record(linc_port_optical_transport_layer_stack, {
+%%   feature_type :: integer(),
+%%   length :: integer(),
+%%   value = [] :: [ofp_port_optical_transport_layer_entry()]
+%% }).
 -record(ofp_port_optical_transport_layer_entry, {
   layer_class :: integer(),
   signal_type :: integer(),
