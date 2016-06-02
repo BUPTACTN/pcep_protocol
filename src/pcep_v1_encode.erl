@@ -51,17 +51,17 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, body
 -spec encode_subobject(Subobject::subobject()) -> binary().
 encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subobject_value = Value}) ->
   case Type of
-    1 -> #ipv4_subobject_value{ipv4_subobject_add = Ipv4_add,
+    1 -> #ipv4_subobject{ipv4_subobject_add = Ipv4_add,
     ipv4_subobject_prefix_len = Ipv4_prefix_len,
     ipv4_subobject_flags = Ipv4_flags} = Value,
       Value_1 = << <<Value1/bytes>> || Value1 <- [<<Ipv4_add:32,Ipv4_prefix_len:8,Ipv4_flags:8>>]>>,
       erlang:list_to_binary([<<Type:8, Length:8>>, Value_1]);
-    2 -> #ipv6_subobject_value{ipv6_subobject_add = Ipv6_add,
-    ipv6_subobject_prefix_len = Ipv6_prefix_len,
-    ipv6_subobject_flags = Ipv6_flags} = Value,
-      Value_2 = << <<Value2/bytes>> || Value2 <- [<<Ipv6_add:128,Ipv6_prefix_len:8,Ipv6_flags:8>>]>>,
-      erlang:list_to_binary([<<Type:8, Length:8>>, Value_2]);
-    3 -> #label_subobject_value{label_subobject_flags =Label_flags,
+%%     2 -> #ipv6_subobject_value{ipv6_subobject_add = Ipv6_add,
+%%     ipv6_subobject_prefix_len = Ipv6_prefix_len,
+%%     ipv6_subobject_flags = Ipv6_flags} = Value,
+%%       Value_2 = << <<Value2/bytes>> || Value2 <- [<<Ipv6_add:128,Ipv6_prefix_len:8,Ipv6_flags:8>>]>>,
+%%       erlang:list_to_binary([<<Type:8, Length:8>>, Value_2]);
+    3 -> #label_subobject{label_subobject_flags =Label_flags,
     label_subobject_c_type = Label_c_type,
     label_subobject_contents = Label_contents} = Value,
       Value_3 = << <<Value3/bytes>> || Value3 <- [<<Label_flags:8,Label_c_type:8,Label_contents:32>>]>>,
@@ -81,28 +81,28 @@ encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subo
 %% LS-Report Msg Sub_TLV
 %% encode_sub_tlv(#tlv{type=Type,length = Length,value = Value}) ->
 %%-spec encode_tlvs(list()) ->binary().
-encode_tlvs([#tlv{}=Tlv | T]) ->
-  T2 = encode_tlvs(T),
-  T3 = encode_tlv(Tlv),
-  <<T3/bytes, T2/bytes>>;
-encode_tlvs([]) ->
-  <<>>.
+%% encode_tlvs([#tlv{}=Tlv | T]) ->
+%%   T2 = encode_tlvs(T),
+%%   T3 = encode_tlv(Tlv),
+%%   <<T3/bytes, T2/bytes>>;
+%% encode_tlvs([]) ->
+%%   <<>>.
 
 encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
   link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
-  <<Link_id_type:16,Link_id_length:16,Link_id/bytes:32>>.
+  <<Link_id_type:16,Link_id_length:16,Link_id:32/bytes>>.
 
 encode_sub_tlv2(#local_interface_ip_address_sub_tlv{local_interface_ip_address_sub_tlv_type = Local_interface_ip_add_type,
   local_interface_ip_address_sub_tlv_length = Local_interface_ip_add_length,local_interface_address = Local_interface_add}) ->
-  <<Local_interface_ip_add_type:16,Local_interface_ip_add_length:16,Local_interface_add/bytes:32>>.
+  <<Local_interface_ip_add_type:16,Local_interface_ip_add_length:16,Local_interface_add:32/bytes>>.
 
 encode_sub_tlv3(#remote_interface_ip_address_sub_tlv{remote_interface_ip_address_sub_tlv_type = Remote_interface_ip_address_type,
   remote_interface_ip_address_sub_tlv_length = Remote_interface_ip_address_length, remote_interface_address = Remote_interface_address}) ->
-  <<Remote_interface_ip_address_type:16,Remote_interface_ip_address_length:16,Remote_interface_address/bytes:32>>.
+  <<Remote_interface_ip_address_type:16,Remote_interface_ip_address_length:16,Remote_interface_address:32/bytes>>.
 
 encode_sub_tlv4(#te_metric_sub_tlv{te_metric_sub_tlv_type = TE_metric_type,te_metric_sub_tlv_length = TE_metric_length,
 te_link_metric = TE_link_metric}) ->
-  <<TE_metric_type:16,TE_metric_length:16,TE_link_metric/bytes:32>>.
+  <<TE_metric_type:16,TE_metric_length:16,TE_link_metric:32/bytes>>.
 
 encode_sub_tlv5(#interface_switching_capability_descriptor_sub_tlv{interface_switching_capability_descriptor_sub_tlv_type = Interface_switching_cap_des_type,
   interface_switching_capability_descriptor_sub_tlv_length = Interface_switching_cap_des_length,switching_cap = Switch_cap,
@@ -162,59 +162,85 @@ encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_n
 %% TODO ERROR, tlv !!!
 %% -spec encode_tlv() -> binary().
 
-encode_tlv_value(#gmpls_cap_tlv_value{gmpls_cap_flag = Gmpls_cap_flag}) ->
+encode_tlv(#gmpls_cap_tlv{
+%%   gmpls_cap_tlv_type = Type,gmpls_cap_tlv_length = Length,
+  gmpls_cap_flag = Gmpls_cap_flag}) ->
   Type = 14,
   Length = 4,
   <<Type:16,Length:16,Gmpls_cap_flag:32>>;
-encode_tlv_value(#stateful_pec_cap_tlv_value{stateful_pce_cap_tlv_flag = Stateful_pce_flag, stateful_pce_cap_tlv_d = State_pce_d,
-stateful_pce_cap_tlv_t = State_pce_t, stateful_pce_cap_tlv_i = State_pce_i, stateful_pce_cap_tlv_s = State_pce_s,
-stateful_pce_cap_tlv_u = State_pce_u}) ->
+encode_tlv(#stateful_pec_cap_tlv{
+%%   stateful_pec_cap_tlv_type = Type,stateful_pec_cap_tlv_length = Length,
+  stateful_pce_cap_tlv_flag = Stateful_pce_flag, stateful_pce_cap_tlv_d = State_pce_d,
+  stateful_pce_cap_tlv_t = State_pce_t, stateful_pce_cap_tlv_i = State_pce_i, stateful_pce_cap_tlv_s = State_pce_s,
+  stateful_pce_cap_tlv_u = State_pce_u}) ->
   Type = 16,
   Length =4,
   <<Type:16,Length:16,Stateful_pce_flag:27,State_pce_d:1,State_pce_t:1,State_pce_i:1,State_pce_s:1,State_pce_u:1>>;
-encode_tlv_value(#pcecc_cap_tlv_value{pcecc_cap_tlv_flag = Pcecc_flag, pcecc_cap_tlv_g = Pcecc_g, pcecc_cap_tlv_l = Pcecc_l}) ->
+encode_tlv(#pcecc_cap_tlv{
+%%   pcecc_cap_tlv_type = Type,pcecc_cap_tlv_length = Length,
+  pcecc_cap_tlv_flag = Pcecc_flag, pcecc_cap_tlv_g = Pcecc_g, pcecc_cap_tlv_l = Pcecc_l}) ->
   Type = 32,
   Length = 4,
   <<Type:16,Length:4,Pcecc_flag:30,Pcecc_g:1,Pcecc_l:1>>;
-encode_tlv_value(#lsp_db_version_tlv_value{lsp_db_version_tlv_ver = Lsp_db_version}) ->
+encode_tlv(#lsp_db_version_tlv{
+%%   lsp_db_version_tlv_type = Type,lsp_db_version_tlv_length = Length,
+  lsp_db_version_tlv_ver = Lsp_db_version}) ->
   Type = 23,
   Length = 8,
   <<Type:16,Length:16,Lsp_db_version:64>>;
-encode_tlv_value(#ted_cap_tlv_value{ted_cap_tlv_flag = Ted_flag, ted_cap_tlv_r = Ted_r}) ->
+encode_tlv(#ted_cap_tlv{
+%%   ted_cap_tlv_type = Type,ted_cap_tlv_length = Length,
+  ted_cap_tlv_flag = Ted_flag, ted_cap_tlv_r = Ted_r}) ->
   Type = 132,
   Length = 4,
   <<Type:16,Length:16,Ted_flag:31,Ted_r:1>>;
-encode_tlv_value(#label_db_version_tlv_value{label_db_version_tlv_ver = Label_db_version}) ->
+encode_tlv(#label_db_version_tlv{
+%%   label_db_version_tlv_type = Type,label_db_version_tlv_length = Length,
+  label_db_version_tlv_ver = Label_db_version}) ->
   Type = 23,
   Length = 8,
   <<Type:16,Length:8,Label_db_version:64>>;
-encode_tlv_value(#symbolic_path_name_tlv_value{symbolic_path_name = Symbolic_path_name}) ->
+encode_tlv(#symbolic_path_name_tlv{
+%%   symbolic_path_name_tlv_type = Type,symbolic_path_name_tlv_length = Length,
+  symbolic_path_name = Symbolic_path_name}) ->
   Type = 17,
   Length = 4,  %% TODO ???
   <<Type:16,Length:16,Symbolic_path_name/bytes>>;
-encode_tlv_value(#ipv4_lsp_identifiers_tlv_value{ipv4_lsp_identifiers_tlv_tunnel_sender_add = Ipv4_lsp_tunnel_sender_add,
+encode_tlv(#ipv4_lsp_identifiers_tlv{
+%%   ipv4_lsp_identifiers_tlv_type = Type,ipv4_lsp_identifiers_tlv_length = Length,
+  ipv4_lsp_identifiers_tlv_tunnel_sender_add = Ipv4_lsp_tunnel_sender_add,
 ipv4_lsp_identifiers_tlv_lsp_id = Ipv4_lsp_lsp_id,ipv4_lsp_identifiers_tlv_tunnel_id = Ipv4_lsp_tunnel_id,
   ipv4_lsp_identifiers_tlv_exrended_tunnel_id = Ipv4_exrended_tunnel_id,
   ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = Ipv4_lsp_tunnel_endpoint_add}) ->
   Type = 18,
   Length = 16,
   <<Type:16,Length:16,Ipv4_lsp_tunnel_sender_add:32,Ipv4_lsp_lsp_id:16,Ipv4_lsp_tunnel_id:16,Ipv4_exrended_tunnel_id:32,Ipv4_lsp_tunnel_endpoint_add:32>>;
-encode_tlv_value(#lsp_error_code_tlv_value{lsp_error_code = Lsp_error_code}) ->
+encode_tlv(#lsp_error_code_tlv{
+%%   lsp_error_code_tlv_type = Type,lsp_error_code_tlv_length = Length,
+  lsp_error_code = Lsp_error_code}) ->
   Type = 20,
   Length = 4,
   <<Type:16,Length:16,Lsp_error_code:32>>;
-encode_tlv_value(#rsvp_error_spec_tlv_value{rsvp_error_spec_tlv_body1 = SVP_ERROR_SPEC_object,rsvp_error_spec_tlv_body2 = User_error_spec_object}) ->
+encode_tlv(#rsvp_error_spec_tlv{
+%%   rsvp_error_spec_tlv_type = Type,rsvp_error_spec_tlv_length = Length,
+  rsvp_error_spec_tlv_body1 = SVP_ERROR_SPEC_object,rsvp_error_spec_tlv_body2 = User_error_spec_object}) ->
   %% TODO after two objects finished
   <<SVP_ERROR_SPEC_object/bytes,User_error_spec_object/bytes>>;
-encode_tlv_value(#next_hop_unnumbered_ipv4_id_tlv_value{node_id = Node_id,inferface_id = Interface_id}) ->
+encode_tlv(#next_hop_unnumbered_ipv4_id_tlv{
+%%   next_hop_unnumbered_ipv4_id_tlv_type = Type,next_hop_unnumbered_ipv4_id_tlv_length = Length,
+  node_id = Node_id,inferface_id = Interface_id}) ->
   Type = 1,
   Length = 8,  %%  onos defines Length as header+value, namely 12.
-  <<Type:16,Length:16,Node_id/bytes:32,Interface_id/bytes:32>>;
-encode_tlv_value(#ls_cap_tlv_value{ls_cap_tlv_flag = Ls_cap_flag, ls_cap_tlv_r = Ls_r}) ->
+  <<Type:16,Length:16,Node_id:32/bytes,Interface_id:32/bytes>>;
+encode_tlv(#ls_cap_tlv{
+%%   ls_cap_tlv_type = Type,ls_cap_tlv_length = Length,
+  ls_cap_tlv_flag = Ls_cap_flag, ls_cap_tlv_r = Ls_r}) ->
   Type = 65280,
   Length = 4,
   <<Type:16,Length:16,Ls_cap_flag:31,Ls_r:1>>;
-encode_tlv_value(#optical_link_attribute_tlv_value{link_type_sub_tlv_body = Link_types,
+encode_tlv(#optical_link_attribute_tlv{
+%%   optical_link_attribute_tlv_type = Type,optical_link_attribute_tlv_length = Length,
+  link_type_sub_tlv_body = Link_types,
   link_id_sub_tlv_body = Link_ids, local_interface_ip_add_sub_tlv_body = Local_interface_ip_adds,
   remote_interface_ip_add_sub_tlv_body = Remote_interface_ip_adds,te_metric_body = Te_metrics,
   interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_deses, shared_risk_link_group_sub_tlv_body = Shared_risk_link_groups,
@@ -230,18 +256,22 @@ encode_tlv_value(#optical_link_attribute_tlv_value{link_type_sub_tlv_body = Link
   Type = 10001,
   Length = 1, %% TODO
   <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes,ValueBin3/bytes,ValueBin4/bytes,ValueBin5/bytes,ValueBin6/bytes,ValueBin7/bytes,ValueBin8/bytes>>;
-encode_tlv_value(#link_descriptors_tlv_value{ipv4_interface_add_sub_tlv_body = Ipv4_interface_adds,
+encode_tlv(#link_descriptors_tlv{
+%%   link_descriptors_tlv_type = Type,link_descriptors_tlv_length = Length,
+  ipv4_interface_add_sub_tlv_body = Ipv4_interface_adds,
 ipv4_neighbor_add_sub_tlv_body = Ipv4_neighbor_adds}) ->
   %% TODO after subTLV
   Type = 65284,
-  Length = 1,  %% TODO
+
   ValueBin1 = list_to_binary([encode_sub_tlv8(Ipv4_interface_add) || Ipv4_interface_add <- Ipv4_interface_adds]),
   ValueBin2 = list_to_binary([encode_sub_tlv9(Ipv4_neighbor_add) || Ipv4_neighbor_add <- Ipv4_neighbor_adds]),
-  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes>>.
-encode_tlv_value(#node_attributes_tlv_value{ipv4_router_id_of_local_Node_sub_tlv_body = Ipv4_router_id_of_local_Nodes}) ->
+  Length = byte_size(ValueBin1)+byte_size(ValueBin2),
+  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes>>;
+encode_tlv(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ipv4_router_id_of_local_Nodes}) ->
   Type = 65285,
-  Length = 1, %%TODO
+
   ValueBin1 = list_to_binary([encode_sub_tlv11(Ipv4_router_id_of_local_Node) || Ipv4_router_id_of_local_Node <- Ipv4_router_id_of_local_Nodes]),
+  Length = byte_size(ValueBin1),
   <<Type:16,Length:16,ValueBin1/bytes>>.
 %% -spec encode_tlv(Tlv::tlv()) -> binary().
 %% encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
@@ -382,10 +412,10 @@ encode_object_body(end_points_v4_ob_type,#end_points_object_ipv4{
   <<Src_v4_add:32,Des_v4_add:32>>;
 
 %% encode end points IPv6 object
-encode_object_body(end_points_v6_ob_type,#end_points_object_ipv6{
-  source_ipv6_add = Src_v6_add,destination_ipv6_add = Des_v6_add
-}) ->
-  <<Src_v6_add:128,Des_v6_add:128>>;
+%% encode_object_body(end_points_v6_ob_type,#end_points_object_ipv6{
+%%   source_ipv6_add = Src_v6_add,destination_ipv6_add = Des_v6_add
+%% }) ->
+%%   <<Src_v6_add:128,Des_v6_add:128>>;
 
 %% encode error object
 encode_object_body(pcep_error_ob_type,#error_object{
@@ -427,11 +457,11 @@ encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_object{
   TlvsBin=encode_tlvs(Tlvs),
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
-encode_object_body(ls_ipv6_topo_prefix_ob_type,#ls_object{
-  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
-}) ->
-  TlvsBin=encode_tlvs(Tlvs),
-  <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
+%% encode_object_body(ls_ipv6_topo_prefix_ob_type,#ls_object{
+%%   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
+%% }) ->
+%%   TlvsBin=encode_tlvs(Tlvs),
+%%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
 %% encode lsp object
 encode_object_body(lsp_ob_type,#lsp_object{

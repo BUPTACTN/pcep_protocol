@@ -98,9 +98,9 @@ decode_object_body(end_points_v4_ob_type,Binary) ->
   <<Src_v4_add:32,Des_v4_add:32>> = Binary,
   #end_points_object_ipv4{source_ipv4_add=Src_v4_add,destination_ipv4_add = Des_v4_add};
 
-decode_object_body(end_points_v6_ob_type,Binary) ->
-  <<Src_v6_add:128,Des_v6_add:128>> = Binary,
-  #end_points_object_ipv6{source_ipv6_add = Src_v6_add,destination_ipv6_add = Des_v6_add};
+%% decode_object_body(end_points_v6_ob_type,Binary) ->
+%%   <<Src_v6_add:128,Des_v6_add:128>> = Binary,
+%%   #end_points_object_ipv6{source_ipv6_add = Src_v6_add,destination_ipv6_add = Des_v6_add};
 
 decode_object_body(pcep_error_ob_type,Binary) ->
   <<Res:8,Flags:8,Error_type:8,Error_value:8,Tlvs/bytes>> = Binary,
@@ -127,10 +127,10 @@ decode_object_body(ls_ipv4_topo_prefix_ob_type,Binary) ->
   DTlvs = decode_tlvs(1,Tlvs),
   #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = DTlvs};
 
-decode_object_body(ls_ipv6_topo_prefix_ob_type,Binary) ->
-  <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
-  DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = DTlvs};
+%% decode_object_body(ls_ipv6_topo_prefix_ob_type,Binary) ->
+%%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
+%%   DTlvs = decode_tlvs(1,Tlvs),
+%%   #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = DTlvs};
 
 decode_object_body(lsp_ob_type,Binary) ->
   <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,Tlvs/bytes>> = Binary,
@@ -147,9 +147,9 @@ decode_object_body(end_points_v4_ob_type,Binary) ->
   <<Sou_ipv4_add:32,Des_ipv4_add:32>> = Binary,
   #end_points_object_ipv4{source_ipv4_add = Sou_ipv4_add,destination_ipv4_add = Des_ipv4_add};
 
-decode_object_body(end_points_v6_ob_type,Binary) ->
-  <<Sou_ipv6_add:128,Des_ipv6_add:128>> = Binary,
-  #end_points_object_ipv6{source_ipv6_add = Sou_ipv6_add,destination_ipv6_add = Des_ipv6_add};
+%% decode_object_body(end_points_v6_ob_type,Binary) ->
+%%   <<Sou_ipv6_add:128,Des_ipv6_add:128>> = Binary,
+%%   #end_points_object_ipv6{source_ipv6_add = Sou_ipv6_add,destination_ipv6_add = Des_ipv6_add};
 
 decode_object_body(bdwidth_req_ob_type,Binary) ->
   <<Bandwidth:32>> = Binary,
@@ -168,17 +168,17 @@ decode_object_body(fec_ipv4_ob_type,Binary) ->
   <<Ipv4_node_id:32>> = Binary,
   #fec_ipv4_object{ipv4_node_id = Ipv4_node_id};
 
-decode_object_body(fec_ipv6_ob_type,Binary) ->
-  <<Ipv6_node_id:128>> = Binary,
-  #fec_ipv6_object{ipv6_node_id = Ipv6_node_id};
+%% decode_object_body(fec_ipv6_ob_type,Binary) ->
+%%   <<Ipv6_node_id:128>> = Binary,
+%%   #fec_ipv6_object{ipv6_node_id = Ipv6_node_id};
 
 decode_object_body(fec_ipv4_adjacency_ob_type,Binary) ->
   <<Local_ipv4_add:32,Remote_ipv4_add:32>> = Binary,
   #fec_ipv4_adjacency_object{local_ipv4_add = Local_ipv4_add,remote_ipv4_add = Remote_ipv4_add};
 
-decode_object_body(fec_ipv6_adjacency_ob_type,Binary) ->
-  <<Local_ipv6_add:128,Remote_ipv6_add:128>> = Binary,
-  #fec_ipv6_adjacency_object{local_ipv6_add = Local_ipv6_add,remote_ipv6_add = Remote_ipv6_add};
+%% decode_object_body(fec_ipv6_adjacency_ob_type,Binary) ->
+%%   <<Local_ipv6_add:128,Remote_ipv6_add:128>> = Binary,
+%%   #fec_ipv6_adjacency_object{local_ipv6_add = Local_ipv6_add,remote_ipv6_add = Remote_ipv6_add};
 
 %%decode_object_body(fec_ipv4_unnumbered_ob_type,Binary) ->
 decode_object_body(label_range_ob_type,Binary) ->
@@ -365,14 +365,14 @@ decode_tlv(Binary) ->
                    true ->
                      ?ERROR("The ERROR_SPEC Object Length is wrong")
              end;
-               2 ->
-                 if Obj_len =:= 24 ->
-                   <<Ipv6_add:128,Flags:8,Error_code:8,Error_value:16>> = erlang:binary_part(Binary,{8,20}), %%TODO
-                   Value1 = erlang:binary_part(Binary,{4,24}),
-                   erlang:binary_to_list(Value1);
-                   true ->
-                     ?ERROR("The ERROR_SPEC Object Length is wrong")
-                 end;
+%%                2 ->
+%%                  if Obj_len =:= 24 ->
+%%                    <<Ipv6_add:128,Flags:8,Error_code:8,Error_value:16>> = erlang:binary_part(Binary,{8,20}), %%TODO
+%%                    Value1 = erlang:binary_part(Binary,{4,24}),
+%%                    erlang:binary_to_list(Value1);
+%%                    true ->
+%%                      ?ERROR("The ERROR_SPEC Object Length is wrong")
+%%                  end;
                _ ->
                  ?ERROR("The ERROR_SPEC Object C_type is wrong")
                  end;
@@ -401,16 +401,16 @@ decode_subobject(Binary) ->
   M = Length*8,
   <<Value:M>> = erlang:binary_part(Binary,{2,Length}),
   SubobType = ?Subobject_Type(Type),
-  if <<Type:8,Length:8,Value:M>> = Binary ->
+  if <<Type:8,Length:8,Value:M>> == Binary ->
     case SubobType of
       ipv4_subobject_type ->
         <<Type:8,Length:8,Value:48>> = Binary,
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-6}),
         <<Ipv4_add:32,Pre_len:8,Resvd:8>> = Value1,
         erlang:binary_to_list(Value1);
-      ipv6_subobject_type ->
-        Value1 = erlang:binary_part(Binary,{byte_size(Binary),-18}),
-        <<Ipv4_add:32,Pre_len:8,Resvd:144>> = Value1,
+%%       ipv6_subobject_type ->
+%%         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-18}),
+%%         <<Ipv4_add:32,Pre_len:8,Resvd:144>> = Value1,
         erlang:binary_to_list(Value1);
       label_subobject_type ->
         <<Type:8,Length:8,Value:48>> = Binary,
@@ -436,14 +436,14 @@ decode_subobject(Binary) ->
                   true ->
                     ?ERROR("sr_ero_subobject length is unmatched_2")
                 end;
-                ST=:=2 ->
-                  if Length=:=20 ->
-                    Value2=erlang:binary_part(Binary,{2,18}),
-                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Ipv6_add:128>> = Value2,
-                    erlang:binary_to_list(Value2);
-                    true ->
-                      ?ERROR("sr_ero_subobject length is unmatched_3")
-                  end;
+%%                 ST=:=2 ->
+%%                   if Length=:=20 ->
+%%                     Value2=erlang:binary_part(Binary,{2,18}),
+%%                     <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Ipv6_add:128>> = Value2,
+%%                     erlang:binary_to_list(Value2);
+%%                     true ->
+%%                       ?ERROR("sr_ero_subobject length is unmatched_3")
+%%                   end;
                 ST=:=3 ->
                   if Length=:=12 ->
                     Value2=erlang:binary_part(Binary,{2,10}),
@@ -452,14 +452,14 @@ decode_subobject(Binary) ->
                     true ->
                       ?ERROR("sr_ero_subobject length is unmatched_4")
                   end;
-                ST=:=4 ->
-                  if Length=:=36 ->
-                    Value2=erlang:binary_part(Binary,{2,34}),
-                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Local_ipv6_add:128,Remote_ipv6_add:128>> = Value2,
-                    erlang:binary_to_list(Value2);
-                    true ->
-                      ?ERROR("sr_ero_subobject length is unmatched_5")
-                  end;
+%%                 ST=:=4 ->
+%%                   if Length=:=36 ->
+%%                     Value2=erlang:binary_part(Binary,{2,34}),
+%%                     <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Local_ipv6_add:128,Remote_ipv6_add:128>> = Value2,
+%%                     erlang:binary_to_list(Value2);
+%%                     true ->
+%%                       ?ERROR("sr_ero_subobject length is unmatched_5")
+%%                   end;
                 ST=:=5 ->
                   if Length=:=20 ->
                     Value2=erlang:binary_part(Binary,{2,18}),
@@ -492,14 +492,14 @@ decode_subobject(Binary) ->
                     true ->
                       ?ERROR("sr_ero_subobject length is unmatched_7")
                   end;
-                  ST=:=2 ->
-                    if Length=:=24 ->
-                      Value2=erlang:binary_part(Binary,{2,22}),
-                      <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32,Ipv6_add:128>> = Value2,
-                      erlang:binary_to_list(Value2);
-                      true ->
-                        ?ERROR("sr_ero_subobject length is unmatched_8")
-                    end;
+%%                   ST=:=2 ->
+%%                     if Length=:=24 ->
+%%                       Value2=erlang:binary_part(Binary,{2,22}),
+%%                       <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32,Ipv6_add:128>> = Value2,
+%%                       erlang:binary_to_list(Value2);
+%%                       true ->
+%%                         ?ERROR("sr_ero_subobject length is unmatched_8")
+%%                     end;
                   ST=:=3 ->
                     if Length=:=16 ->
                       Value2=erlang:binary_part(Binary,{2,14}),
@@ -508,14 +508,14 @@ decode_subobject(Binary) ->
                       true ->
                         ?ERROR("sr_ero_subobject length is unmatched_9")
                     end;
-                  ST=:=4 ->
-                    if Length=:=40 ->
-                      Value2=erlang:binary_part(Binary,{2,38}),
-                      <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32,Local_ipv6_add:128,Remote_ipv6_add:128>> = Value2,
-                      erlang:binary_to_list(Value2);
-                      true ->
-                        ?ERROR("sr_ero_subobject length is unmatched_10")
-                    end;
+%%                   ST=:=4 ->
+%%                     if Length=:=40 ->
+%%                       Value2=erlang:binary_part(Binary,{2,38}),
+%%                       <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32,Local_ipv6_add:128,Remote_ipv6_add:128>> = Value2,
+%%                       erlang:binary_to_list(Value2);
+%%                       true ->
+%%                         ?ERROR("sr_ero_subobject length is unmatched_10")
+%%                     end;
                   ST=:=5 ->
                     if Length=:=24 ->
                       Value2=erlang:binary_part(Binary,{2,22}),

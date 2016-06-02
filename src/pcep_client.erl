@@ -277,7 +277,7 @@ handle_info(timeout, #state{resource_id = ResourceId,
   ets = Tid} = State) ->
   case connect(Proto, Host, Port) of
     {ok, Socket}->
-      {ok, OpenBin} = pcep_protocol:encode(pcep_open_message_default:create_open_message(1)),
+      {ok, OpenBin} = pcep_protocol:encode(create_open()),
       {noreply, State#state{socket = Socket}};
     {error, _Reason} ->
       erlang:send_after(Timeout, erlang:self(), timeout),

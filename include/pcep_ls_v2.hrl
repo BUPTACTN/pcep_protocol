@@ -1,12 +1,14 @@
 
 %%-include("pcep_protocol.hrl").
 %% open message tlvs
--record(ls_cap_tlv_value, {
+-record(ls_cap_tlv, {
+  ls_cap_tlv_type :: integer(),
+  ls_cap_tlv_length :: integer(),
   ls_cap_tlv_flag = <<0:31>> ::integer(),%%31bits
   ls_cap_tlv_r = true ::boolean()%%1bit
 }).
 
--type ls_cap_tlv_value()::#ls_cap_tlv_value{}.
+-type ls_cap_tlv()::#ls_cap_tlv{}.
 
 %% -record(routing_universe_tlv_value,{
 %%   routing_universe_tlv_identifier::integer()
@@ -158,7 +160,9 @@
 
 -type ipv4_router_id_of_local_node_sub_tlv() :: #ipv4_router_id_of_local_node_sub_tlv{}.
 
--record(optical_link_attribute_tlv_value,{
+-record(optical_link_attribute_tlv,{
+  optical_link_attribute_tlv_type :: integer(),
+  optical_link_attribute_tlv_length :: integer(),
   link_type_sub_tlv_body :: any(),
   link_id_sub_tlv_body :: any(),
   local_interface_ip_add_sub_tlv_body :: any(),
@@ -169,20 +173,24 @@
   port_label_res_sub_tlv_body ::any()
 }).
 
--type optical_link_attribute_tlv_value() :: #optical_link_attribute_tlv_value{}.
+-type optical_link_attribute_tlv() :: #optical_link_attribute_tlv{}.
 
--record(link_descriptors_tlv_value,{
+-record(link_descriptors_tlv,{
+  link_descriptors_tlv_type ::integer(),
+  link_descriptors_tlv_length :: integer(),
   ipv4_interface_add_sub_tlv_body :: any(),
   ipv4_neighbor_add_sub_tlv_body :: any()
 }).
 
--type link_descriptors_tlv_value() :: #link_descriptors_tlv_value{}.
+-type link_descriptors_tlv() :: #link_descriptors_tlv{}.
 
--record(node_attributes_tlv_value,{
+-record(node_attributes_tlv,{
+  node_attributes_tlv_type :: integer(),
+  node_attributes_tlv_length :: integer(),
   ipv4_router_id_of_local_Node_sub_tlv_body :: any()
 }).
 
--type node_attributes_tlv_value() :: #node_attributes_tlv_value{}.
+-type node_attributes_tlv() :: #node_attributes_tlv{}.
 %% -record(ls_rpt_msg,{
 %%   ls_rpt_msg_header::pcep_object_message(),
 %%   ls_rpt_msg_object::ls_object()

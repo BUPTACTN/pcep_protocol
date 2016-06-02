@@ -65,16 +65,16 @@
                                                             srp_ob_type -> true;
                                                             label_ob_type -> true;
                                                             fec_ipv4_ob_type -> true;
-                                                            fec_ipv6_ob_type -> true;
+%%                                                             fec_ipv6_ob_type -> true;
                                                             fec_ipv4_adjacency_ob_type -> true;
-                                                            fec_ipv6_adjacency_ob_type -> true
+%%                                                             fec_ipv6_adjacency_ob_type -> true
                                                             %% fec_ipv4_unnumbered_ob_type -> true
                                                           end;
                                         lsrpt_msg -> case Object of
                                                        ls_link_ob_type -> true;
                                                        ls_node_ob_type -> true;
                                                        ls_ipv4_topo_prefix_ob_type -> true;
-                                                       ls_ipv6_topo_prefix_ob_type -> true
+%%                                                        ls_ipv6_topo_prefix_ob_type -> true
                                                      end;
                                         pclrresv_msg -> case Object of
                                                           srp_ob_type -> true;
@@ -138,15 +138,15 @@
     224 -> case ObjectType of
              1 -> ls_link_ob_type; %% draft-dhodylee-pce-pcep-ls-02
              2 -> ls_node_ob_type;
-             3 -> ls_ipv4_topo_prefix_ob_type;
-             4 -> ls_ipv6_topo_prefix_ob_type
+             3 -> ls_ipv4_topo_prefix_ob_type
+%%              4 -> ls_ipv6_topo_prefix_ob_type
            end;
     225 -> label_ob_type;
     226 -> case ObjectType of
              1 -> fec_ipv4_ob_type;  %%draft-zhao-pce-pcep-extension-for-pce-controller-01 , section : 7.5
-             2 -> fec_ipv6_ob_type;
-             3 -> fec_ipv4_adjacency_ob_type;
-             4 -> fec_ipv6_adjacency_ob_type
+%%              2 -> fec_ipv6_ob_type;
+             3 -> fec_ipv4_adjacency_ob_type
+%%              4 -> fec_ipv6_adjacency_ob_type
              %%   5 -> fec_ipv4_unnumbered_ob_type
            end;
     _ -> unsupported_class
@@ -177,7 +177,7 @@ end).
 -define(Subobject_Type(SubObjectType),  %% RRO Object and ERO Object
 case SubObjectType of
   1 -> ipv4_subobject_type; %% RFC 4874:3.1.1
-  2 -> ipv6_subobject_type;%% RFC 4874
+%%   2 -> ipv6_subobject_type;%% RFC 4874
   3 -> label_subobject_type;%% RFC 3209
   96 -> sr_ero_subobject_type; %% draft-ietf-pce-segment-routing-00
   64 -> path_key_subobject_type; %% RFC 5520
@@ -340,13 +340,17 @@ end
 
 %% Open Message ---------------------------------------------------------------
 %% open message tlvs
--record(gmpls_cap_tlv_value, {
+-record(gmpls_cap_tlv, {
+  gmpls_cap_tlv_type :: integer(),
+  gmpls_cap_tlv_length :: integer(),
   gmpls_cap_flag = <<0:32>> :: integer()
 }).
 
--type gmpls_cap_tlv_value() :: #gmpls_cap_tlv_value{}.
+-type gmpls_cap_tlv() :: #gmpls_cap_tlv{}.
 
--record(stateful_pec_cap_tlv_value, {
+-record(stateful_pec_cap_tlv, {
+  stateful_pec_cap_tlv_type ::integer(),
+  stateful_pec_cap_tlv_length :: integer(),
   stateful_pce_cap_tlv_flag = <<0:27>> :: integer(),
   stateful_pce_cap_tlv_d = true :: boolean(),
   stateful_pce_cap_tlv_t = true :: boolean(),
@@ -355,34 +359,42 @@ end
   stateful_pce_cap_tlv_u = true :: boolean()
 }).
 
--type stateful_pec_cap_tlv_value() :: #stateful_pec_cap_tlv_value{}.
+-type stateful_pec_cap_tlv() :: #stateful_pec_cap_tlv{}.
 
--record(pcecc_cap_tlv_value, {
+-record(pcecc_cap_tlv, {
+  pcecc_cap_tlv_type :: integer(),
+  pcecc_cap_tlv_length :: integer(),
   pcecc_cap_tlv_flag = <<0:30>> :: integer(),
   pcecc_cap_tlv_g = true :: boolean(),
   pcecc_cap_tlv_l = true :: boolean()
 }).
 
--type pcecc_cap_tlv_value() :: #pcecc_cap_tlv_value{}.
+-type pcecc_cap_tlv() :: #pcecc_cap_tlv{}.
 
--record(lsp_db_version_tlv_value, {
+-record(lsp_db_version_tlv, {
+  lsp_db_version_tlv_type :: integer(),
+  lsp_db_version_tlv_length :: integer(),
   lsp_db_version_tlv_ver = <<0:24>> :: integer()
 }).
 
--type lsp_db_version_tlv_value() :: #lsp_db_version_tlv_value{}.
+-type lsp_db_version_tlv() :: #lsp_db_version_tlv{}.
 
--record(ted_cap_tlv_value, {
+-record(ted_cap_tlv, {
+  ted_cap_tlv_type::integer(),
+  ted_cap_tlv_length :: integer(),
   ted_cap_tlv_flag = <<0:31>> :: integer(),
   ted_cap_tlv_r = true :: boolean()
 }).
 
--type ted_cap_tlv_value() :: #ted_cap_tlv_value{}.
+-type ted_cap_tlv() :: #ted_cap_tlv{}.
 
--record(label_db_version_tlv_value, {
+-record(label_db_version_tlv, {
+  label_db_version_tlv_type :: integer(),
+  label_db_version_tlv_length :: integer(),
   label_db_version_tlv_ver = <<0:64>> :: integer()
 }).
 
--type label_db_version_tlv_value() :: #label_db_version_tlv_value{}.
+-type label_db_version_tlv() :: #label_db_version_tlv{}.
 
 -record(open_object, {
 %%   open_object_header::pcep_object_message(),
@@ -492,15 +504,15 @@ end
   source_ipv4_add :: integer(),  %% 32bits
   destination_ipv4_add :: integer()  %%32bits
 }).
-
--record(end_points_object_ipv6, {
-  source_ipv6_add :: integer(),  %% 128bits
-  destination_ipv6_add :: integer()  %% 128bits
-}).
+%%
+%% -record(end_points_object_ipv6, {
+%%   source_ipv6_add :: integer(),  %% 128bits
+%%   destination_ipv6_add :: integer()  %% 128bits
+%% }).
 
 -type end_points_object_ipv4() :: #end_points_object_ipv4{}.
 
--type end_points_object_ipv6() :: #end_points_object_ipv6{}.
+%% -type end_points_object_ipv6() :: #end_points_object_ipv6{}.
 
 %% -record(pcreq_msg,{
 %%   pcreq_msg_header::pcep_message(),

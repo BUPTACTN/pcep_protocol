@@ -25,16 +25,16 @@
 
 -type ero_ipv4_subobject()::#ero_ipv4_subobject{}.
 
--record(ero_ipv6_subobject,{
-  ero_ipv6_subobject_l::boolean(),
-  ero_ipv6_subobject_type = 2::integer(),
-  ero_ipv6_subobject_length::integer(),
-  ero_ipv6_subobject_ipv4_add::integer(),
-  ero_ipv6_subobject_prefix_len::integer(),
-  ero_ipv6_subobject_resvd::integer()
-}).
+%% -record(ero_ipv6_subobject,{
+%%   ero_ipv6_subobject_l::boolean(),
+%%   ero_ipv6_subobject_type = 2::integer(),
+%%   ero_ipv6_subobject_length::integer(),
+%%   ero_ipv6_subobject_ipv4_add::integer(),
+%%   ero_ipv6_subobject_prefix_len::integer(),
+%%   ero_ipv6_subobject_resvd::integer()
+%% }).
 
--type ero_ipv6_subobject()::#ero_ipv6_subobject{}.
+%% -type ero_ipv6_subobject()::#ero_ipv6_subobject{}.
 
 -record(ero_auto_sys_num_subobject,{
   ero_auto_sys_num_subobject_l::boolean(),
@@ -81,18 +81,22 @@
 
 -type label_object()::#label_object{}.
 
--record(next_hop_ipv4_add_tlv_value,{
+-record(next_hop_ipv4_add_tlv,{
+  next_hop_ipv4_add_tlv_type :: integer(),
+  next_hop_ipv4_add_tlv_length :: integer(),
   nexthop_IPv4_add::integer()
 }).
 
--type next_hop_ipv4_add_tlv_value()::#next_hop_ipv4_add_tlv_value{}.
+-type next_hop_ipv4_add_tlv()::#next_hop_ipv4_add_tlv{}.
 
--record(next_hop_unnumbered_ipv4_id_tlv_value,{
+-record(next_hop_unnumbered_ipv4_id_tlv,{
+  next_hop_unnumbered_ipv4_id_tlv_type :: integer(),
+  next_hop_unnumbered_ipv4_id_tlv_length :: integer(),
   node_id::integer(),
   inferface_id::integer()
 }).
 
--type next_hop_unnumbered_ipv4_id_tlv_value()::#next_hop_unnumbered_ipv4_id_tlv_value{}.
+-type next_hop_unnumbered_ipv4_id_tlv()::#next_hop_unnumbered_ipv4_id_tlv{}.
 
 -record(fec_ipv4_object,{
   ipv4_node_id::integer()
@@ -100,11 +104,11 @@
 
 -type fec_ipv4_object()::#fec_ipv4_object{}.
 
--record(fec_ipv6_object,{
-  ipv6_node_id::integer()
-}).
-
--type fec_ipv6_object()::#fec_ipv6_object{}.
+%% -record(fec_ipv6_object,{
+%%   ipv6_node_id::integer()
+%% }).
+%%
+%% -type fec_ipv6_object()::#fec_ipv6_object{}.
 
 -record(fec_ipv4_adjacency_object,{
   local_ipv4_add::integer(),
@@ -112,13 +116,13 @@
 }).
 
 -type fec_ipv4_adjacency_object()::#fec_ipv4_adjacency_object{}.
-
--record(fec_ipv6_adjacency_object,{
-  local_ipv6_add::integer(),
-  remote_ipv6_add::integer()
-}).
-
--type fec_ipv6_adjacency_object()::#fec_ipv6_adjacency_object{}.
+%%
+%% -record(fec_ipv6_adjacency_object,{
+%%   local_ipv6_add::integer(),
+%%   remote_ipv6_add::integer()
+%% }).
+%%
+%% -type fec_ipv6_adjacency_object()::#fec_ipv6_adjacency_object{}.
 
 -record(label_range_object,{
   label_type::integer(),
