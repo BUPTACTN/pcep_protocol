@@ -267,17 +267,17 @@ handle_cast(_Request, State) ->
 %% 在of协议的实现中，此处会重新发送hello消息表示重新连接的，也不知此处应不应该发送open消息。
 %% 这要取决于open消息在协议栈中能否直接拼出来，另外，也要注意发送了这个之后会不会进入相应的状态机。
 %% 不知哪里调用了handle_info方法 TODO
-handle_info(timeout, #state{resource_id = ResourceId,
+handle_info(timeout, #state{resource_id = _ResourceId,
   controller = {Host, Port, Proto},
-  parent = ControllingProcess,
-  versions = Versions,
+  parent = _ControllingProcess,
+  versions = _Versions,
   socket = undefined,
   timeout = Timeout,
-  supervisor = Sup,
-  ets = Tid} = State) ->
+  supervisor = _Sup,
+  ets = _Tid} = State) ->
   case connect(Proto, Host, Port) of
     {ok, Socket}->
-      {ok, OpenBin} = pcep_protocol:encode(create_open()),
+      {ok, _OpenBin} = pcep_protocol:encode(create_open()),
       {noreply, State#state{socket = Socket}};
     {error, _Reason} ->
       erlang:send_after(Timeout, erlang:self(), timeout),
@@ -285,7 +285,7 @@ handle_info(timeout, #state{resource_id = ResourceId,
   end;
 %% @doc timeout event, I don't know if necessary to reconnected
 handle_info(timeout, #state{controller = {_Host, _Port, Proto},
-  versions = Versions,
+  versions = _Versions,
   socket = Socket}  = State) ->
 %%  {ok, HelloBin} = pcep_protocol:encode(create_hello(Versions)),
 %%  send(Proto, Socket, HelloBin),

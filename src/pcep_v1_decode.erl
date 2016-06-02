@@ -204,9 +204,9 @@ decode_object_body(rro_ob_type,Binary) ->
 decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV, Priority=2 indicate the TLV is Subobject
   case Priority of
     1 ->
-      <<Type:16/integer, Length:16/integer,RstTlvs/bytes>> = Binary,
+      <<_Type:16/integer, Length:16/integer,RstTlvs/bytes>> = Binary,
       M = Length*8,
-      <<Value:M, Tlvs/bytes>> = RstTlvs,
+      <<_Value:M, Tlvs/bytes>> = RstTlvs,
       if
         erlang:byte_size(Tlvs)>0 ->
           Tlv = decode_tlv(Binary),
@@ -216,9 +216,9 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
           [Tlv]
       end;
     2 ->
-      <<Type:8/integer,Length:8,RstTlvs/bytes>> =Binary,
+      <<_Type:8/integer,Length:8,RstTlvs/bytes>> =Binary,
       M = (Length-2)*8,
-      <<Value:M,Tlvs/bytes>> = RstTlvs,
+      <<_Value:M,Tlvs/bytes>> = RstTlvs,
       if erlang:byte_size(Tlvs) > 0 ->
         Tlv = decode_subobject(Binary),
         [Tlv,decode_tlvs(Priority,Tlvs)];
@@ -320,7 +320,7 @@ decode_tlv(Binary) ->
       erlang:binary_to_list(Value1);
     ipv4_lsp_identifiers_tlv_type ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-16}),
-      <<Tunnel_sender_add:32,Lsp_id:16,Tunnel_id:16,Exrended_tunnel_id:32,Tunnel_endpoint_add:32>> = Value1,  %%T TODO address
+      <<_Tunnel_sender_add:32,_Lsp_id:16,_Tunnel_id:16,_Exrended_tunnel_id:32,_Tunnel_endpoint_add:32>> = Value1,  %%T TODO address
       erlang:binary_to_list(Value1);
     lsp_error_code_tlv_type ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
@@ -351,7 +351,7 @@ decode_tlv(Binary) ->
       erlang:binary_to_list(Value1);
     next_hop_unnumbered_ipv4_id_tlv_type ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-8}),
-      <<Node_id:32,Inferface:32>> = Value1,  %%T TODO address
+      <<_Node_id:32,_Inferface:32>> = Value1,  %%T TODO address
       erlang:binary_to_list(Value1);
     rsvp_error_spec_tlv_type ->
       <<Obj_len:16,Class_num:8,C_type:8>> = erlang:binary_part(Binary,{4,4}),
@@ -359,7 +359,7 @@ decode_tlv(Binary) ->
         6 -> case C_type of
                1 ->
                  if Obj_len =:= 12 ->
-                   <<Ipv4_add:32,Flags:8,Error_code:8,Error_value:16>> = erlang:binary_part(Binary,{8,8}), %%TODO
+                   <<_Ipv4_add:32,_Flags:8,_Error_code:8,_Error_value:16>> = erlang:binary_part(Binary,{8,8}), %%TODO
                    Value1 = erlang:binary_part(Binary,{4,12}),
                    erlang:binary_to_list(Value1);
                    true ->
@@ -378,7 +378,7 @@ decode_tlv(Binary) ->
                  end;
         194 ->
           if C_type =:= 1 ->
-            <<Enterprise_num:32,Sub_org:8,Err_desc_len:8,User_error_value:16,Error_description/bytes>> = erlang:binary_part(Binary,{4,(Obj_len-4)}),
+            <<_Enterprise_num:32,_Sub_org:8,_Err_desc_len:8,_User_error_value:16,_Error_description/bytes>> = erlang:binary_part(Binary,{4,(Obj_len-4)}),
             Value1 = erlang:binary_part(Binary,{4,(Obj_len-8)}),
             erlang:binary_to_list(Value1);
             true ->
@@ -406,16 +406,16 @@ decode_subobject(Binary) ->
       ipv4_subobject_type ->
         <<Type:8,Length:8,Value:48>> = Binary,
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-6}),
-        <<Ipv4_add:32,Pre_len:8,Resvd:8>> = Value1,
+        <<Ipv4_add:32,_Pre_len:8,_Resvd:8>> = Value1,
         erlang:binary_to_list(Value1);
 %%       ipv6_subobject_type ->
 %%         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-18}),
 %%         <<Ipv4_add:32,Pre_len:8,Resvd:144>> = Value1,
-        erlang:binary_to_list(Value1);
+%%         erlang:binary_to_list(Value1);
       label_subobject_type ->
         <<Type:8,Length:8,Value:48>> = Binary,
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-6}),
-        <<Flags:8,C_type:8,Contents:32>> = Value1,
+        <<Flags:8,_C_type:8,_Contents:32>> = Value1,
         erlang:binary_to_list(Value1);
       sr_ero_subobject_type ->
         Value1 = erlang:binary_part(Binary,{2,2}),
@@ -535,7 +535,7 @@ decode_subobject(Binary) ->
         end;
       path_key_subobject_type ->
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-6}),
-        <<Path_key:16,Pce_id:32>> = Value1,
+        <<_Path_key:16,_Pce_id:32>> = Value1,
         erlang:binary_to_list(Value1);
       unsupported_subobject_type ->
         ?ERROR("The Subobject Type is unsupported")
