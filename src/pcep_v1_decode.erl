@@ -406,7 +406,7 @@ decode_subobject(Binary) ->
       ipv4_subobject_type ->
         <<Type:8,Length:8,Value:48>> = Binary,
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-6}),
-        <<Ipv4_add:32,_Pre_len:8,_Resvd:8>> = Value1,
+        <<_Ipv4_add:32,_Pre_len:8,_Resvd:8>> = Value1,
         erlang:binary_to_list(Value1);
 %%       ipv6_subobject_type ->
 %%         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-18}),
@@ -415,7 +415,7 @@ decode_subobject(Binary) ->
       label_subobject_type ->
         <<Type:8,Length:8,Value:48>> = Binary,
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-6}),
-        <<Flags:8,_C_type:8,_Contents:32>> = Value1,
+        <<_Flags:8,_C_type:8,_Contents:32>> = Value1,
         erlang:binary_to_list(Value1);
       sr_ero_subobject_type ->
         Value1 = erlang:binary_part(Binary,{2,2}),
@@ -431,7 +431,7 @@ decode_subobject(Binary) ->
               if ST=:=1 ->
                 if Length =:= 8 ->
                   Value2=erlang:binary_part(Binary,{2,6}),
-                  <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Ipv4_add:32>> = Value2,
+                  <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_Ipv4_add:32>> = Value2,
                   erlang:binary_to_list(Value2);
                   true ->
                     ?ERROR("sr_ero_subobject length is unmatched_2")
@@ -447,7 +447,7 @@ decode_subobject(Binary) ->
                 ST=:=3 ->
                   if Length=:=12 ->
                     Value2=erlang:binary_part(Binary,{2,10}),
-                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Local_ipv4_add:32,Remote_ipv4_add:32>> = Value2,
+                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_Local_ipv4_add:32,_Remote_ipv4_add:32>> = Value2,
                     erlang:binary_to_list(Value2);
                     true ->
                       ?ERROR("sr_ero_subobject length is unmatched_4")
@@ -463,7 +463,7 @@ decode_subobject(Binary) ->
                 ST=:=5 ->
                   if Length=:=20 ->
                     Value2=erlang:binary_part(Binary,{2,18}),
-                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Local_node_id:32,Local_interface_id:32,Remote_node_id:32,Remote_interface_id:32>> = Value2,
+                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_Local_node_id:32,_Local_interface_id:32,_Remote_node_id:32,_Remote_interface_id:32>> = Value2,
                     erlang:binary_to_list(Value2);
                     true ->
                       ?ERROR("sr_ero_subobject length is unmatched_5")
@@ -478,7 +478,7 @@ decode_subobject(Binary) ->
             if F=:=1 ->
               if Length =:= 8 ->
                 Value2 = erlang:binary_part(Binary,{2,6}),
-                <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32>> = Value2,
+                <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_SID:32>> = Value2,
                 erlang:binary_to_list(Value2);
                 true ->
                   ?ERROR("sr_ero_subobject length is unmatched_6")
@@ -487,7 +487,7 @@ decode_subobject(Binary) ->
                 if ST=:=1 ->
                   if Length =:= 12 ->
                     Value2=erlang:binary_part(Binary,{2,10}),
-                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32,Ipv4_add:32>> = Value2,
+                    <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_SID:32,_Ipv4_add:32>> = Value2,
                     erlang:binary_to_list(Value2);
                     true ->
                       ?ERROR("sr_ero_subobject length is unmatched_7")
@@ -503,7 +503,7 @@ decode_subobject(Binary) ->
                   ST=:=3 ->
                     if Length=:=16 ->
                       Value2=erlang:binary_part(Binary,{2,14}),
-                      <<ST:4,Flags:8,F:1,S:1,C:1,M:1,SID:32,Local_ipv4_add:32,Remote_ipv4_add:32>> = Value2,
+                      <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_SID:32,_Local_ipv4_add:32,_Remote_ipv4_add:32>> = Value2,
                       erlang:binary_to_list(Value2);
                       true ->
                         ?ERROR("sr_ero_subobject length is unmatched_9")
@@ -519,7 +519,7 @@ decode_subobject(Binary) ->
                   ST=:=5 ->
                     if Length=:=24 ->
                       Value2=erlang:binary_part(Binary,{2,22}),
-                      <<ST:4,Flags:8,F:1,S:1,C:1,M:1,Local_node_id:32,Local_interface_id:32,Remote_node_id:32,Remote_interface_id:32>> = Value2,
+                      <<ST:4,Flags:8,F:1,S:1,C:1,M:1,_Local_node_id:32,_Local_interface_id:32,_Remote_node_id:32,_Remote_interface_id:32>> = Value2,
                       erlang:binary_to_list(Value2);
                       true ->
                         ?ERROR("sr_ero_subobject length is unmatched_11")
