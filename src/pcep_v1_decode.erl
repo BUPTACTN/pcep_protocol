@@ -46,13 +46,11 @@ decode_object_msg(Atom, Binary) ->
   <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, RstObjects/bytes>> = Binary,
   ClassType = ?CLASSTYPEMOD(Class, Type),
   IsLegal = ?ISLEGAL(Atom, ClassType),
-  N = Ob_length*8-32,
-
+  N = Ob_length * 8 - 32,
   <<Ob_body:N,Objects/bytes>>  = RstObjects,
   Ob_body2 = decode_object_body(Type,<<Ob_body:N>>),
   #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2},
-
-case IsLegal of
+  case IsLegal of
     true ->
       if
         erlang:byte_size(Objects) > 0 ->
@@ -60,8 +58,7 @@ case IsLegal of
         true ->
           #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body}
           end;
-
-          false ->
+    false ->
       ?ERROR("Message Type and Class type don't match!"),
       <<>>
   end.

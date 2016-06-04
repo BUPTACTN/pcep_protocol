@@ -66,14 +66,14 @@
                                                             label_ob_type -> true;
                                                             fec_ipv4_ob_type -> true;
 %%                                                             fec_ipv6_ob_type -> true;
-                                                            fec_ipv4_adjacency_ob_type -> true;
+                                                            fec_ipv4_adjacency_ob_type -> true
 %%                                                             fec_ipv6_adjacency_ob_type -> true
                                                             %% fec_ipv4_unnumbered_ob_type -> true
                                                           end;
                                         lsrpt_msg -> case Object of
                                                        ls_link_ob_type -> true;
                                                        ls_node_ob_type -> true;
-                                                       ls_ipv4_topo_prefix_ob_type -> true;
+                                                       ls_ipv4_topo_prefix_ob_type -> true
 %%                                                        ls_ipv6_topo_prefix_ob_type -> true
                                                      end;
                                         pclrresv_msg -> case Object of
@@ -90,7 +90,6 @@
                                        5 -> notification_msg;
                                        6 -> error_msg;
                                        7 -> close_msg;
-                                       %% TODO for fxf
 
                                        10 -> pcrpt_msg;%% draft-ietf-pce-stateful-pce-12
                                        11 -> pcupd_msg; %% draft-ietf-pce-stateful-pce-12
@@ -621,6 +620,18 @@ end
 %%% Port Structures (A 2.1)
 %%%-----------------------------------------------------------------------------
 
+%% Port Modification Message
+
+-record(pcep_port_mod, {
+  port_no :: pcep_port_no(),
+  hw_addr :: binary(),
+  config = [] :: [pcep_port_config()],
+  mask = [] :: [pcep_port_config()],
+  advertise = [] :: [pcep_port_feature()]
+}).
+
+-type pcep_port_mod() :: #pcep_port_mod{}.
+
 -type pcep_port_config() :: port_down
                           | no_recv
                           | no_fwd
@@ -772,3 +783,5 @@ end
 }).
 
 -type pcep_lsrpt_msg() :: #pcep_lsrpt_msg{}.
+
+
