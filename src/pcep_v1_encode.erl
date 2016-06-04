@@ -80,61 +80,15 @@ encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subo
 %%   <<>>.
 %% LS-Report Msg Sub_TLV
 %% encode_sub_tlv(#tlv{type=Type,length = Length,value = Value}) ->
-%%-spec encode_tlvs(list()) ->binary().
-%% encode_tlvs([#tlv{}=Tlv | T]) ->
-%%   T2 = encode_tlvs(T),
-%%   T3 = encode_tlv(Tlv),
-%%   <<T3/bytes, T2/bytes>>;
-%% encode_tlvs([]) ->
-%%   <<>>.
-
-encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
-  link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
-  <<Link_id_type:16,Link_id_length:16,Link_id:32/bytes>>.
-
-encode_sub_tlv2(#local_interface_ip_address_sub_tlv{local_interface_ip_address_sub_tlv_type = Local_interface_ip_add_type,
-  local_interface_ip_address_sub_tlv_length = Local_interface_ip_add_length,local_interface_address = Local_interface_add}) ->
-  <<Local_interface_ip_add_type:16,Local_interface_ip_add_length:16,Local_interface_add:32/bytes>>.
-
-encode_sub_tlv3(#remote_interface_ip_address_sub_tlv{remote_interface_ip_address_sub_tlv_type = Remote_interface_ip_address_type,
-  remote_interface_ip_address_sub_tlv_length = Remote_interface_ip_address_length, remote_interface_address = Remote_interface_address}) ->
-  <<Remote_interface_ip_address_type:16,Remote_interface_ip_address_length:16,Remote_interface_address:32/bytes>>.
-
-encode_sub_tlv4(#te_metric_sub_tlv{te_metric_sub_tlv_type = TE_metric_type,te_metric_sub_tlv_length = TE_metric_length,
-te_link_metric = TE_link_metric}) ->
-  <<TE_metric_type:16,TE_metric_length:16,TE_link_metric:32/bytes>>.
-
-encode_sub_tlv5(#interface_switching_capability_descriptor_sub_tlv{interface_switching_capability_descriptor_sub_tlv_type = Interface_switching_cap_des_type,
-  interface_switching_capability_descriptor_sub_tlv_length = Interface_switching_cap_des_length,switching_cap = Switch_cap,
-  encoding = Encoding,reserved = Reserved,priority_0 = Priority_0,priority_1 = Priority_1,priority_2 = Priority_2,
-  priority_3 = Priority_3,priority_4 = Priority_4,priority_5 = Priority_5,priority_6 = Priority_6,priority_7 = Priority_7}) ->
-  <<Interface_switching_cap_des_type:16,Interface_switching_cap_des_length:16,Switch_cap:8,Encoding:8,Reserved:16,
-  Priority_0:32,Priority_1:32,Priority_2:32,Priority_3:32,Priority_4:32,Priority_5:32,Priority_6:32,Priority_7:32>>.
-
-encode_sub_tlv6(#shared_risk_link_group_sub_tlv{shared_risk_link_group_sub_tlv_type = Shared_risk_link_group_type,
-  shared_risk_link_group_sub_tlv_length = Shared_risk_link_group_length,shared_risk_link_group_value = Shared_risk_link_group_value}) ->
-  <<Shared_risk_link_group_type:16,Shared_risk_link_group_length:16,Shared_risk_link_group_value/bytes>>.
-
-encode_sub_tlv7(#port_label_restrictions_sub_tlv{}) ->
-  %% TODO after defined.
+-spec encode_tlvs(list()) ->binary().
+encode_tlvs([#tlv{}=Tlv | T]) ->
+  T2 = encode_tlvs(T),
+  T3 = encode_tlv(Tlv),
+  <<T3/bytes, T2/bytes>>;
+encode_tlvs([]) ->
   <<>>.
 
-encode_sub_tlv8(#ipv4_interface_address_sub_tlv{ipv4_interface_address_sub_tlv_type = Ipv4_interface_add_type,
-  ipv4_interface_address_sub_tlv_length = Ipv4_interface_add_length,ipv4_interface_address = Ipv4_interface_address}) ->
-  <<Ipv4_interface_add_type:16,Ipv4_interface_add_length:16,Ipv4_interface_address:32>>.
 
-encode_sub_tlv9(#ipv4_neighbor_address_sub_tlv{ipv4_neighbor_address_sub_tlv_type = Ipv4_neighbor_add_type,
-  ipv4_neighbor_address_sub_tlv_length = Ipv4_neighbor_add_length, ipv4_neighbor_address = Ipv4_neighbor_add}) ->
-  <<Ipv4_neighbor_add_type:16,Ipv4_neighbor_add_length:16,Ipv4_neighbor_add:32>>.
-
-encode_sub_tlv10(#link_type_sub_tlv{link_type_sub_tlv_type = Link_type_type, link_type_sub_tlv_length = Link_type_length,
-  link_type = Link_type_value}) ->
-  <<Link_type_type:16,Link_type_length:16,Link_type_value:32>>.
-
-encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_node_sub_tlv_type = Ipv4_router_id_of_local_node_type,
-  ipv4_router_id_of_local_node_sub_tlv_length = Ipv4_router_id_of_local_node_length,
-  ipv4_router_id_of_local_node = Ipv4_router_id_of_local_node}) ->
-  <<Ipv4_router_id_of_local_node_type:16,Ipv4_router_id_of_local_node_length:16,Ipv4_router_id_of_local_node:32>>.
 %% encode_tlv
 %% -spce encode_sub_tlv(ObjectType::integer(),Sub_Tlv::sub_tlv()) -> binary().
 %% encode_sub_tlv(ObjectType,#sub_tlv{sub_type = Sub_type, sub_length = Sub_length, sub_value = Sub_value}) ->
@@ -273,6 +227,54 @@ encode_tlv(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ipv4
   ValueBin1 = list_to_binary([encode_sub_tlv11(Ipv4_router_id_of_local_Node) || Ipv4_router_id_of_local_Node <- Ipv4_router_id_of_local_Nodes]),
   Length = byte_size(ValueBin1),
   <<Type:16,Length:16,ValueBin1/bytes>>.
+
+encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
+  link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
+  <<Link_id_type:16,Link_id_length:16,Link_id:32/bytes>>.
+
+encode_sub_tlv2(#local_interface_ip_address_sub_tlv{local_interface_ip_address_sub_tlv_type = Local_interface_ip_add_type,
+  local_interface_ip_address_sub_tlv_length = Local_interface_ip_add_length,local_interface_address = Local_interface_add}) ->
+  <<Local_interface_ip_add_type:16,Local_interface_ip_add_length:16,Local_interface_add:32/bytes>>.
+
+encode_sub_tlv3(#remote_interface_ip_address_sub_tlv{remote_interface_ip_address_sub_tlv_type = Remote_interface_ip_address_type,
+  remote_interface_ip_address_sub_tlv_length = Remote_interface_ip_address_length, remote_interface_address = Remote_interface_address}) ->
+  <<Remote_interface_ip_address_type:16,Remote_interface_ip_address_length:16,Remote_interface_address:32/bytes>>.
+
+encode_sub_tlv4(#te_metric_sub_tlv{te_metric_sub_tlv_type = TE_metric_type,te_metric_sub_tlv_length = TE_metric_length,
+  te_link_metric = TE_link_metric}) ->
+  <<TE_metric_type:16,TE_metric_length:16,TE_link_metric:32/bytes>>.
+
+encode_sub_tlv5(#interface_switching_capability_descriptor_sub_tlv{interface_switching_capability_descriptor_sub_tlv_type = Interface_switching_cap_des_type,
+  interface_switching_capability_descriptor_sub_tlv_length = Interface_switching_cap_des_length,switching_cap = Switch_cap,
+  encoding = Encoding,reserved = Reserved,priority_0 = Priority_0,priority_1 = Priority_1,priority_2 = Priority_2,
+  priority_3 = Priority_3,priority_4 = Priority_4,priority_5 = Priority_5,priority_6 = Priority_6,priority_7 = Priority_7}) ->
+  <<Interface_switching_cap_des_type:16,Interface_switching_cap_des_length:16,Switch_cap:8,Encoding:8,Reserved:16,
+  Priority_0:32,Priority_1:32,Priority_2:32,Priority_3:32,Priority_4:32,Priority_5:32,Priority_6:32,Priority_7:32>>.
+
+encode_sub_tlv6(#shared_risk_link_group_sub_tlv{shared_risk_link_group_sub_tlv_type = Shared_risk_link_group_type,
+  shared_risk_link_group_sub_tlv_length = Shared_risk_link_group_length,shared_risk_link_group_value = Shared_risk_link_group_value}) ->
+  <<Shared_risk_link_group_type:16,Shared_risk_link_group_length:16,Shared_risk_link_group_value/bytes>>.
+
+encode_sub_tlv7(#port_label_restrictions_sub_tlv{}) ->
+  %% TODO after defined.
+  <<>>.
+
+encode_sub_tlv8(#ipv4_interface_address_sub_tlv{ipv4_interface_address_sub_tlv_type = Ipv4_interface_add_type,
+  ipv4_interface_address_sub_tlv_length = Ipv4_interface_add_length,ipv4_interface_address = Ipv4_interface_address}) ->
+  <<Ipv4_interface_add_type:16,Ipv4_interface_add_length:16,Ipv4_interface_address:32>>.
+
+encode_sub_tlv9(#ipv4_neighbor_address_sub_tlv{ipv4_neighbor_address_sub_tlv_type = Ipv4_neighbor_add_type,
+  ipv4_neighbor_address_sub_tlv_length = Ipv4_neighbor_add_length, ipv4_neighbor_address = Ipv4_neighbor_add}) ->
+  <<Ipv4_neighbor_add_type:16,Ipv4_neighbor_add_length:16,Ipv4_neighbor_add:32>>.
+
+encode_sub_tlv10(#link_type_sub_tlv{link_type_sub_tlv_type = Link_type_type, link_type_sub_tlv_length = Link_type_length,
+  link_type = Link_type_value}) ->
+  <<Link_type_type:16,Link_type_length:16,Link_type_value:32>>.
+
+encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_node_sub_tlv_type = Ipv4_router_id_of_local_node_type,
+  ipv4_router_id_of_local_node_sub_tlv_length = Ipv4_router_id_of_local_node_length,
+  ipv4_router_id_of_local_node = Ipv4_router_id_of_local_node}) ->
+  <<Ipv4_router_id_of_local_node_type:16,Ipv4_router_id_of_local_node_length:16,Ipv4_router_id_of_local_node:32>>.
 %% -spec encode_tlv(Tlv::tlv()) -> binary().
 %% encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   case Type of
