@@ -108,7 +108,7 @@ controlling_process(Pid, ControllingPid) ->
 %% Valid messages include all the reply and async messages from all version of
 %% the OpenFlow Protocol specification. Attempt so send any other message will
 %% result in {error, {bad_message, Message :: pcep_message()}}.
--spec send(pid(), ofp_message()) -> ok | {error, Reason :: term()}.
+-spec send(pid(), pcep_message()) -> ok | {error, Reason :: term()}.
 send(Pid, Message) ->
   gen_server:call(Pid, {send, Message}).
 %% @doc Update the connection to the controller.
@@ -420,7 +420,7 @@ handle_info(_Info, State) ->
 %%  NewState;
 handle_message(#pcep_message{version = ?VERSION,
 message_type = MessageType} = Message, State)
-  when ?MESSAGETYPEMOD(MessageType) == open_msg ->
+  when MessageType == 1 ->
   do_send(Message#pcep_message{message_type = 2},State),
   State;
 handle_message(#pcep_message{version = ?VERSION,
@@ -431,8 +431,8 @@ handle_message(#pcep_message{version = ?VERSION,
   State;
 handle_message(#pcep_message{version = ?VERSION,
   message_type = MessageType} = Message,State)
-when ?MESSAGETYPEMOD(MessageType) == pcupd_msg;
-       ?MESSAGETYPEMOD(MessageType) == pcinitiate_msg ->
+when MessageType == 11;
+       MessageType == 12 ->
 %%        ?MESSAGETYPEMOD(MessageType) ==
   do_send(Message#pcep_message{message_type = 10},State),
   State.
@@ -545,7 +545,7 @@ do_send(#pcep_message{version = Vsn}=Message,
     #state{controller = {_, _, Proto},
       socket = Socket,
       parser = Parser,
-      version = Version} = State) when Vsn=:= Version ->
+      version = Version} = _State) when Vsn=:= Version ->
   case pcep_parser:encode(Parser, Message) of
     {ok, Binary} ->
       Size = erlang:byte_size(Binary),
@@ -610,7 +610,7 @@ terminate_connection(#state{
   controller = {Host, Port, Proto},
   socket = Socket,
   parent = Parent,
-  supervisor = Sup,
+  supervisor = _Sup,
   ets = Tid} = State, Reason) ->
   close(Proto, Socket),
   ets:delete(Tid, erlang:self()),
