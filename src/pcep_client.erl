@@ -425,7 +425,7 @@ message_type = MessageType} = Message, State)
   State;
 handle_message(#pcep_message{version = ?VERSION,
   message_type = MessageType}=Message,#state{parent = Parent} = State)
-  when ?MESSAGETYPEMOD(MessageType) == keepalive_msg ->
+  when MessageType == 2 ->
   Parent ! {pcep_message, self(), Message},  %% 仿照of协议中的echo消息填写,
   do_send(Message#pcep_message{message_type = 224},State),
   State;
