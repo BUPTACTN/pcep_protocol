@@ -18,18 +18,14 @@
 %% -include("pcep_onos.hrl").
 %%-include_lib("kernel/include/inet.hrl").
 
-
-
--define(DEFAULT_HOST, "localhost").
--define(DEFAULT_PORT, 4189).
--define(DEFAULT_VERSION, 1).
--define(DEFAULT_TIMEOUT, timer:seconds(3)). %% TODO
-
-%% 暂时就这么一个版本
-client_module(1) -> pcep_client_v2.
-
 %% API
--export([start_link/4]).
+-export([start_link/4,
+  controlling_process/2,
+  send/2,
+  stop/1,
+  update_connection_config/2,
+  get_controllers_state/1,
+  get_resource_ids/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -38,6 +34,16 @@ client_module(1) -> pcep_client_v2.
   handle_info/2,
   terminate/2,
   code_change/3]).
+
+
+-define(DEFAULT_HOST, "localhost").
+-define(DEFAULT_PORT, 4189).
+-define(DEFAULT_VERSION, 1).
+-define(DEFAULT_TIMEOUT, timer:seconds(3)). %% TODO
+
+%% 暂时就这么一个版本
+%% client_module(1) -> pcep_client_v2.
+
 
 -import(pcep_client_v2,[create_error/2]).
 -define(SERVER, ?MODULE).
@@ -93,6 +99,50 @@ start_link(Tid, ResourceId, ControllerHandle, Opts) ->
   gen_server:start_link(?MODULE, {Tid, ResourceId, ControllerHandle, Parent,
     Opts, erlang:self()}, []).
 
+%% @doc Change the controlling process.
+-spec controlling_process(pid(), pid()) -> ok.
+controlling_process(Pid, ControllingPid) ->
+  gen_server:call(Pid, {controlling_process, ControllingPid}).
+
+%% @doc Send a message.
+%% Valid messages include all the reply and async messages from all version of
+%% the OpenFlow Protocol specification. Attempt so send any other message will
+%% result in {error, {bad_message, Message :: pcep_message()}}.
+-spec send(pid(), ofp_message()) -> ok | {error, Reason :: term()}.
+send(Pid, Message) ->
+  gen_server:call(Pid, {send, Message}).
+%% @doc Update the connection to the controller.
+%%
+%% If the list of configuration tuples doesn't contain some value, the value will
+%% be taken from the current configuration. For example, to change only the port
+%% of a controller the client is expected to connect to (without changing the IP
+%% address etc.), one needs to create the following configuration:
+%% [{port, 6634}].
+-spec update_connection_config(pid(), list(ConfigTuple)) -> ok when
+  ConfigTuple :: {ip, inet:ip_address()} |
+  {protocol, tcp | tls} |
+  {prort, inet:port_number()} |
+  {role, controller_role()}.
+update_connection_config(Pid, Config) ->
+  gen_server:cast(Pid, {update_connection_config, Config}).
+
+%% @doc Stop the client.
+-spec stop(pid()) -> ok.
+stop(Pid) ->
+  gen_server:call(Pid, stop).
+
+-spec get_controllers_state(integer()) -> [#controller_status{}].
+get_controllers_state(SwitchId) ->
+  Tid = pcep_channel:get_ets(SwitchId),
+  lists:map(fun({main, Pid}) ->
+    gen_server:call(Pid, get_controller_state)
+  end, ets:lookup(Tid, main)).
+
+get_resource_ids(SwitchId) ->
+  Tid = pcep_channel:get_ets(SwitchId),
+  lists:map(fun({main, Pid}) ->
+    {Pid, gen_server:call(Pid, get_resource_id)}
+  end, ets:lookup(Tid, main)).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
@@ -369,20 +419,22 @@ handle_info(_Info, State) ->
 %%  do_send(Message#ofp_message{body = Reply}, State),
 %%  NewState;
 handle_message(#pcep_message{version = ?VERSION,
-message_type = ?MESSAGETYPEMOD(1)} = Message, State) ->
-  do_send(Message#pcep_message{message_type = ?MESSAGETYPEMOD(2)},State),
+message_type = MessageType} = Message, State)
+  when ?MESSAGETYPEMOD(MessageType) == open_msg ->
+  do_send(Message#pcep_message{message_type = 2},State),
   State;
 handle_message(#pcep_message{version = ?VERSION,
   message_type = MessageType}=Message,#state{parent = Parent} = State)
-  when ?MESSAGETYPEMOD(MessageType) == 2 ->
+  when ?MESSAGETYPEMOD(MessageType) == keepalive_msg ->
   Parent ! {pcep_message, self(), Message},  %% 仿照of协议中的echo消息填写,
+  do_send(Message#pcep_message{message_type = 224},State),
   State;
 handle_message(#pcep_message{version = ?VERSION,
   message_type = MessageType} = Message,State)
-when ?MESSAGETYPEMOD(MessageType) == 4;
-       ?MESSAGETYPEMOD(MessageType) == 11 ->
+when ?MESSAGETYPEMOD(MessageType) == pcupd_msg;
+       ?MESSAGETYPEMOD(MessageType) == pcinitiate_msg ->
 %%        ?MESSAGETYPEMOD(MessageType) ==
-  do_send(Message#pcep_message{message_type = ?MESSAGETYPEMOD(10)},State),
+  do_send(Message#pcep_message{message_type = 10},State),
   State.
 
 
@@ -528,9 +580,6 @@ close(_, undefined) ->
 close(tcp, Socket) ->
   gen_tcp:close(Socket).
 %% default options in tcp connection.
-opts(tcp) ->
-  [binary, {reuseaddr, true}, {active, once}].
-
 
 %% @doc reestablish connection to controller if necessary.
 reestablish_connection_if_required(NewController, State) ->
@@ -579,11 +628,11 @@ reconnect(Timeout) ->
 %% create_msg 模块
 create_open() ->
   Body = #pcep_open{},
-  #pcep_message(version = 1, flags = 0, message_type = 1, message_length, body = Body).  %% TODO open msg length
+  #pcep_message{version = 1, flags = 0, message_type = 1, message_length = 30, body = Body}.  %% TODO open msg length
 
 %% create_keepalive 模块
-create_keepalive() ->
-  Body = #pcep_keepalive{},
-  #pcep_message(version = 1, flags = 0, message_type = 2, message_length = 4, body = Body).
+%% create_keepalive() ->
+%%   Body = #pcep_keepalive{},
+%%   #pcep_message{version = 1, flags = 0, message_type = 2, message_length = 4, body = Body}.
 
 %% TODO Other Messages Create 模块

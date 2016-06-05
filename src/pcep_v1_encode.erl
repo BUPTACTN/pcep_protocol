@@ -35,7 +35,7 @@ encode_objects([]) ->
 
 %% encode pcep_message -------------------------------------------------------------------
 -spec do(Message ::pcep_message()) ->binary().
-do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, body=Body}=msg) ->
+do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, body=Body}=_Msg) ->
 %%   when MessageLength =:= erlang:byte_size(msg) ->
   BodyBin = encode_objects(Body),  %% one msg can include many objects
   MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
@@ -372,8 +372,8 @@ encode_subobjects([]) ->
 %% encode common body, which is object related message -------------------------------------------------------------------
 -spec encode_object_msg(ObjectMessage::pcep_object_message()) -> binary().
 encode_object_msg(#pcep_object_message{
-  object_class = Class, object_type = Type, res_flags=Flags, p=P,i=I,object_length=Ob_length,body=Body}=object_msg)
-  when Ob_length =:= erlang:byte_size(object_msg) ->
+  object_class = Class, object_type = Type, res_flags=Flags, p=P,i=I,object_length=Ob_length,body=Body}=Object_msg)
+  when Ob_length =:= erlang:byte_size(Object_msg) ->
   Ct = ?CLASSTYPEMOD(Class, Type),
   case Ct of
     unsupported_class ->
@@ -382,8 +382,8 @@ encode_object_msg(#pcep_object_message{
       BodyBin=encode_object_body(Ct, Body),%% TODO
       <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, BodyBin/bytes>>
   end;
-encode_object_msg(#pcep_object_message{object_length=Ob_length}=object_msg)
-  when Ob_length /= erlang:byte_size(object_msg) ->
+encode_object_msg(#pcep_object_message{object_length=Ob_length}=Object_msg)
+  when Ob_length /= erlang:byte_size(Object_msg) ->
   ?ERROR("object message length doesn't math the field message_length"),
   <<>>.
 
