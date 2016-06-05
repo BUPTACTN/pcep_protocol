@@ -9,6 +9,6 @@
                   lager,
                   eenum
                  ]},
-%%  {mod, {pcep_protocol, []}},
+%%  {PCEP_MOD, {pcep_protocol, []}},
   {env, []}
  ]}.

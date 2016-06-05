@@ -60,7 +60,7 @@
   version :: integer(),
   %% supported versions
   versions :: [integer()],
-  role ::controller_role(),
+  role ::pcep_controller_role(),
   generation_id :: integer(),
   %% TODO ? filter
 %%  filter = #async_config{},
@@ -122,7 +122,7 @@ send(Pid, Message) ->
   ConfigTuple :: {ip, inet:ip_address()} |
   {protocol, tcp | tls} |
   {prort, inet:port_number()} |
-  {role, controller_role()}.
+  {role, pcep_controller_role()}.
 update_connection_config(Pid, Config) ->
   gen_server:cast(Pid, {update_connection_config, Config}).
 
@@ -131,7 +131,7 @@ update_connection_config(Pid, Config) ->
 stop(Pid) ->
   gen_server:call(Pid, stop).
 
--spec get_controllers_state(integer()) -> [#controller_status{}].
+-spec get_controllers_state(integer()) -> [#pcep_controller_status{}].
 get_controllers_state(SwitchId) ->
   Tid = pcep_channel:get_ets(SwitchId),
   lists:map(fun({main, Pid}) ->
@@ -528,7 +528,7 @@ controller_state(ConfigControllerIP, ConfigControllerPort, ResourceId,
                       {_, _} ->
                         up
                     end,
-  #controller_status{
+  #pcep_controller_status{
     resource_id = ResourceId,
     controller_ip = ControllerIP,
     controller_port = ControllerPort,

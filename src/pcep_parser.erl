@@ -16,7 +16,7 @@
 
 -spec new(integer()) -> {ok, pcep_parser()}.
 new(Version) ->
-  case ?MOD(Version) of
+  case ?PCEP_MOD(Version) of
     unsupported ->
       {error, unsupported_version};
     Module ->

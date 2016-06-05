@@ -7,7 +7,7 @@
 -define(PCEP_COMMON_HEADER_SIZE, 4).
 -define(PCEP_OBJECT_MESSAGE_HEADER_SIZE, 4).
 
--define(MOD(Version), case Version of
+-define(PCEP_MOD(Version), case Version of
                           1 -> pcep_v1;
                           _ -> unsupported
                       end).
@@ -67,9 +67,9 @@
 %% Client ----------------------------------------------------------------------
 
 %% normally controller must be pce
--type controller_role() :: pce | pcc.
+-type pcep_controller_role() :: pce | pcc.
 
--record(controller_status, {
+-record(pcep_controller_status, {
           resource_id        :: string(),
           controller_ip      :: string(),
           controller_port    :: integer(),
