@@ -3,7 +3,7 @@
 -define(VERSION, 1).
 
 
--include("pcep_logger.hrl").
+%% -include("pcep_logger.hrl").
 -include("pcep_stateful_pce_v2.hrl").
 -include("pcep_onos.hrl").
 -include("pcep_ls_v2.hrl").
@@ -189,62 +189,60 @@ end).
 -define(Error_Object_TYPE_VALUE(ErrorType, ErrorValue),
   case ErrorType of
     1 -> case ErrorValue of
-           1 -> ?ERROR("reception of an invalid Open message or a non Open message");
-           2 -> ?ERROR("no Open message received before the expiration of the OpenWait timer");
-           3 -> ?ERROR("unacceptable and non-negotiable session characteristics");
-           4 -> ?ERROR("unacceptable but negotiable session characteristics");
-           5 -> ?ERROR("reception of a second Open message with still unacceptable session characteristics");
-           6 -> ?ERROR("reception of a PCErr message proposing unacceptable session characteristics");
-           7 -> ?ERROR("No Keepalive or PCErr message received before the expiration of the KeepWait timer");
-           8 -> ?ERROR("PCEP version not supported")
+           1 -> false;
+           2 -> false;
+           3 -> false;
+           4 -> false;
+           5 -> false;
+           6 -> false;
+           7 -> false;
+           8 -> false
          end;
-    2 -> ?ERROR("Capability not supported");
+    2 -> false;
     3 -> case ErrorValue of
-           1 -> ?ERROR("Unrecognized object class");
-           2 -> ?ERROR("Unrecognized object Type");
+           1 -> false;
+           2 -> false;
            _ -> unsupported_error_value
          end;
     4 -> case ErrorValue of
-           1 -> ?ERROR("Not supported object class");
-           2 -> ?ERROR("Not supported object Type");
+           1 -> false;
+           2 -> false;
            _ -> unsupported_error_value
          end;
     5 -> case ErrorValue of
-           1 -> ?ERROR("C bit of the METRIC object set (request rejected)");
-           2 -> ?ERROR("O bit of the RP object cleared (request rejected)");
+           1 -> false;
+           2 -> false;
            _ -> unsupported_error_value
          end;
     6 -> case ErrorValue of
-           1 -> ?ERROR("RP object missing");
-           2 -> ?ERROR("RRO missing for a reoptimization request (R bit of the RP object set)");
-           3 -> ?ERROR("END-POINTS object missing");
-           8 -> ?ERROR("LSP Object missing");  %% 8~11 draft-ietf-pce-stateful-pce-12
-           9 -> ?ERROR("ERO Object missing");
-           10 -> ?ERROR("SRP Object missing");
-           11 -> ?ERROR("LSP-IDENTIFIERS TLV missing");
+           1 -> false;
+           2 -> false;
+           3 -> false;
+           8 -> false;  %% 8~11 draft-ietf-pce-stateful-pce-12
+           9 -> false;
+           10 -> false;
+           11 -> false;
            _ -> unsupported_error_value
          end;
-    7 -> ?ERROR("Synchronized path computation request missing");
-    8 -> ?ERROR("Unknown request reference");
-    9 -> ?ERROR("Attempt to establish a second PCEP session");
+    7 -> false;
+    8 -> false;
+    9 -> false;
     10 -> case ErrorValue of
             1 ->
-              ?ERROR("reception of an object with P flag not set although the P flag must be set according to this specification.");
+               false;
             _ -> unsupported_error_value
           end;
     19 -> case ErrorValue of
-            1 -> ?ERROR("Attempted LSP Update Request for a nondelegated LSP.");
-            2 -> ?ERROR("Attempted LSP Update Request if the stateful PCE capability was not advertised.");
-            3 -> ?ERROR("Attempted LSP Update Request for an LSP identified by an unknown PLSP-ID.");
-            4 ->
-              ?ERROR("A PCE indicates to a PCC that it has exceeded the resource limit allocated for its state, and thus it cannot accept and process its LSP State Report message.");
-            5 -> ?ERROR("Attempted LSP State Report if active stateful PCE capability was not advertised.");
+            1 -> false;
+            2 -> false;
+            3 -> false;
+            4 -> false;
+            5 -> false;
             _ -> unsupported_error_value
           end;
     20 -> case ErrorValue of
-            1 ->
-              ?ERROR("A PCE indicates to a PCC that it can not process (an otherwise valid) LSP State Report. The PCEP-ERROR Object is followed by the LSP Object that identifies the LSP.");
-            5 -> ?ERROR("A PCC indicates to a PCE that it can not complete the state synchronization,")
+            1 -> false;
+            5 -> false
           end
   end
 ).
@@ -269,13 +267,13 @@ case LinkSubTLVType of
   15 -> interface_switching_cap_descriptor;
   16 -> shared_risk_link_group;
   34 -> port_label_restriction;
-  _ -> ?ERROR("Other SubTLV Type")
+  _ ->  unsupported_SubTLV_Type
 end
 ).
 -define(Node_SubTLV_Type(NodeSubTLVType),
 case NodeSubTLVType of
-  1 -> Node_IPv4_Local_Add;
-  _ -> ?ERROR("Other NodeSubTLV Type")
+  1 -> node_IPv4_Local_Add;
+  _ -> unsupported_SubTLV_Type
 end
 ).
 %% 策略二：Link与Node一起定义，但增加参数ObjectType
@@ -290,13 +288,13 @@ case ObjectType of
          15 -> interface_switching_cap_descriptor;
          16 -> shared_risk_link_group;
          34 -> port_label_restriction;
-         _ -> ?ERROR("Other LinkSubTLV Type")
+         _ -> unsupported_LinkSubTLV_Type
        end;
   2 -> case SubTLVType of
          1 -> node_IPv4_local_add;
-         _ -> ?ERROR("Other NodeSubTLV Type")
+         _ -> unsupported_NodeSubTLV_Type
        end;
-  _ -> ?ERROR("Other LSObject Type")
+  _ -> unsupported_LSObject_Type
 end
 ).
 

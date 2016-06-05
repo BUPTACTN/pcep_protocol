@@ -8,7 +8,7 @@
 %%%-------------------------------------------------------------------
 -module(pcep_v1_decode).
 -author("root").
-
+-include("pcep_logger.hrl").
 -include("pcep_protocol.hrl").
 %% -include("pcep_ls_v2.hrl").
 -include("pcep_v1.hrl").
