@@ -668,21 +668,36 @@ end
                           | pause
                           | pause_asym.
 
+%% -record(pcep_port, {      %% 相当于lsrpt中的link属性
+%%
+%%   port_no :: pcep_port_no(),
+%%   hw_addr :: binary(),
+%%   name :: binary(),
+%%   config = [] :: [pcep_port_config()],
+%%   state = [] :: [pcep_port_state()],
+%%   curr = [] :: [pcep_port_feature()],
+%%   advertised = [] :: [pcep_port_feature()],
+%%   supported = [] :: [pcep_port_feature()],
+%%   peer = [] :: [pcep_port_feature()],
+%%   curr_speed = 0 :: integer(),
+%%   max_speed = 0 :: integer()
+%% }).
 -record(pcep_port, {
-  port_no :: pcep_port_no(),
-  hw_addr :: binary(),
-  name :: binary(),
-  config = [] :: [pcep_port_config()],
-  state = [] :: [pcep_port_state()],
-  curr = [] :: [pcep_port_feature()],
-  advertised = [] :: [pcep_port_feature()],
-  supported = [] :: [pcep_port_feature()],
-  peer = [] :: [pcep_port_feature()],
-  curr_speed = 0 :: integer(),
-  max_speed = 0 :: integer()
+  link_type :: integer(),
+  link_id :: pcep_port_no(),
+  local_interface_ip_add :: integer(),
+  remote_interface_ip_add :: integer(),
+  te_metric :: any(),
+  interface_switch_cap_desc :: any(),
+  shared_risk_link_group :: any(),
+  port_label_res :: any(),
+  ipv4_interface_add :: integer(),
+  ipv4_neighbor_add :: integer()
 }).
 -type pcep_port() :: #pcep_port{}.
-
+-record(pcep_node, {
+%% TODO   Node sub_tlv
+}).
 -type pcep_messsage_body() :: pcep_open_msg() |
                               pcep_error_msg() |
                               pcep_keepalive_msg() |
@@ -777,7 +792,7 @@ end
 -type pcep_pclrresv_msg() :: #pcep_pclrresv_msg{}.
 
 -record(pcep_lsrpt_msg, {
-  pcep_lsrpt_msg :: ls_object()
+  pcep_lsrpt_ls_object :: ls_object()
 }).
 
 -type pcep_lsrpt_msg() :: #pcep_lsrpt_msg{}.
