@@ -683,6 +683,7 @@ end
 %%   max_speed = 0 :: integer()
 %% }).
 -record(pcep_port, {
+  state :: pcep_port_state(),
   link_type :: integer(),
   link_id :: pcep_port_no(),
   local_interface_ip_add :: integer(),
@@ -698,7 +699,7 @@ end
 -record(pcep_node, {
 %% TODO   Node sub_tlv
 }).
--type pcep_messsage_body() :: pcep_open_msg() |
+-type pcep_message_body() :: pcep_open_msg() |
                               pcep_error_msg() |
                               pcep_keepalive_msg() |
                               pcep_pcinitiate_msg() |
