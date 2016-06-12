@@ -2,6 +2,9 @@
 %%Protocol Version
 -define(VERSION, 1).
 
+%% Maximum value ----------------------------------------------------------
+
+-define(PCEPP_MAX, 16#ffffff00).
 
 %% -include("pcep_logger.hrl").
 -include("pcep_stateful_pce_v2.hrl").
