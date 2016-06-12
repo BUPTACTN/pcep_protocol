@@ -689,6 +689,7 @@ end
   state :: pcep_port_state(),
   link_type :: integer(),
   link_id :: pcep_port_no(),
+  name :: any(),
   local_interface_ip_add :: integer(),
   remote_interface_ip_add :: integer(),
   te_metric :: any(),
