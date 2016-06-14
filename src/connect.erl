@@ -21,13 +21,13 @@
 -define(OPEN_MSG_LENGTH, 100).
 -define(KEEPALIVE_MSG_LENGTH, 4).
 %% API
--export([timer_stop/1, mutipart_test/0, make/0]).
-make() ->
-  {ok,Tree}=epp:parse_file("myheader.hrl",["./"],[])
-mutipart_test() ->
-  [{setup,
-    fun start/0
-  }].
+-export([timer_stop/1, start/0]).
+%% make() ->
+%%   {ok,Tree}=epp:parse_file("myheader.hrl",["./"],[])
+%% mutipart_test() ->
+%%   [{setup,
+%%     fun start/0
+%%   }].
 start() ->
   Message1 = #pcep_message{
     version = 1,

@@ -391,7 +391,7 @@ encode_object_msg(#pcep_object_message{object_length=Ob_length}=Object_msg)
 
 %% encode open object -------------------------------------------------------------------
 encode_object_body(open_ob_type, #open_object{
-  version=Version, flags = Flags, keepAlive = KeepAlive, deadTimer=DeadTimer, sid = Sid, tlvs = Tlvs
+  version=Version, flags = Flags, keepAlive = KeepAlive, deadTimer=DeadTimer, sid = Sid, open_object_tlvs = Tlvs
 }) when Version =:= 1 ->
   TlvsBin=encode_tlvs(Tlvs),
   Sid=0,  %%TODO after connecting
