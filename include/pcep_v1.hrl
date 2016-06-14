@@ -403,7 +403,7 @@ end
   keepAlive :: integer(), %% 8bits maximum period of time in seconds between two consecutive PCEP messages
   deadTimer :: integer(), %%
   sid :: integer(),
-  tlvs :: list()
+  open_object_tlvs :: open_object_tlvs()
 %%  open_object_tlv_gmpls_cap_tlv::gmpls_cap_tlv(),
 %%  open_object_tlv_stateful_pec_cap_tlv::stateful_pec_cap_tlv(),
 %%  open_object_tlv_pcecc_cap_tlv::pcecc_cap_tlv()
@@ -411,6 +411,15 @@ end
 
 -type open_object() :: #open_object{}.
 
+-record(open_object_tlvs, {
+  open_gmpls_cap_tlv :: gmpls_cap_tlv(),
+  open_stateful_pce_cap_tlv :: stateful_pec_cap_tlv(),
+  open_pcecc_cap_tlv :: pcecc_cap_tlv(),
+  open_ted_cap_tlv :: ted_cap_tlv(),
+  open_ls_cap_tlv :: ls_cap_tlv()
+}).
+
+-type open_object_tlvs() :: #open_object_tlvs{}.
 %% -record(open_msg,{
 %%   open_msg::pcep_message(),
 %%   open_object::open_object()
