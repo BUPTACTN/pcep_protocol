@@ -84,7 +84,7 @@ decode_object_msg(Atom, Binary) ->
 decode_object_body(open_ob_type, Binary) ->
   <<Version:3, Flags:5, Keepalive:8, DeadTimer:8, SID:8, Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #open_object{version = Version, flags = Flags, keepAlive = Keepalive, deadTimer = DeadTimer, sid = SID, tlvs = DTlvs};
+  #open_object{version = Version, flags = Flags, keepAlive = Keepalive, deadTimer = DeadTimer, sid = SID, open_object_tlvs = DTlvs};
 
 decode_object_body(rp_ob_type, Binary) ->
   <<Flags:26,O:1,B:1,R:1,Pri:3,Req_id:32,Tlvs/bytes>> = Binary,
