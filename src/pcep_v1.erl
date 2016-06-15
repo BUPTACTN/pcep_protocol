@@ -28,8 +28,8 @@
 encode(Message) ->
   try
     io:format("Enter pcep_v1 module ~n~n"),
-    {ok, pcep_v1_encode:do(Message)},
-    io:format("pcep_v1 module encode output ~p~n", [pcep_v1_encode:do(Message)])
+    io:format("pcep_v1 module encode output ~p~n", [pcep_v1_encode:do(Message)]),
+    {ok, pcep_v1_encode:do(Message)}
   catch
     _:Exception ->
       {error, Exception}
