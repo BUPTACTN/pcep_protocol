@@ -386,6 +386,7 @@ encode_object_msg(#pcep_object_message{
     _ ->
       io:format("5555555555555"),
       BodyBin=encode_object_body(Ct, Body),%% TODO
+      io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
       <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, BodyBin/bytes>>
   end.
 %% encode_object_msg(#pcep_object_message{object_length=_Ob_length}=Object_msg) ->
@@ -424,7 +425,7 @@ encode_object_body(open_ob_type, #open_object{
 %%   Ls_cap_tlv1 = list_to_binary([encode_tlv12(Ls_cap_tlvs) || Ls_cap_tlvs <- Ls_cap_tlv]),
 
   Sid=0,  %%TODO after connecting
-  <<Version:3, Flags:5, KeepAlive:8, DeadTimer:8, Sid:8, Open_object_tlvs1/bytes>>;
+  list_to_binary([<<Version:3, Flags:5, KeepAlive:8, DeadTimer:8, Sid:8>>, Open_object_tlvs1]);
 encode_object_body(open_ob_type, #open_object{version = Version}) when Version /= 1 ->
   ?ERROR("open object version is not mached"),
   <<>>;
