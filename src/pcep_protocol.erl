@@ -18,7 +18,9 @@ encode(#pcep_message{version = Version} = Message) ->
     unsupported ->
       {error, unsupported_version};
     Module ->
+      io:format("pcep protocol Message is ~p~n", [Message]),
       Module:encode(Message)
+
   end.
 
 %% @doc Decode binary to pcep message representation.

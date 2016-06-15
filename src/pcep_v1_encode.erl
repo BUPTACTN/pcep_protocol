@@ -26,19 +26,21 @@
 
 %%-spec encode_objects(list()) ->binary().
 
-encode_objects([#pcep_object_message{} = Object | H]) ->
-  H2 = encode_objects(H),
-  H3 = encode_object_msg(Object),
-  <<H3/bytes,H2/bytes>>;
-encode_objects([]) ->
-  <<>>.
+%% encode_objects([#pcep_object_message{} = Object | H]) ->
+%%   H2 = encode_objects(H),
+%%   H3 = encode_object_msg(Object),
+%%   <<H3/bytes,H2/bytes>>;
+%% encode_objects([]) ->
+%%   <<>>.
 
 %% encode pcep_message -------------------------------------------------------------------
 -spec do(Message ::pcep_message()) ->binary().
-do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType, body=Body}=_Msg) ->
+do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,message_length=MessageLength, body=Body}=_Msg) ->
 %%   when MessageLength =:= erlang:byte_size(msg) ->
-  BodyBin = encode_objects(Body),  %% one msg can include many objects
-  MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
+  io:format("do start11111111111~n"),
+%%   BodyBin = encode_objects(Body),  %% one msg can include many objects
+  BodyBin = encode_object_msg(Body),
+%%   MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
   <<?VERSION:3, Flags:5, MessageType:8, MessageLength:16, BodyBin/bytes>>.
 %% do(#pcep_message{message_length=MessageLength}=msg)
 %%   when MessageLength /= erlang:byte_size(msg) ->
@@ -80,13 +82,13 @@ encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subo
 %%   <<>>.
 %% LS-Report Msg Sub_TLV
 %% encode_sub_tlv(#tlv{type=Type,length = Length,value = Value}) ->
--spec encode_tlvs(list()) ->binary().
-encode_tlvs([#tlv{}=Tlv | T]) ->
-  T2 = encode_tlvs(T),
-  T3 = encode_tlv(Tlv),
-  <<T3/bytes, T2/bytes>>;
-encode_tlvs([]) ->
-  <<>>.
+%% -spec encode_tlvs(list()) ->binary().
+%% encode_tlvs([#tlv{}=Tlv | T]) ->
+%%   T2 = encode_tlvs(T),
+%%   T3 = encode_tlv(Tlv),
+%%   <<T3/bytes, T2/bytes>>;
+%% encode_tlvs([]) ->
+%%   <<>>.
 
 
 %% encode_tlv
@@ -116,51 +118,53 @@ encode_tlvs([]) ->
 %% TODO ERROR, tlv !!!
 %% -spec encode_tlv() -> binary().
 
-encode_tlv(#gmpls_cap_tlv{
+encode_tlv1(#gmpls_cap_tlv{
 %%   gmpls_cap_tlv_type = Type,gmpls_cap_tlv_length = Length,
   gmpls_cap_flag = Gmpls_cap_flag}) ->
+  io:format("encode gmpls_cap_tlv start~n"),
   Type = 14,
   Length = 4,
-  <<Type:16,Length:16,Gmpls_cap_flag:32>>;
-encode_tlv(#stateful_pec_cap_tlv{
+  <<Type:16,Length:16,Gmpls_cap_flag:32>>.
+encode_tlv2(#stateful_pec_cap_tlv{
 %%   stateful_pec_cap_tlv_type = Type,stateful_pec_cap_tlv_length = Length,
   stateful_pce_cap_tlv_flag = Stateful_pce_flag, stateful_pce_cap_tlv_d = State_pce_d,
   stateful_pce_cap_tlv_t = State_pce_t, stateful_pce_cap_tlv_i = State_pce_i, stateful_pce_cap_tlv_s = State_pce_s,
   stateful_pce_cap_tlv_u = State_pce_u}) ->
+  io:format("encode stateful_pce_cap_tlv start~n"),
   Type = 16,
   Length =4,
-  <<Type:16,Length:16,Stateful_pce_flag:27,State_pce_d:1,State_pce_t:1,State_pce_i:1,State_pce_s:1,State_pce_u:1>>;
-encode_tlv(#pcecc_cap_tlv{
+  <<Type:16,Length:16,Stateful_pce_flag:27,State_pce_d:1,State_pce_t:1,State_pce_i:1,State_pce_s:1,State_pce_u:1>>.
+encode_tlv3(#pcecc_cap_tlv{
 %%   pcecc_cap_tlv_type = Type,pcecc_cap_tlv_length = Length,
   pcecc_cap_tlv_flag = Pcecc_flag, pcecc_cap_tlv_g = Pcecc_g, pcecc_cap_tlv_l = Pcecc_l}) ->
   Type = 32,
   Length = 4,
-  <<Type:16,Length:4,Pcecc_flag:30,Pcecc_g:1,Pcecc_l:1>>;
-encode_tlv(#lsp_db_version_tlv{
+  <<Type:16,Length:4,Pcecc_flag:30,Pcecc_g:1,Pcecc_l:1>>.
+encode_tlv4(#lsp_db_version_tlv{
 %%   lsp_db_version_tlv_type = Type,lsp_db_version_tlv_length = Length,
   lsp_db_version_tlv_ver = Lsp_db_version}) ->
   Type = 23,
   Length = 8,
-  <<Type:16,Length:16,Lsp_db_version:64>>;
-encode_tlv(#ted_cap_tlv{
+  <<Type:16,Length:16,Lsp_db_version:64>>.
+encode_tlv5(#ted_cap_tlv{
 %%   ted_cap_tlv_type = Type,ted_cap_tlv_length = Length,
   ted_cap_tlv_flag = Ted_flag, ted_cap_tlv_r = Ted_r}) ->
   Type = 132,
   Length = 4,
-  <<Type:16,Length:16,Ted_flag:31,Ted_r:1>>;
-encode_tlv(#label_db_version_tlv{
+  <<Type:16,Length:16,Ted_flag:31,Ted_r:1>>.
+encode_tlv6(#label_db_version_tlv{
 %%   label_db_version_tlv_type = Type,label_db_version_tlv_length = Length,
   label_db_version_tlv_ver = Label_db_version}) ->
   Type = 23,
   Length = 8,
-  <<Type:16,Length:8,Label_db_version:64>>;
-encode_tlv(#symbolic_path_name_tlv{
+  <<Type:16,Length:8,Label_db_version:64>>.
+encode_tlv7(#symbolic_path_name_tlv{
 %%   symbolic_path_name_tlv_type = Type,symbolic_path_name_tlv_length = Length,
   symbolic_path_name = Symbolic_path_name}) ->
   Type = 17,
   Length = 4,  %% TODO ???
-  <<Type:16,Length:16,Symbolic_path_name/bytes>>;
-encode_tlv(#ipv4_lsp_identifiers_tlv{
+  <<Type:16,Length:16,Symbolic_path_name/bytes>>.
+encode_tlv8(#ipv4_lsp_identifiers_tlv{
 %%   ipv4_lsp_identifiers_tlv_type = Type,ipv4_lsp_identifiers_tlv_length = Length,
   ipv4_lsp_identifiers_tlv_tunnel_sender_add = Ipv4_lsp_tunnel_sender_add,
 ipv4_lsp_identifiers_tlv_lsp_id = Ipv4_lsp_lsp_id,ipv4_lsp_identifiers_tlv_tunnel_id = Ipv4_lsp_tunnel_id,
@@ -168,31 +172,31 @@ ipv4_lsp_identifiers_tlv_lsp_id = Ipv4_lsp_lsp_id,ipv4_lsp_identifiers_tlv_tunne
   ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = Ipv4_lsp_tunnel_endpoint_add}) ->
   Type = 18,
   Length = 16,
-  <<Type:16,Length:16,Ipv4_lsp_tunnel_sender_add:32,Ipv4_lsp_lsp_id:16,Ipv4_lsp_tunnel_id:16,Ipv4_exrended_tunnel_id:32,Ipv4_lsp_tunnel_endpoint_add:32>>;
-encode_tlv(#lsp_error_code_tlv{
+  <<Type:16,Length:16,Ipv4_lsp_tunnel_sender_add:32,Ipv4_lsp_lsp_id:16,Ipv4_lsp_tunnel_id:16,Ipv4_exrended_tunnel_id:32,Ipv4_lsp_tunnel_endpoint_add:32>>.
+encode_tlv9(#lsp_error_code_tlv{
 %%   lsp_error_code_tlv_type = Type,lsp_error_code_tlv_length = Length,
   lsp_error_code = Lsp_error_code}) ->
   Type = 20,
   Length = 4,
-  <<Type:16,Length:16,Lsp_error_code:32>>;
-encode_tlv(#rsvp_error_spec_tlv{
+  <<Type:16,Length:16,Lsp_error_code:32>>.
+encode_tlv10(#rsvp_error_spec_tlv{
 %%   rsvp_error_spec_tlv_type = Type,rsvp_error_spec_tlv_length = Length,
   rsvp_error_spec_tlv_body1 = SVP_ERROR_SPEC_object,rsvp_error_spec_tlv_body2 = User_error_spec_object}) ->
   %% TODO after two objects finished
-  <<SVP_ERROR_SPEC_object/bytes,User_error_spec_object/bytes>>;
-encode_tlv(#next_hop_unnumbered_ipv4_id_tlv{
+  <<SVP_ERROR_SPEC_object/bytes,User_error_spec_object/bytes>>.
+encode_tlv11(#next_hop_unnumbered_ipv4_id_tlv{
 %%   next_hop_unnumbered_ipv4_id_tlv_type = Type,next_hop_unnumbered_ipv4_id_tlv_length = Length,
   node_id = Node_id,inferface_id = Interface_id}) ->
   Type = 1,
   Length = 8,  %%  onos defines Length as header+value, namely 12.
-  <<Type:16,Length:16,Node_id:32/bytes,Interface_id:32/bytes>>;
-encode_tlv(#ls_cap_tlv{
+  <<Type:16,Length:16,Node_id:32/bytes,Interface_id:32/bytes>>.
+encode_tlv12(#ls_cap_tlv{
 %%   ls_cap_tlv_type = Type,ls_cap_tlv_length = Length,
   ls_cap_tlv_flag = Ls_cap_flag, ls_cap_tlv_r = Ls_r}) ->
   Type = 65280,
   Length = 4,
-  <<Type:16,Length:16,Ls_cap_flag:31,Ls_r:1>>;
-encode_tlv(#optical_link_attribute_tlv{
+  <<Type:16,Length:16,Ls_cap_flag:31,Ls_r:1>>.
+encode_tlv13(#optical_link_attribute_tlv{
 %%   optical_link_attribute_tlv_type = Type,optical_link_attribute_tlv_length = Length,
   link_type_sub_tlv_body = Link_types,
   link_id_sub_tlv_body = Link_ids, local_interface_ip_add_sub_tlv_body = Local_interface_ip_adds,
@@ -209,8 +213,8 @@ encode_tlv(#optical_link_attribute_tlv{
   ValueBin8 = list_to_binary([encode_sub_tlv7(Port_label_res) || Port_label_res <- Port_label_reses]),
   Type = 10001,
   Length = 1, %% TODO
-  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes,ValueBin3/bytes,ValueBin4/bytes,ValueBin5/bytes,ValueBin6/bytes,ValueBin7/bytes,ValueBin8/bytes>>;
-encode_tlv(#link_descriptors_tlv{
+  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes,ValueBin3/bytes,ValueBin4/bytes,ValueBin5/bytes,ValueBin6/bytes,ValueBin7/bytes,ValueBin8/bytes>>.
+encode_tlv14(#link_descriptors_tlv{
 %%   link_descriptors_tlv_type = Type,link_descriptors_tlv_length = Length,
   ipv4_interface_add_sub_tlv_body = Ipv4_interface_adds,
 ipv4_neighbor_add_sub_tlv_body = Ipv4_neighbor_adds}) ->
@@ -220,8 +224,8 @@ ipv4_neighbor_add_sub_tlv_body = Ipv4_neighbor_adds}) ->
   ValueBin1 = list_to_binary([encode_sub_tlv8(Ipv4_interface_add) || Ipv4_interface_add <- Ipv4_interface_adds]),
   ValueBin2 = list_to_binary([encode_sub_tlv9(Ipv4_neighbor_add) || Ipv4_neighbor_add <- Ipv4_neighbor_adds]),
   Length = byte_size(ValueBin1)+byte_size(ValueBin2),
-  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes>>;
-encode_tlv(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ipv4_router_id_of_local_Nodes}) ->
+  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes>>.
+encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ipv4_router_id_of_local_Nodes}) ->
   Type = 65285,
 
   ValueBin1 = list_to_binary([encode_sub_tlv11(Ipv4_router_id_of_local_Node) || Ipv4_router_id_of_local_Node <- Ipv4_router_id_of_local_Nodes]),
@@ -372,30 +376,41 @@ encode_subobjects([]) ->
 %% encode common body, which is object related message -------------------------------------------------------------------
 -spec encode_object_msg(ObjectMessage::pcep_object_message()) -> binary().
 encode_object_msg(#pcep_object_message{
-  object_class = Class, object_type = Type, res_flags=Flags, p=P,i=I,object_length=Ob_length,body=Body}=Object_msg)
-  when Ob_length =:= erlang:byte_size(Object_msg) ->
+  object_class = Class, object_type = Type, res_flags=Flags, p=P,i=I,object_length=Ob_length,body=Body}=_Object_msg) ->
+%%   when Ob_length =:= erlang:byte_size(Object_msg) ->
+  io:format("encode_object_msg start~n"),
   Ct = ?CLASSTYPEMOD(Class, Type),
   case Ct of
     unsupported_class ->
       ?ERROR(Ct),<<>>;
     _ ->
+      io:format("5555555555555"),
       BodyBin=encode_object_body(Ct, Body),%% TODO
       <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, BodyBin/bytes>>
-  end;
-encode_object_msg(#pcep_object_message{object_length=Ob_length}=Object_msg)
-  when Ob_length /= erlang:byte_size(Object_msg) ->
-  ?ERROR("object message length doesn't math the field message_length"),
-  <<>>.
+  end.
+%% encode_object_msg(#pcep_object_message{object_length=_Ob_length}=Object_msg) ->
+%% %%   when Ob_length /= erlang:byte_size(Object_msg)
+%%   ?ERROR("object message length doesn't math the field message_length"),
+%%   <<>>.
 
 
 
 %% encode open object -------------------------------------------------------------------
 encode_object_body(open_ob_type, #open_object{
-  version=Version, flags = Flags, keepAlive = KeepAlive, deadTimer=DeadTimer, sid = Sid, open_object_tlvs = Tlvs
+  version=Version, flags = Flags, keepAlive = KeepAlive, deadTimer=DeadTimer, sid = Sid,
+  open_object_tlvs = #open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,open_stateful_pce_cap_tlv = Stateful_pce_cap_tlv,
+  open_pcecc_cap_tlv = Pcecc_cap_tlv,open_ted_cap_tlv = Ted_cap_tlv, open_ls_cap_tlv = Ls_cap_tlv}
 }) when Version =:= 1 ->
-  TlvsBin=encode_tlvs(Tlvs),
+  io:format("encode_object_body start, Ls_tlv is ~p~n", [Ls_cap_tlv]),
+%%   TlvsBin=encode_tlvs(Tlvs),
+  Gmpls_cap_tlv1 = list_to_binary([encode_tlv1(Gmpls_cap_tlvs) || Gmpls_cap_tlvs <- Gmpls_cap_tlv]),
+  Stateful_pce_cap_tlv1 = list_to_binary([encode_tlv2(Stateful_pce_cap_tlvs) || Stateful_pce_cap_tlvs <- Stateful_pce_cap_tlv]),
+  Pcecc_cap_tlv1 = list_to_binary([encode_tlv3(Pcecc_cap_tlvs) || Pcecc_cap_tlvs <- Pcecc_cap_tlv]),
+  Ted_cap_tlv1 = list_to_binary([encode_tlv5(Ted_cap_tlvs) || Ted_cap_tlvs <- Ted_cap_tlv]),
+  Ls_cap_tlv1 = list_to_binary([encode_tlv12(Ls_cap_tlvs) || Ls_cap_tlvs <- Ls_cap_tlv]),
+
   Sid=0,  %%TODO after connecting
-  <<Version:3, Flags:5, KeepAlive:8, DeadTimer:8, Sid:8, TlvsBin/bytes>>;
+  <<Version:3, Flags:5, KeepAlive:8, DeadTimer:8, Sid:8, Gmpls_cap_tlv1/bytes,Stateful_pce_cap_tlv1/bytes,Pcecc_cap_tlv1/bytes,Ted_cap_tlv1/bytes,Ls_cap_tlv1/bytes>>;
 encode_object_body(open_ob_type, #open_object{version = Version}) when Version /= 1 ->
   ?ERROR("open object version is not mached"),
   <<>>;
