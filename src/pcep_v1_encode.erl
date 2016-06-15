@@ -392,25 +392,36 @@ encode_object_msg(#pcep_object_message{
 %% %%   when Ob_length /= erlang:byte_size(Object_msg)
 %%   ?ERROR("object message length doesn't math the field message_length"),
 %%   <<>>.
-
+encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,open_stateful_pce_cap_tlv = Stateful_pce_cap_tlv,
+   open_pcecc_cap_tlv = Pcecc_cap_tlv,open_ted_cap_tlv = Ted_cap_tlv, open_ls_cap_tlv = Ls_cap_tlv}) ->
+  io:format("encode_open_object_tlvs start, input is ~p~n", [Gmpls_cap_tlv]),
+  Gmpls_cap_tlv1 = list_to_binary([encode_tlv1(Gmpls_cap_tlvs) || Gmpls_cap_tlvs <- Gmpls_cap_tlv]),
+  io:format("Gmpls_cap_tlv output is ~p~n",[Gmpls_cap_tlv1]),
+  Stateful_pce_cap_tlv1 = list_to_binary([encode_tlv2(Stateful_pce_cap_tlvs) || Stateful_pce_cap_tlvs <- Stateful_pce_cap_tlv]),
+  Pcecc_cap_tlv1 = list_to_binary([encode_tlv3(Pcecc_cap_tlvs) || Pcecc_cap_tlvs <- Pcecc_cap_tlv]),
+  Ted_cap_tlv1 = list_to_binary([encode_tlv5(Ted_cap_tlvs) || Ted_cap_tlvs <- Ted_cap_tlv]),
+  Ls_cap_tlv1 = list_to_binary([encode_tlv12(Ls_cap_tlvs) || Ls_cap_tlvs <- Ls_cap_tlv]),
+  <<Gmpls_cap_tlv1/bytes,Stateful_pce_cap_tlv1/bytes,Pcecc_cap_tlv1/bytes,Ted_cap_tlv1/bytes,Ls_cap_tlv1/bytes>>.
 
 
 %% encode open object -------------------------------------------------------------------
 encode_object_body(open_ob_type, #open_object{
   version=Version, flags = Flags, keepAlive = KeepAlive, deadTimer=DeadTimer, sid = Sid,
-  open_object_tlvs = #open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,open_stateful_pce_cap_tlv = Stateful_pce_cap_tlv,
-  open_pcecc_cap_tlv = Pcecc_cap_tlv,open_ted_cap_tlv = Ted_cap_tlv, open_ls_cap_tlv = Ls_cap_tlv}
+  open_object_tlvs = Open_object_tlvs
+%%   #open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,open_stateful_pce_cap_tlv = Stateful_pce_cap_tlv,
+%%   open_pcecc_cap_tlv = Pcecc_cap_tlv,open_ted_cap_tlv = Ted_cap_tlv, open_ls_cap_tlv = Ls_cap_tlv}
 }) when Version =:= 1 ->
-  io:format("encode_object_body start, Ls_tlv is ~p~n", [Ls_cap_tlv]),
-%%   TlvsBin=encode_tlvs(Tlvs),
-  Gmpls_cap_tlv1 = list_to_binary([encode_tlv1(Gmpls_cap_tlvs) || Gmpls_cap_tlvs <- Gmpls_cap_tlv]),
-  Stateful_pce_cap_tlv1 = list_to_binary([encode_tlv2(Stateful_pce_cap_tlvs) || Stateful_pce_cap_tlvs <- Stateful_pce_cap_tlv]),
-  Pcecc_cap_tlv1 = list_to_binary([encode_tlv3(Pcecc_cap_tlvs) || Pcecc_cap_tlvs <- Pcecc_cap_tlv]),
-  Ted_cap_tlv1 = list_to_binary([encode_tlv5(Ted_cap_tlvs) || Ted_cap_tlvs <- Ted_cap_tlv]),
-  Ls_cap_tlv1 = list_to_binary([encode_tlv12(Ls_cap_tlvs) || Ls_cap_tlvs <- Ls_cap_tlv]),
+  io:format("encode_object_body start, Open_object_tlvs is ~p~n", [Open_object_tlvs]),
+%%   TlvsBin=encode_tlv1(Tlvs),
+  Open_object_tlvs1 = list_to_binary([encode_open_object_tlvs(Open_object_tlvss) || Open_object_tlvss <- Open_object_tlvs]),
+%%   Gmpls_cap_tlv1 = list_to_binary([encode_tlv1(Gmpls_cap_tlvs) || Gmpls_cap_tlvs <- Gmpls_cap_tlv]),
+%%   Stateful_pce_cap_tlv1 = list_to_binary([encode_tlv2(Stateful_pce_cap_tlvs) || Stateful_pce_cap_tlvs <- Stateful_pce_cap_tlv]),
+%%   Pcecc_cap_tlv1 = list_to_binary([encode_tlv3(Pcecc_cap_tlvs) || Pcecc_cap_tlvs <- Pcecc_cap_tlv]),
+%%   Ted_cap_tlv1 = list_to_binary([encode_tlv5(Ted_cap_tlvs) || Ted_cap_tlvs <- Ted_cap_tlv]),
+%%   Ls_cap_tlv1 = list_to_binary([encode_tlv12(Ls_cap_tlvs) || Ls_cap_tlvs <- Ls_cap_tlv]),
 
   Sid=0,  %%TODO after connecting
-  <<Version:3, Flags:5, KeepAlive:8, DeadTimer:8, Sid:8, Gmpls_cap_tlv1/bytes,Stateful_pce_cap_tlv1/bytes,Pcecc_cap_tlv1/bytes,Ted_cap_tlv1/bytes,Ls_cap_tlv1/bytes>>;
+  <<Version:3, Flags:5, KeepAlive:8, DeadTimer:8, Sid:8, Open_object_tlvs1/bytes>>;
 encode_object_body(open_ob_type, #open_object{version = Version}) when Version /= 1 ->
   ?ERROR("open object version is not mached"),
   <<>>;
@@ -419,7 +430,7 @@ encode_object_body(open_ob_type, #open_object{version = Version}) when Version /
 encode_object_body(rp_object_type, #rp_object{
   flags=Flags,o = O,b = B,r = R,pri = Pri,request_id_num = Req_id,tlvs = Tlvs
 }) ->
-  TlvsBin = encode_tlvs(Tlvs),
+  TlvsBin = encode_tlv1(Tlvs),
   <<Flags:26,O:1,B:1,R:1,Pri:3,Req_id:32,TlvsBin/bytes>>;
 
 %% encode end points IPv4 object
@@ -438,21 +449,21 @@ encode_object_body(end_points_v4_ob_type,#end_points_object_ipv4{
 encode_object_body(pcep_error_ob_type,#error_object{
   reserved = Res,flags = Flags,error_type = Error_type,error_value = Error_value,tlvs = Tlvs
 }) ->
-  TlvsBin = encode_tlvs(Tlvs),
+  TlvsBin = encode_tlv1(Tlvs),
   <<Res:8,Flags:8,Error_type:8,Error_value:8,TlvsBin/bytes>>;
 
 %% encode close object
 encode_object_body(close_ob_type,#close_object{
   reserved = Res,flags = Flags,reason = Reason,tlvs = Tlvs
 }) ->
-  TlvsBin=encode_tlvs(Tlvs),
+  TlvsBin=encode_tlv1(Tlvs),
   <<Res:16,Flags:8,Reason:8,TlvsBin/bytes>>;
 
 %% encode ls object
 encode_object_body(ls_link_ob_type,#ls_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
 }) ->
-  TlvsBin=encode_tlvs(Tlvs),
+  TlvsBin=encode_tlv1(Tlvs),
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 %% ls object protocol id
 %%| 1 | IS-IS Level 1
@@ -465,26 +476,26 @@ encode_object_body(ls_link_ob_type,#ls_object{
 encode_object_body(ls_node_ob_type,#ls_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
 }) ->
-  TlvsBin=encode_tlvs(Tlvs),
+  TlvsBin=encode_tlv1(Tlvs),
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
 encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
 }) ->
-  TlvsBin=encode_tlvs(Tlvs),
+  TlvsBin=encode_tlv1(Tlvs),
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
 %% encode_object_body(ls_ipv6_topo_prefix_ob_type,#ls_object{
 %%   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
 %% }) ->
-%%   TlvsBin=encode_tlvs(Tlvs),
+%%   TlvsBin=encode_tlv1(Tlvs),
 %%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
 %% encode lsp object
 encode_object_body(lsp_ob_type,#lsp_object{
   plsp_id = Plsp_id,flag = Flag,o = O,a = A,r = R,s = S,d =D,tlvs = Tlvs
 }) ->
-  TlvsBin=encode_tlvs(Tlvs),
+  TlvsBin=encode_tlv1(Tlvs),
   <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,TlvsBin/bytes>>;
 
 %% encode rro object
@@ -497,10 +508,10 @@ encode_object_body(rro_ob_type,#rro_object{
 
 
 %%TODO for fxf
-%% encode_tlvs([#tlv{}=Tlv | T]) ->
+%% encode_tlv1([#tlv{}=Tlv | T]) ->
 %%
-%%   T2 = encode_tlvs(T),
+%%   T2 = encode_tlv1(T),
 %%   <<encode_tlv(Tlv), T2/bytes>>;
-%% encode_tlvs([]) ->
+%% encode_tlv1([]) ->
 %%   <<>>.
 
