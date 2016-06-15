@@ -40,8 +40,9 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
   io:format("do start11111111111~n"),
 %%   BodyBin = encode_objects(Body),  %% one msg can include many objects
   BodyBin = encode_object_msg(Body),
+  io:format("BodyBin in do is ~p~n",[BodyBin]),
 %%   MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
-  <<?VERSION:3, Flags:5, MessageType:8, MessageLength:16, BodyBin/bytes>>.
+  list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin]).
 %% do(#pcep_message{message_length=MessageLength}=msg)
 %%   when MessageLength /= erlang:byte_size(msg) ->
 %%   ?ERROR("message length doesn't math the field message_length"),
@@ -387,7 +388,7 @@ encode_object_msg(#pcep_object_message{
       io:format("5555555555555"),
       BodyBin=encode_object_body(Ct, Body),%% TODO
       io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
-      <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, BodyBin/bytes>>
+      list_to_binary([<<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16>>, BodyBin])
   end.
 %% encode_object_msg(#pcep_object_message{object_length=_Ob_length}=Object_msg) ->
 %% %%   when Ob_length /= erlang:byte_size(Object_msg)
