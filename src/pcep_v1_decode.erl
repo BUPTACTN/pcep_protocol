@@ -50,18 +50,20 @@ decode_object_msg(Atom, Binary) ->
   ClassType = ?CLASSTYPEMOD(Class, Type),
   IsLegal = ?ISLEGAL(Atom, ClassType),
 %%   N = Ob_length,
-  <<Ob_body:Ob_length/bytes,Objects/bytes>>  = RstObjects,
-  io:format("Ob_body in decode_object_msg is ~p~n", [Ob_body]),
-  Ob_body2 = decode_object_body(Type,Ob_body),
-  #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2},
+%%   Ob_body2 = decode_object_body(Type,Ob_body),
   case IsLegal of
     true ->
       if
-        erlang:byte_size(Objects) > 0 ->
+        byte_size(Binary) > Ob_length ->
+          <<Ob_body:Ob_length/bytes,Objects/bytes>>  = RstObjects,
+          Ob_body1 = decode_object_body(Type,Ob_body),
+          #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body1},
+
           decode_object_msg(Atom, Objects);
         true ->
-          io:format("only one object~n"),
-          #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body}
+          io:format("only one object,Ob_body in decode_object_msg is ~p~n",[Ob_body]),
+          Ob_body2 = decode_object_body(Type,Ob_body),
+          #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2}
           end;
     false ->
       ?ERROR("Message Type and Class type don't match!"),
