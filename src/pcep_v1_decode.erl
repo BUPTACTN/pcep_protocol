@@ -33,6 +33,7 @@ do(Binary) ->
     false ->
       {error, binary_too_small};
     true ->
+      io:format("decode do start,input is ~p~n", [Binary]),
       MsgType = ?MESSAGETYPEMOD(MessageType),
       Body = decode_object_msg(MsgType, Binary2),
       {ok, #pcep_message{version = Version, message_type = MessageType, message_length = MessageLength, body = Body}}
@@ -43,6 +44,7 @@ do(Binary) ->
 %% @doc decode Object
 %%-spce decode_object_msg(atom(), binary()) -> pcep_object_message().
 decode_object_msg(Atom, Binary) ->
+  io:format("decode_object_msg start, Atom is ~p~n,Binary is ~p~n", [Atom,Binary]),
   <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, RstObjects/bytes>> = Binary,
   ClassType = ?CLASSTYPEMOD(Class, Type),
   IsLegal = ?ISLEGAL(Atom, ClassType),

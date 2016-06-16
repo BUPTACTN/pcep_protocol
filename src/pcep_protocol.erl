@@ -36,6 +36,7 @@ decode(Binary) when byte_size(Binary) >= ?PCEP_COMMON_HEADER_SIZE ->
         false ->
           {error, binary_too_small};
         true ->
+          io:format("Message to be decoded in pcep protocol  is ~p~n", [Binary]),
           Module:decode(Binary)
       end
   end;
