@@ -59,6 +59,7 @@ decode_object_msg(Atom, Binary) ->
         erlang:byte_size(Objects) > 0 ->
           decode_object_msg(Atom, Objects);
         true ->
+          io:format("only one object~n"),
           #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body}
           end;
     false ->
