@@ -51,6 +51,7 @@ decode_object_msg(Atom, Binary) ->
   IsLegal = ?ISLEGAL(Atom, ClassType),
   N = Ob_length * 8 - 32,
   <<Ob_body:N,Objects/bytes>>  = RstObjects,
+  io:format("Ob_body in decode_object_msg is ~p~n", [Ob_body]),
   Ob_body2 = decode_object_body(Type,<<Ob_body:N>>),
   #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2},
   case IsLegal of
@@ -86,6 +87,7 @@ decode_object_msg(Atom, Binary) ->
 %% @doc decode object body
 %% -spec decode_object_body(atom(), binary()) -> any().
 decode_object_body(open_ob_type, Binary) ->
+  io:format("decode_open_object_body start,Binary is ~p~n", [Binary]),
   <<Version:3, Flags:5, Keepalive:8, DeadTimer:8, SID:8, Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
   #open_object{version = Version, flags = Flags, keepAlive = Keepalive, deadTimer = DeadTimer, sid = SID, open_object_tlvs = DTlvs};
