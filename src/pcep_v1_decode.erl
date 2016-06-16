@@ -61,8 +61,8 @@ decode_object_msg(Atom, Binary) ->
 
           decode_object_msg(Atom, Objects);
         true ->
-          io:format("only one object,Ob_body in decode_object_msg is ~p~n",[Ob_body]),
-          Ob_body2 = decode_object_body(Type,Ob_body),
+          io:format("only one object,Ob_body in decode_object_msg is ~p~n",[RstObjects]),
+          Ob_body2 = decode_object_body(Type,RstObjects),
           #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2}
           end;
     false ->
