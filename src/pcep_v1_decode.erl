@@ -56,13 +56,13 @@ decode_object_msg(Atom, Binary) ->
       if
         byte_size(Binary) > Ob_length ->
           <<Ob_body:Ob_length/bytes,Objects/bytes>>  = RstObjects,
-          Ob_body1 = decode_object_body(Type,Ob_body),
+          Ob_body1 = decode_object_body(ClassType,Ob_body),
           #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body1},
 
           decode_object_msg(Atom, Objects);
         true ->
           io:format("only one object,Ob_body in decode_object_msg is ~p~n",[RstObjects]),
-          Ob_body2 = decode_object_body(Type,RstObjects),
+          Ob_body2 = decode_object_body(ClassType,RstObjects),
           #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2}
           end;
     false ->
