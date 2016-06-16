@@ -37,10 +37,10 @@
 -spec do(Message ::pcep_message()) ->binary().
 do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,message_length=MessageLength, body=Body}=_Msg) ->
 %%   when MessageLength =:= erlang:byte_size(msg) ->
-  io:format("do start11111111111~n"),
+%%   io:format("do start11111111111~n"),
 %%   BodyBin = encode_objects(Body),  %% one msg can include many objects
   BodyBin = encode_object_msg(Body),
-  io:format("BodyBin in do is ~p~n",[BodyBin]),
+%%   io:format("BodyBin in do is ~p~n",[BodyBin]),
 %%   MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
   list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin]).
 %% do(#pcep_message{message_length=MessageLength}=msg)
