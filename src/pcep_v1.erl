@@ -39,6 +39,7 @@ encode(Message) ->
 -spec decode(Binary :: binary()) -> {ok, pcep_message(), binary()} | {error, any()}.
 decode(Binary) ->
   try
+    io:format("Enter pcep_v1 module decode ~n~n"),
     pcep_v1_decode:do(Binary)
   catch
     _:Exception ->
