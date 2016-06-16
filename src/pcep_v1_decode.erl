@@ -49,10 +49,10 @@ decode_object_msg(Atom, Binary) ->
   <<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16, RstObjects/bytes>> = Binary,
   ClassType = ?CLASSTYPEMOD(Class, Type),
   IsLegal = ?ISLEGAL(Atom, ClassType),
-  N = Ob_length * 8 - 32,
-  <<Ob_body:N,Objects/bytes>>  = RstObjects,
+%%   N = Ob_length,
+  <<Ob_body:Ob_length/bytes,Objects/bytes>>  = RstObjects,
   io:format("Ob_body in decode_object_msg is ~p~n", [Ob_body]),
-  Ob_body2 = decode_object_body(Type,<<Ob_body:N>>),
+  Ob_body2 = decode_object_body(Type,Ob_body),
   #pcep_object_message{object_class = Class, object_type = Type, res_flags = Flags, p = P, i = I, object_length = Ob_length, body = Ob_body2},
   case IsLegal of
     true ->
