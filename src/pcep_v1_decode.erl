@@ -29,16 +29,17 @@ do(Binary) when ?PCEP_COMMON_HEADER_SIZE > erlang:byte_size(Binary) ->
   {error, binary_too_small};
 do(Binary) ->
   <<Version:3, MessageType:8, MessageLength:16, Binary2/bytes>> = Binary,
-  case MessageLength =:= erlang:byte_size(Binary) of
-    false ->
-      {error, binary_too_small};
+  case MessageLength > erlang:byte_size(Binary) of
     true ->
+      {error, binary_too_small};
+    false ->
+      BodyLength = MessageLength - 4,
+      <<BodyBin:BodyLength/bytes,Rest/bytes>> = Binary2,
       io:format("decode do start,input is ~p~n", [Binary]),
       MsgType = ?MESSAGETYPEMOD(MessageType),
-      Body = decode_object_msg(MsgType, Binary2),
-      {ok, #pcep_message{version = Version, message_type = MessageType, message_length = MessageLength, body = Body}}
+      Body = decode_object_msg(MsgType, BodyBin),
+      {ok, #pcep_message{version = Version, message_type = MessageType, message_length = MessageLength, body = Body}, Rest}
   end.
-
 
 
 %% @doc decode Object

@@ -122,7 +122,7 @@ encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subo
 encode_tlv1(#gmpls_cap_tlv{
 %%   gmpls_cap_tlv_type = Type,gmpls_cap_tlv_length = Length,
   gmpls_cap_flag = Gmpls_cap_flag}) ->
-  io:format("encode gmpls_cap_tlv start~n"),
+%%   io:format("encode gmpls_cap_tlv start~n"),
   Type = 14,
   Length = 4,
   <<Type:16,Length:16,Gmpls_cap_flag:32>>.
@@ -131,7 +131,7 @@ encode_tlv2(#stateful_pec_cap_tlv{
   stateful_pce_cap_tlv_flag = Stateful_pce_flag, stateful_pce_cap_tlv_d = State_pce_d,
   stateful_pce_cap_tlv_t = State_pce_t, stateful_pce_cap_tlv_i = State_pce_i, stateful_pce_cap_tlv_s = State_pce_s,
   stateful_pce_cap_tlv_u = State_pce_u}) ->
-  io:format("encode stateful_pce_cap_tlv start~n"),
+%%   io:format("encode stateful_pce_cap_tlv start~n"),
   Type = 16,
   Length =4,
   <<Type:16,Length:16,Stateful_pce_flag:27,State_pce_d:1,State_pce_t:1,State_pce_i:1,State_pce_s:1,State_pce_u:1>>.
@@ -379,15 +379,15 @@ encode_subobjects([]) ->
 encode_object_msg(#pcep_object_message{
   object_class = Class, object_type = Type, res_flags=Flags, p=P,i=I,object_length=Ob_length,body=Body}=_Object_msg) ->
 %%   when Ob_length =:= erlang:byte_size(Object_msg) ->
-  io:format("encode_object_msg start~n"),
+%%   io:format("encode_object_msg start~n"),
   Ct = ?CLASSTYPEMOD(Class, Type),
   case Ct of
     unsupported_class ->
       ?ERROR(Ct),<<>>;
     _ ->
-      io:format("5555555555555"),
+%%       io:format("5555555555555"),
       BodyBin=encode_object_body(Ct, Body),%% TODO
-      io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
+%%       io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
       list_to_binary([<<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16>>, BodyBin])
   end.
 %% encode_object_msg(#pcep_object_message{object_length=_Ob_length}=Object_msg) ->
@@ -396,14 +396,14 @@ encode_object_msg(#pcep_object_message{
 %%   <<>>.
 encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,open_stateful_pce_cap_tlv = Stateful_pce_cap_tlv,
    open_pcecc_cap_tlv = Pcecc_cap_tlv,open_ted_cap_tlv = Ted_cap_tlv, open_ls_cap_tlv = Ls_cap_tlv}) ->
-  io:format("encode_open_object_tlvs start, input is ~p~n", [Gmpls_cap_tlv]),
+%%   io:format("encode_open_object_tlvs start, input is ~p~n", [Gmpls_cap_tlv]),
   Gmpls_cap_tlv1 = encode_tlv1(Gmpls_cap_tlv),
-  io:format("Gmpls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
+%%   io:format("Gmpls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
   Stateful_pce_cap_tlv1 = encode_tlv2(Stateful_pce_cap_tlv),
   Pcecc_cap_tlv1 = encode_tlv3(Pcecc_cap_tlv),
   Ted_cap_tlv1 = encode_tlv5(Ted_cap_tlv),
   Ls_cap_tlv1 = encode_tlv12(Ls_cap_tlv),
-  io:format("Ls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
+%%   io:format("Ls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
 
   list_to_binary([Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Pcecc_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
 
@@ -415,10 +415,10 @@ encode_object_body(open_ob_type, #open_object{
 %%   #open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,open_stateful_pce_cap_tlv = Stateful_pce_cap_tlv,
 %%   open_pcecc_cap_tlv = Pcecc_cap_tlv,open_ted_cap_tlv = Ted_cap_tlv, open_ls_cap_tlv = Ls_cap_tlv}
 }) when Version =:= 1 ->
-  io:format("encode_object_body start, Open_object_tlvs is ~p~n", [Open_object_tlvs]),
+%%   io:format("encode_object_body start, Open_object_tlvs is ~p~n", [Open_object_tlvs]),
 %%   TlvsBin=encode_tlv1(Tlvs),
   Open_object_tlvs1 = encode_open_object_tlvs(Open_object_tlvs),
-  io:format("Open_object_tlv1 is ~p~n",[Open_object_tlvs1]),
+%%   io:format("Open_object_tlv1 is ~p~n",[Open_object_tlvs1]),
 %%   Gmpls_cap_tlv1 = list_to_binary([encode_tlv1(Gmpls_cap_tlvs) || Gmpls_cap_tlvs <- Gmpls_cap_tlv]),
 %%   Stateful_pce_cap_tlv1 = list_to_binary([encode_tlv2(Stateful_pce_cap_tlvs) || Stateful_pce_cap_tlvs <- Stateful_pce_cap_tlv]),
 %%   Pcecc_cap_tlv1 = list_to_binary([encode_tlv3(Pcecc_cap_tlvs) || Pcecc_cap_tlvs <- Pcecc_cap_tlv]),
