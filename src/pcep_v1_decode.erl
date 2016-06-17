@@ -218,12 +218,18 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
           N=Length+4,
           <<Tlv1:N/bytes,_TlvRest/bytes>> = Binary,
           io:format("decode_tlvs start, Tlvs in decode_Tlvs is ~p~n", [Tlvs]),
-          Tlv = decode_tlv(Tlv1),
-          io:format("Tlv output in decode_tlvs is ~p~n",[Tlv]),
-          [Tlv, decode_tlvs(Priority,Tlvs)];
+          decode_tlv(Tlv1),
+          io:format("Tlv output in decode_tlvs is ~p~n",[decode_tlv(Tlv1)]),
+          decode_tlvs(Priority,Tlvs);
+
+%%           [Tlv, decode_tlvs(Priority,Tlvs)];
         true ->
-          Tlv = decode_tlv(Binary),
-          [Tlv]
+          if erlang:byte_size(Binary) <(Length+4) ->
+            ?ERROR("Tlv size is too small");
+            true ->
+              decode_tlv(Binary)
+          end
+%%           [Tlv]
       end;
     2 ->
       <<_Type:8/integer,Length:8,RstTlvs/bytes>> =Binary,
@@ -266,8 +272,9 @@ decode_tlv(Binary) ->
         io:format("decode_gmpls_cap_tlv start, Binary is ~p~n", [Binary]),
         Flag = erlang:binary_part(Binary,{byte_size(Binary),-4}),
         if Flag =:= <<0,0,0,0>> ->
-          erlang:binary_to_list(Flag);
-        true ->
+%%           erlang:binary_to_list(Flag);
+          #gmpls_cap_tlv{gmpls_cap_tlv_type = Type,gmpls_cap_tlv_length = Length,gmpls_cap_flag = Flag};
+          true ->
           ?ERROR("The gmpls cap TLV is wrong")
         end;
       stateful_pce_cap_tlv_type ->
@@ -280,7 +287,11 @@ decode_tlv(Binary) ->
 %%       U = erlang:binary_part(Binary,{63,1}),
       <<Flag:27,D:1,T:1,I:1,S:1,U:1>> = Value1,
       if (Flag=:=0)and(D=:=1)and(T=:=1)and(I=:=1)and(S=:=1)and(U=:=1) ->
-        erlang:binary_to_list(Value1);
+        io:format("stateful_pce_cap_tlv decode start88888888888888"),
+%%         erlang:binary_to_list(Value1);
+        #stateful_pec_cap_tlv{stateful_pec_cap_tlv_type = Type,stateful_pec_cap_tlv_length = Length,
+        stateful_pce_cap_tlv_flag = Flag,stateful_pce_cap_tlv_d = D,stateful_pce_cap_tlv_t = T,stateful_pce_cap_tlv_i = I,
+        stateful_pce_cap_tlv_s = S,stateful_pce_cap_tlv_u = U};
         true ->
           ?ERROR("The stateful pce cap Tlv is wrong")
           end;
