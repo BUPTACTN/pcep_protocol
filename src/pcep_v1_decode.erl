@@ -215,8 +215,10 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
       if
         erlang:byte_size(Binary) > (Length+4) ->
           <<_Value:Length/bytes, Tlvs/bytes>> = RstTlvs,
+          N=Length+4,
+          <<Tlv1:N/bytes,_TlvRest/byte>> = Binary,
           io:format("decode_tlvs start, Tlvs in decode_Tlvs is ~p~n", [Tlvs]),
-          Tlv = decode_tlv(_Value),
+          Tlv = decode_tlv(Tlv1),
           io:format("Tlv output in decode_tlvs is ~p~n",[Tlv]),
           [Tlv, decode_tlvs(Priority,Tlvs)];
         true ->
@@ -253,9 +255,11 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
 decode_tlv(Binary) ->
   Length=erlang:byte_size(Binary)-4,
   <<Type:16>> = erlang:binary_part(Binary,{0,2}),
+  io:format("Type in decode_tlv is ~p~n", [Type]),
   L = Length*8,
   <<Value:L>> = erlang:binary_part(Binary,{4,Length}),
   TlvType = ?TLV_Type(Type),
+  io:format("TlvType in decode_tlv is ~p~n", [TlvType]),
   if <<Type:16,Length:16,Value:L>> =:= Binary ->
     case TlvType of
       gmpls_cap_tlv_type ->
