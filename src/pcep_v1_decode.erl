@@ -298,15 +298,16 @@ decode_tlv(Binary) ->
     pcecc_cap_tlv_type ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       io:format("Value1 in pcecc_cap_tlv_type is ~p~n", [Value1]),
+%%       <<Flag:30,G:1,L:1>> = Value1,
       <<Flag:30,G:1,L:1>> = Value1,
-%%       io:format("pcecc start11111111111111~n"),
-%%       if (Flag =:= 0)and(G=:=1)and(L=:=1) ->
-%%         io:format("pcecc start22222222222~n"),
+      io:format("pcecc start11111111111111~n"),
+      if (Flag =:= 0)and(G=:=1)and(L=:=1) ->
+        io:format("pcecc start22222222222~n"),
 %%         erlang:binary_to_list(Value1);
-      #pcecc_cap_tlv{pcecc_cap_tlv_type = Type,pcecc_cap_tlv_length = Length,pcecc_cap_tlv_g = G,pcecc_cap_tlv_l = L};
-%%         true ->
-%%           ?ERROR("The pcecc cap tlv is wrong")
-%%           end;
+      #pcecc_cap_tlv{pcecc_cap_tlv_type = Type,pcecc_cap_tlv_length = Length,pcecc_cap_tlv_flag = Flag,pcecc_cap_tlv_g = G,pcecc_cap_tlv_l = L};
+        true ->
+          ?ERROR("The pcecc cap tlv is wrong")
+          end;
     label_db_version_tlv_type ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-8}),
       if Value1 =:= <<0,0,0,0,0,0,0,0>> ->
