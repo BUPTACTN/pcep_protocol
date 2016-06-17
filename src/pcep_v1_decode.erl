@@ -216,7 +216,7 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
         erlang:byte_size(Binary) > (Length+4) ->
           <<_Value:Length/bytes, Tlvs/bytes>> = RstTlvs,
           N=Length+4,
-          <<Tlv1:N/bytes,_TlvRest/byte>> = Binary,
+          <<Tlv1:N/bytes,_TlvRest/bytes>> = Binary,
           io:format("decode_tlvs start, Tlvs in decode_Tlvs is ~p~n", [Tlvs]),
           Tlv = decode_tlv(Tlv1),
           io:format("Tlv output in decode_tlvs is ~p~n",[Tlv]),
