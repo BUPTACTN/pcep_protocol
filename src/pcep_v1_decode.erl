@@ -270,8 +270,9 @@ decode_tlv(Binary) ->
     case TlvType of
       gmpls_cap_tlv_type ->
         io:format("decode_gmpls_cap_tlv start, Binary is ~p~n", [Binary]),
-        Flag = erlang:binary_part(Binary,{byte_size(Binary),-4}),
-        if Flag =:= <<0,0,0,0>> ->
+        Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
+        <<Flag:32>> = Value1,
+        if Flag =:= 0 ->
 %%           erlang:binary_to_list(Flag);
           #gmpls_cap_tlv{gmpls_cap_tlv_type = Type,gmpls_cap_tlv_length = Length,gmpls_cap_flag = Flag};
           true ->
