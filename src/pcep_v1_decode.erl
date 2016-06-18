@@ -296,10 +296,10 @@ decode_tlv(Binary) ->
           ?ERROR("The stateful pce cap Tlv is wrong")
           end;
     pcecc_cap_tlv_type ->
-      Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
-      io:format("Value1 in pcecc_cap_tlv_type is ~p~n", [Value1]),
+      Pcecc_cap_value = erlang:binary_part(Binary,{byte_size(Binary),-4}),
+      io:format("Value1 in pcecc_cap_tlv_type is ~p~n", [Pcecc_cap_value]),
 %%       <<Flag:30,G:1,L:1>> = Value1,
-      <<Flag:30,G:1,L:1>> = Value1,
+      <<Flag:30,G:1,L:1>> = Pcecc_cap_value,
       io:format("pcecc start11111111111111~n"),
       if (Flag =:= 0)and(G=:=1)and(L=:=1) ->
         io:format("pcecc start22222222222~n"),
