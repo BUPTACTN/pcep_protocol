@@ -400,12 +400,12 @@ encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,ope
   Gmpls_cap_tlv1 = encode_tlv1(Gmpls_cap_tlv),
 %%   io:format("Gmpls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
   Stateful_pce_cap_tlv1 = encode_tlv2(Stateful_pce_cap_tlv),
-  Pcecc_cap_tlv1 = encode_tlv3(Pcecc_cap_tlv),
+%%   Pcecc_cap_tlv1 = encode_tlv3(Pcecc_cap_tlv),
   Ted_cap_tlv1 = encode_tlv5(Ted_cap_tlv),
   Ls_cap_tlv1 = encode_tlv12(Ls_cap_tlv),
 %%   io:format("Ls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
 
-  list_to_binary([Pcecc_cap_tlv1,Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
+  list_to_binary([Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
 
 
 %% encode open object -------------------------------------------------------------------
