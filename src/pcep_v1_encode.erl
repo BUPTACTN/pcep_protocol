@@ -199,33 +199,34 @@ encode_tlv12(#ls_cap_tlv{
   <<Type:16,Length:16,Ls_cap_flag:31,Ls_r:1>>.
 encode_tlv13(#optical_link_attribute_tlv{
 %%   optical_link_attribute_tlv_type = Type,optical_link_attribute_tlv_length = Length,
-  link_type_sub_tlv_body = Link_types,
-  link_id_sub_tlv_body = Link_ids, local_interface_ip_add_sub_tlv_body = Local_interface_ip_adds,
-  remote_interface_ip_add_sub_tlv_body = Remote_interface_ip_adds,te_metric_body = Te_metrics,
-  interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_deses, shared_risk_link_group_sub_tlv_body = Shared_risk_link_groups,
-  port_label_res_sub_tlv_body = Port_label_reses}) ->
-  ValueBin1 = list_to_binary([encode_sub_tlv10(Link_type) || Link_type <- Link_types]),
-  ValueBin2 = list_to_binary([encode_sub_tlv1(Link_id) || Link_id <- Link_ids]),
-  ValueBin3 = list_to_binary([encode_sub_tlv2(Local_interface_ip_add) || Local_interface_ip_add <- Local_interface_ip_adds]),
-  ValueBin4 = list_to_binary([encode_sub_tlv3(Remote_interface_ip_add) || Remote_interface_ip_add <- Remote_interface_ip_adds]),
-  ValueBin5 = list_to_binary([encode_sub_tlv4(Te_metric) || Te_metric <- Te_metrics]),
-  ValueBin6 = list_to_binary([encode_sub_tlv5(Interface_switching_cap_des) || Interface_switching_cap_des <- Interface_switching_cap_deses]),
-  ValueBin7 = list_to_binary([encode_sub_tlv6(Shared_risk_link_group) || Shared_risk_link_group <- Shared_risk_link_groups]),
-  ValueBin8 = list_to_binary([encode_sub_tlv7(Port_label_res) || Port_label_res <- Port_label_reses]),
+  link_type_sub_tlv_body = Link_type,
+  link_id_sub_tlv_body = Link_id, local_interface_ip_add_sub_tlv_body = Local_interface_ip_add,
+  remote_interface_ip_add_sub_tlv_body = Remote_interface_ip_add,te_metric_body = Te_metric,
+  interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_des, shared_risk_link_group_sub_tlv_body = Shared_risk_link_group,
+  port_label_res_sub_tlv_body = Port_label_res}) ->
+  ValueBin1 = encode_sub_tlv10(Link_type),
+  ValueBin2 = encode_sub_tlv1(Link_id),
+  ValueBin3 = encode_sub_tlv2(Local_interface_ip_add),
+  ValueBin4 = encode_sub_tlv3(Remote_interface_ip_add),
+  ValueBin5 = encode_sub_tlv4(Te_metric),
+  ValueBin6 = encode_sub_tlv5(Interface_switching_cap_des),
+  ValueBin7 = encode_sub_tlv6(Shared_risk_link_group),
+  ValueBin8 = encode_sub_tlv7(Port_label_res),
   Type = 10001,
   Length = 1, %% TODO
-  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes,ValueBin3/bytes,ValueBin4/bytes,ValueBin5/bytes,ValueBin6/bytes,ValueBin7/bytes,ValueBin8/bytes>>.
+  Resbytes = 0,
+  list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin7,ValueBin8]).
 encode_tlv14(#link_descriptors_tlv{
 %%   link_descriptors_tlv_type = Type,link_descriptors_tlv_length = Length,
-  ipv4_interface_add_sub_tlv_body = Ipv4_interface_adds,
-ipv4_neighbor_add_sub_tlv_body = Ipv4_neighbor_adds}) ->
+  ipv4_interface_add_sub_tlv_body = Ipv4_interface_add,
+ipv4_neighbor_add_sub_tlv_body = Ipv4_neighbor_add}) ->
   %% TODO after subTLV
   Type = 65284,
 
-  ValueBin1 = list_to_binary([encode_sub_tlv8(Ipv4_interface_add) || Ipv4_interface_add <- Ipv4_interface_adds]),
-  ValueBin2 = list_to_binary([encode_sub_tlv9(Ipv4_neighbor_add) || Ipv4_neighbor_add <- Ipv4_neighbor_adds]),
+  ValueBin1 =encode_sub_tlv8(Ipv4_interface_add),
+  ValueBin2 = encode_sub_tlv9(Ipv4_neighbor_add),
   Length = byte_size(ValueBin1)+byte_size(ValueBin2),
-  <<Type:16,Length:16,ValueBin1/bytes,ValueBin2/bytes>>.
+  list_to_binary([<<Type:16,Length:16>>,ValueBin1,ValueBin2]).
 encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ipv4_router_id_of_local_Nodes}) ->
   Type = 65285,
 
@@ -260,9 +261,11 @@ encode_sub_tlv6(#shared_risk_link_group_sub_tlv{shared_risk_link_group_sub_tlv_t
   shared_risk_link_group_sub_tlv_length = Shared_risk_link_group_length,shared_risk_link_group_value = Shared_risk_link_group_value}) ->
   <<Shared_risk_link_group_type:16,Shared_risk_link_group_length:16,Shared_risk_link_group_value/bytes>>.
 
-encode_sub_tlv7(#port_label_restrictions_sub_tlv{}) ->
+encode_sub_tlv7(#port_label_restrictions_sub_tlv{port_label_restrictions_sub_tlv_type = Type, port_label_restrictions_sub_tlv_length = Length,
+  matrix_ID = Matrix_ID,res_type = Res_type,switching_cap = Switching_cap,encoding = Encoding,additional_res = Additional_res}) ->
   %% TODO after defined.
-  <<>>.
+
+  <<Type:16,Length:16,Matrix_ID:8,Res_type:8,Switching_cap:8,Encoding:8,Additional_res:32>>.
 
 encode_sub_tlv8(#ipv4_interface_address_sub_tlv{ipv4_interface_address_sub_tlv_type = Ipv4_interface_add_type,
   ipv4_interface_address_sub_tlv_length = Ipv4_interface_add_length,ipv4_interface_address = Ipv4_interface_address}) ->
@@ -274,7 +277,7 @@ encode_sub_tlv9(#ipv4_neighbor_address_sub_tlv{ipv4_neighbor_address_sub_tlv_typ
 
 encode_sub_tlv10(#link_type_sub_tlv{link_type_sub_tlv_type = Link_type_type, link_type_sub_tlv_length = Link_type_length,
   link_type = Link_type_value}) ->
-  <<Link_type_type:16,Link_type_length:16,Link_type_value:32>>.
+  <<Link_type_type:16,Link_type_length:16,Link_type_value:8>>.
 
 encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_node_sub_tlv_type = Ipv4_router_id_of_local_node_type,
   ipv4_router_id_of_local_node_sub_tlv_length = Ipv4_router_id_of_local_node_length,
@@ -407,6 +410,10 @@ encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,ope
 
   list_to_binary([Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
 
+encode_ls_object_tlvs(#ls_object_tlvs{actn_link_tlv = Actn_link_tlv,link_descriptor_tlv = Link_des_tlv}) ->
+  Actn_link_tlv1 = encode_tlv13(Actn_link_tlv),
+  Link_des_tlv1 = encode_tlv14(Link_des_tlv),
+  list_to_binary([Actn_link_tlv1,Link_des_tlv1]).
 
 %% encode open object -------------------------------------------------------------------
 encode_object_body(open_ob_type, #open_object{
@@ -466,10 +473,10 @@ encode_object_body(close_ob_type,#close_object{
 
 %% encode ls object
 encode_object_body(ls_link_ob_type,#ls_object{
-  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
+  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = Tlvs
 }) ->
-  TlvsBin=encode_tlv1(Tlvs),
-  <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
+  TlvsBin=encode_ls_object_tlvs(Tlvs),
+  list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin/bytes]);
 %% ls object protocol id
 %%| 1 | IS-IS Level 1
 %%| 2 | IS-IS Level 2

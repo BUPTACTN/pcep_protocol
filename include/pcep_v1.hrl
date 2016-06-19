@@ -161,7 +161,7 @@
     32 -> pcecc_cap_tlv_type;
     23 -> label_db_version_tlv_type;
     132 -> ted_cap_tlv_type;
-    65280 -> ls_cap_tlv_type;
+    10003 -> ls_cap_tlv_type;
     65281 -> routing_universe_tlv_type;
     65282 -> local_node_descriptor_tlv_type;
     65283 -> remote_node_descriptor_tlv_type;

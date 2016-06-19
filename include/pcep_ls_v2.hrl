@@ -58,11 +58,15 @@
   ls_object_r::boolean(),
   ls_object_s::boolean(),
   ls_object_ls_id::integer(),
-  tlvs
+  ls_object_tlvs :: ls_object_tlvs()
 }).
 
 -type ls_object()::#ls_object{}.
 
+-record(ls_object_tlvs,{
+  actn_link_tlv :: optical_link_attribute_tlv(),
+  link_descriptor_tlv :: link_descriptors_tlv()
+}).
 -record(link_id_sub_tlv, {
   link_id_sub_tlv_type :: integer(),
   link_id_sub_tlv_length :: integer(),
@@ -124,6 +128,13 @@
 
 -record(port_label_restrictions_sub_tlv, {
   %% TODO how to finished it?
+  port_label_restrictions_sub_tlv_type :: integer(),
+  port_label_restrictions_sub_tlv_length :: integer(),
+  matrix_ID ::integer(),
+  res_type :: integer(),
+  switching_cap :: integer(),
+  encoding :: integer(),
+  additional_res :: any
 }).
 
 -type port_label_restrictions_sub_tlv_value() :: #port_label_restrictions_sub_tlv{}.
@@ -164,6 +175,7 @@
   optical_link_attribute_tlv_type :: integer(),
   optical_link_attribute_tlv_length :: integer(),
   link_type_sub_tlv_body :: any(),
+  res_bytes :: integer(),
   link_id_sub_tlv_body :: any(),
   local_interface_ip_add_sub_tlv_body :: any(),
   remote_interface_ip_add_sub_tlv_body :: any(),
