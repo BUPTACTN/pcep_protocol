@@ -120,17 +120,17 @@ decode_object_body(close_ob_type,Binary) ->
 decode_object_body(ls_link_ob_type,Binary) ->
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = DTlvs};
+  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = DTlvs};
 
 decode_object_body(ls_node_ob_type,Binary) ->
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = DTlvs};
+  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = DTlvs};
 
 decode_object_body(ls_ipv4_topo_prefix_ob_type,Binary) ->
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = DTlvs};
+  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = DTlvs};
 
 %% decode_object_body(ls_ipv6_topo_prefix_ob_type,Binary) ->
 %%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
