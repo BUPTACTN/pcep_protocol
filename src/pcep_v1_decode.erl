@@ -268,6 +268,19 @@ decode_tlv(Binary) ->
   io:format("TlvType in decode_tlv is ~p~n", [TlvType]),
   if <<Type:16,Length:16,Value:L>> =:= Binary ->
     case TlvType of
+      pcecc_cap_tlv_type ->
+        Pcecc_cap_value = erlang:binary_part(Binary,{byte_size(Binary),-4}),
+        io:format("Value1 in pcecc_cap_tlv_type is ~p~n", [Pcecc_cap_value]),
+%%       <<Flag:30,G:1,L:1>> = Value1,
+        <<Flag:30,G:1,L:1>> = Pcecc_cap_value,
+        io:format("pcecc start11111111111111~n"),
+        if (Flag =:= 0)and(G=:=1)and(L=:=1) ->
+          io:format("pcecc start22222222222~n"),
+%%         erlang:binary_to_list(Value1);
+          #pcecc_cap_tlv{pcecc_cap_tlv_type = Type,pcecc_cap_tlv_length = Length,pcecc_cap_tlv_flag = Flag,pcecc_cap_tlv_g = G,pcecc_cap_tlv_l = L};
+          true ->
+            ?ERROR("The pcecc cap tlv is wrong")
+        end;
       gmpls_cap_tlv_type ->
         io:format("decode_gmpls_cap_tlv start, Binary is ~p~n", [Binary]),
         Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
@@ -296,19 +309,7 @@ decode_tlv(Binary) ->
         true ->
           ?ERROR("The stateful pce cap Tlv is wrong")
           end;
-    pcecc_cap_tlv_type ->
-      Pcecc_cap_value = erlang:binary_part(Binary,{byte_size(Binary),-4}),
-      io:format("Value1 in pcecc_cap_tlv_type is ~p~n", [Pcecc_cap_value]),
-%%       <<Flag:30,G:1,L:1>> = Value1,
-      <<Flag:30,G:1,L:1>> = Pcecc_cap_value,
-      io:format("pcecc start11111111111111~n"),
-      if (Flag =:= 0)and(G=:=1)and(L=:=1) ->
-        io:format("pcecc start22222222222~n"),
-%%         erlang:binary_to_list(Value1);
-      #pcecc_cap_tlv{pcecc_cap_tlv_type = Type,pcecc_cap_tlv_length = Length,pcecc_cap_tlv_flag = Flag,pcecc_cap_tlv_g = G,pcecc_cap_tlv_l = L};
-        true ->
-          ?ERROR("The pcecc cap tlv is wrong")
-          end;
+
     label_db_version_tlv_type ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-8}),
       if Value1 =:= <<0,0,0,0,0,0,0,0>> ->
