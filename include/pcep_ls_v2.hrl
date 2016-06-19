@@ -67,6 +67,9 @@
   actn_link_tlv :: optical_link_attribute_tlv(),
   link_descriptor_tlv :: link_descriptors_tlv()
 }).
+
+-type ls_object_tlvs() :: #ls_object_tlvs{}.
+
 -record(link_id_sub_tlv, {
   link_id_sub_tlv_type :: integer(),
   link_id_sub_tlv_length :: integer(),
