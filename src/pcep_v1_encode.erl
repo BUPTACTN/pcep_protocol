@@ -245,19 +245,19 @@ encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ip
 
 encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
   link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
-  <<Link_id_type:16,Link_id_length:16,Link_id:32/bytes>>.
+  <<Link_id_type:16,Link_id_length:16,Link_id:32>>.
 
 encode_sub_tlv2(#local_interface_ip_address_sub_tlv{local_interface_ip_address_sub_tlv_type = Local_interface_ip_add_type,
   local_interface_ip_address_sub_tlv_length = Local_interface_ip_add_length,local_interface_address = Local_interface_add}) ->
-  <<Local_interface_ip_add_type:16,Local_interface_ip_add_length:16,Local_interface_add:32/bytes>>.
+  <<Local_interface_ip_add_type:16,Local_interface_ip_add_length:16,Local_interface_add:32>>.
 
 encode_sub_tlv3(#remote_interface_ip_address_sub_tlv{remote_interface_ip_address_sub_tlv_type = Remote_interface_ip_address_type,
   remote_interface_ip_address_sub_tlv_length = Remote_interface_ip_address_length, remote_interface_address = Remote_interface_address}) ->
-  <<Remote_interface_ip_address_type:16,Remote_interface_ip_address_length:16,Remote_interface_address:32/bytes>>.
+  <<Remote_interface_ip_address_type:16,Remote_interface_ip_address_length:16,Remote_interface_address:32>>.
 
 encode_sub_tlv4(#te_metric_sub_tlv{te_metric_sub_tlv_type = TE_metric_type,te_metric_sub_tlv_length = TE_metric_length,
   te_link_metric = TE_link_metric}) ->
-  <<TE_metric_type:16,TE_metric_length:16,TE_link_metric:32/bytes>>.
+  <<TE_metric_type:16,TE_metric_length:16,TE_link_metric:32>>.
 
 encode_sub_tlv5(#interface_switching_capability_descriptor_sub_tlv{interface_switching_capability_descriptor_sub_tlv_type = Interface_switching_cap_des_type,
   interface_switching_capability_descriptor_sub_tlv_length = Interface_switching_cap_des_length,switching_cap = Switch_cap,
