@@ -194,7 +194,7 @@ encode_tlv11(#next_hop_unnumbered_ipv4_id_tlv{
 encode_tlv12(#ls_cap_tlv{
 %%   ls_cap_tlv_type = Type,ls_cap_tlv_length = Length,
   ls_cap_tlv_flag = Ls_cap_flag, ls_cap_tlv_r = Ls_r}) ->
-  Type = 65280,
+  Type = 10003,
   Length = 4,
   <<Type:16,Length:16,Ls_cap_flag:31,Ls_r:1>>.
 encode_tlv13(#optical_link_attribute_tlv{
