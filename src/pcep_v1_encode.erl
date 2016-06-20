@@ -490,7 +490,7 @@ encode_object_body(ls_link_ob_type,#ls_object{
   io:format("encode_ls_object_body start~n"),
   TlvsBin=encode_ls_object_tlvs(Tlvs),
   io:format("TlvsBin in encode_ls_object_body is ~p~n",[TlvsBin]),
-  list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin/bytes]);
+  list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 %% ls object protocol id
 %%| 1 | IS-IS Level 1
 %%| 2 | IS-IS Level 2
