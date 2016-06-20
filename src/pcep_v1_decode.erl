@@ -213,7 +213,7 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
 %%       M = Length*8,
 %%       <<_Value:Length/bytes, Tlvs/bytes>> = RstTlvs,
       Tlv_list = if
-        erlang:byte_size(Binary) > (Length+4) ->
+        erlang:byte_size(Binary) >= (Length+4) ->
           <<_Value:Length/bytes, Tlvs/bytes>> = RstTlvs,
           N=Length+4,
           <<Tlv1:N/bytes,_TlvRest/bytes>> = Binary,
@@ -225,11 +225,8 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
 
 %%           [Tlv, decode_tlvs(Priority,Tlvs)];
         true ->
-          if erlang:byte_size(Binary) <(Length+4) ->
-            ?ERROR("Tlv size is too small");
-            true ->
-              decode_tlv(Binary)
-          end
+            ?ERROR("Tlv size is too small")
+
 %%           [Tlv]
       end,
   list_to_tuple(Tlv_list);
@@ -331,6 +328,7 @@ decode_tlv(Binary) ->
       Value1 = erlang:binary_part(Binary,{byte_size(Binary),-4}),
       <<Flag:31,R:1>> = Value1,
       if (Flag=:=0)and(R=:=1) ->
+        io:format("decode_ls_cap_tlv start~n"),
 %%         erlang:binary_to_list(Value1);
         #ls_cap_tlv{ls_cap_tlv_type = Type,ls_cap_tlv_length = Length,ls_cap_tlv_flag = Flag,ls_cap_tlv_r = R};
         true ->
