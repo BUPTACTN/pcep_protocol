@@ -268,7 +268,8 @@ encode_sub_tlv5(#interface_switching_capability_descriptor_sub_tlv{interface_swi
 
 encode_sub_tlv6(#shared_risk_link_group_sub_tlv{shared_risk_link_group_sub_tlv_type = Shared_risk_link_group_type,
   shared_risk_link_group_sub_tlv_length = Shared_risk_link_group_length,shared_risk_link_group_value = Shared_risk_link_group_value}) ->
-  <<Shared_risk_link_group_type:16,Shared_risk_link_group_length:16,Shared_risk_link_group_value:Shared_risk_link_group_length/bytes>>.
+  N = Shared_risk_link_group_length*8,
+  <<Shared_risk_link_group_type:16,Shared_risk_link_group_length:16,Shared_risk_link_group_value:N>>.
 
 encode_sub_tlv7(#port_label_restrictions_sub_tlv{port_label_restrictions_sub_tlv_type = Type, port_label_restrictions_sub_tlv_length = Length,
   matrix_ID = Matrix_ID,res_type = Res_type,switching_cap = Switching_cap,encoding = Encoding,additional_res = Additional_res}) ->
