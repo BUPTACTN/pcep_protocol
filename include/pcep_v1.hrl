@@ -138,8 +138,8 @@
     33 -> srp_ob_type;
     60 -> label_range_ob_type;
     224 -> case ObjectType of
-             1 -> ls_link_ob_type; %% draft-dhodylee-pce-pcep-ls-02
-             2 -> ls_node_ob_type;
+             2 -> ls_link_ob_type; %% draft-dhodylee-pce-pcep-ls-02
+             1 -> ls_node_ob_type;
              3 -> ls_ipv4_topo_prefix_ob_type
 %%              4 -> ls_ipv6_topo_prefix_ob_type
            end;

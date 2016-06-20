@@ -388,9 +388,9 @@ encode_object_msg(#pcep_object_message{
     unsupported_class ->
       ?ERROR(Ct),<<>>;
     _ ->
-%%       io:format("5555555555555"),
+      io:format("5555555555555~n"),
       BodyBin=encode_object_body(Ct, Body),%% TODO
-%%       io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
+      io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
       list_to_binary([<<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16>>, BodyBin])
   end.
 %% encode_object_msg(#pcep_object_message{object_length=_Ob_length}=Object_msg) ->
@@ -411,7 +411,9 @@ encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,ope
   list_to_binary([Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
 
 encode_ls_object_tlvs(#ls_object_tlvs{actn_link_tlv = Actn_link_tlv,link_descriptor_tlv = Link_des_tlv}) ->
+  io:format("encode_ls_object_tlvs start~n"),
   Actn_link_tlv1 = encode_tlv13(Actn_link_tlv),
+  io:format("Actn_link_tlv1 in encode_ls_object_tlvs is ~p~n", [Actn_link_tlv1]),
   Link_des_tlv1 = encode_tlv14(Link_des_tlv),
   list_to_binary([Actn_link_tlv1,Link_des_tlv1]).
 
@@ -475,7 +477,9 @@ encode_object_body(close_ob_type,#close_object{
 encode_object_body(ls_link_ob_type,#ls_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = Tlvs
 }) ->
+  io:format("encode_ls_object_body start~n"),
   TlvsBin=encode_ls_object_tlvs(Tlvs),
+  io:format("TlvsBin in encode_ls_object_body is ~p~n",[TlvsBin]),
   list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin/bytes]);
 %% ls object protocol id
 %%| 1 | IS-IS Level 1
