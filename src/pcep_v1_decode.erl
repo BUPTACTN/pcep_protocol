@@ -218,9 +218,10 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
           N=Length+4,
           <<Tlv1:N/bytes,_TlvRest/bytes>> = Binary,
           io:format("decode_tlvs start, Tlvs in decode_Tlvs is ~p~n", [Tlvs]),
-          decode_tlv(Tlv1),
+          Tlv = decode_tlv(Tlv1),
           io:format("Tlv output in decode_tlvs is ~p~n",[decode_tlv(Tlv1)]),
-          decode_tlvs(Priority,Tlvs);
+
+          Tlv_list = [Tlv,decode_tlvs(Priority,Tlvs)];
 
 %%           [Tlv, decode_tlvs(Priority,Tlvs)];
         true ->
@@ -230,7 +231,8 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
               decode_tlv(Binary)
           end
 %%           [Tlv]
-      end;
+      end,
+  list_to_tuple(Tlv_list);
     2 ->
       <<_Type:8/integer,Length:8,RstTlvs/bytes>> =Binary,
       M = (Length-2)*8,
