@@ -242,6 +242,12 @@ encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ip
   ValueBin1 = list_to_binary([encode_sub_tlv11(Ipv4_router_id_of_local_Node) || Ipv4_router_id_of_local_Node <- Ipv4_router_id_of_local_Nodes]),
   Length = byte_size(ValueBin1),
   <<Type:16,Length:16,ValueBin1/bytes>>.
+encode_tlv16(#optical_node_attribute_tlv{node_ip = Node_ip}) ->
+  Type = 10002,
+  Length = 8,
+  Pre = 32,
+  Res_bytes = 0,
+  <<Type:16,Length:16,Pre:8,Node_ip:32,Res_bytes:24>>.
 
 encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
   link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
@@ -413,13 +419,16 @@ encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,ope
   Gmpls_cap_tlv1 = encode_tlv1(Gmpls_cap_tlv),
 %%   io:format("Gmpls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
   Stateful_pce_cap_tlv1 = encode_tlv2(Stateful_pce_cap_tlv),
-%%   Pcecc_cap_tlv1 = encode_tlv3(Pcecc_cap_tlv),
+  Pcecc_cap_tlv1 = encode_tlv3(Pcecc_cap_tlv),
   Ted_cap_tlv1 = encode_tlv5(Ted_cap_tlv),
   Ls_cap_tlv1 = encode_tlv12(Ls_cap_tlv),
 %%   io:format("Ls_cap_tlv output is ~p~n",[Gmpls_cap_tlv]),
 
-  list_to_binary([Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
-
+  list_to_binary([Gmpls_cap_tlv1,Stateful_pce_cap_tlv1,Pcecc_cap_tlv1,Ted_cap_tlv1,Ls_cap_tlv1]).
+encode_lsp_object_tlvs(#lsp_object_tlvs{lsp_object_lsp_identifier_tlv = Lsp_identifier_tlv,lsp_object_symbolic_path_name_tlv = Symbolic_path_name_tlv}) ->
+  Lsp_identifier_tlv1 = encode_tlv8(Lsp_identifier_tlv),
+  Symbolic_path_name_tlv1 = encode_tlv7(Symbolic_path_name_tlv),
+  list_to_binary([<<Lsp_identifier_tlv1,Symbolic_path_name_tlv1>>]).
 encode_ls_object_tlvs(#ls_object_tlvs{actn_link_tlv = Actn_link_tlv,link_descriptor_tlv = Link_des_tlv}) ->
   io:format("encode_ls_object_tlvs start~n"),
   Actn_link_tlv1 = encode_tlv13(Actn_link_tlv),
@@ -449,6 +458,12 @@ encode_object_body(open_ob_type, #open_object{
 encode_object_body(open_ob_type, #open_object{version = Version}) when Version /= 1 ->
   ?ERROR("open object version is not mached"),
   <<>>;
+%% encode lsp object
+encode_object_body(lsp_ob_type,#lsp_object{
+  plsp_id = Plsp_id,flag = Flag,c = C,o = O,a = A,r = R,s = S,d =D,lsp_object_tlvs = Tlvs
+}) ->
+  TlvsBin=encode_lsp_object_tlvs(Tlvs),
+  list_to_binary([<<Plsp_id:20,Flag:4,C:1,O:3,A:1,R:1,S:1,D:1>>,TlvsBin]);
 
 %% encode rp object -------------------------------------------------------------------
 encode_object_body(rp_object_type, #rp_object{
@@ -484,11 +499,11 @@ encode_object_body(close_ob_type,#close_object{
   <<Res:16,Flags:8,Reason:8,TlvsBin/bytes>>;
 
 %% encode ls object
-encode_object_body(ls_link_ob_type,#ls_object{
-  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = Tlvs
+encode_object_body(ls_link_ob_type,#ls_link_object{
+  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlv = Tlvs
 }) ->
   io:format("encode_ls_object_body start~n"),
-  TlvsBin=encode_ls_object_tlvs(Tlvs),
+  TlvsBin=encode_tlv13(Tlvs),
   io:format("TlvsBin in encode_ls_object_body is ~p~n",[TlvsBin]),
   list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 %% ls object protocol id
@@ -499,17 +514,17 @@ encode_object_body(ls_link_ob_type,#ls_object{
 %%| 5 | Static configuration
 %%| 6 | OSPFv3
 %%| 7 | BGP-LS
-encode_object_body(ls_node_ob_type,#ls_object{
-  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = Tlvs
+encode_object_body(ls_node_ob_type,#ls_node_object{
+  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_node_object_tlv = Tlvs
 }) ->
-  TlvsBin=encode_tlv1(Tlvs),
-  <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
+  TlvsBin=encode_tlv16(Tlvs),
+  list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 
-encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_object{
-  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = Tlvs
+encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_link_object{
+  ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlv = Tlvs
 }) ->
   TlvsBin=encode_tlv1(Tlvs),
-  <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
+  list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 
 %% encode_object_body(ls_ipv6_topo_prefix_ob_type,#ls_object{
 %%   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,tlvs = Tlvs
@@ -517,12 +532,7 @@ encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_object{
 %%   TlvsBin=encode_tlv1(Tlvs),
 %%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
-%% encode lsp object
-encode_object_body(lsp_ob_type,#lsp_object{
-  plsp_id = Plsp_id,flag = Flag,o = O,a = A,r = R,s = S,d =D,tlvs = Tlvs
-}) ->
-  TlvsBin=encode_tlv1(Tlvs),
-  <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,TlvsBin/bytes>>;
+
 
 %% encode rro object
 %% TODO for fxf 2016-03-30

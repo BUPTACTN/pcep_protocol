@@ -220,7 +220,6 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
           io:format("decode_tlvs start, Tlvs in decode_Tlvs is ~p~n", [Tlvs]),
           Tlv = decode_tlv(Tlv1),
           io:format("Tlv output in decode_tlvs is ~p~n",[decode_tlv(Tlv1)]),
-
           [Tlv|decode_tlvs(Priority,_TlvRest)];
         (erlang:byte_size(Binary) < (Length+4)) and (erlang:byte_size(Binary)>0) ->
           ?ERROR("Tlv size is too small");
@@ -228,7 +227,6 @@ decode_tlvs(Priority,Binary) ->    %% Priority=1 indicate the TLV is normal TLV,
 
         true ->
           {}
-
 %%           [Tlv]
       end;
 %%   list_to_tuple(Tlv_list);

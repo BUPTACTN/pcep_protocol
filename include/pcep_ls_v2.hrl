@@ -52,16 +52,37 @@
 %%
 %% -type link_attributes_tlv_value()::#link_attributes_tlv_value{}.
 
--record(ls_object,{
+-record(ls_link_object,{
   ls_object_protocol_id::integer(),%%8bits
   ls_object_flag::integer(),%%22bits
   ls_object_r::boolean(),
   ls_object_s::boolean(),
   ls_object_ls_id::integer(),
-  ls_object_tlvs :: ls_object_tlvs()
+  ls_object_tlv :: optical_link_attribute_tlv()
 }).
 
--type ls_object()::#ls_object{}.
+-type ls_link_object()::#ls_link_object{}.
+
+-record(ls_node_object,{
+  ls_object_protocol_id::integer(),%%8bits
+  ls_object_flag::integer(),%%22bits
+  ls_object_r::boolean(),
+  ls_object_s::boolean(),
+  ls_object_ls_id::integer(),
+  ls_node_object_tlv :: optical_node_attribute_tlv()
+}).
+
+-type ls_node_object() :: #ls_node_object{}.
+
+-record(optical_node_attribute_tlv,{
+  optical_node_attribute_tlv_type :: integer(),
+  optical_node_attribute_tlv_length :: integer(),
+  node_pre ::integer(),
+  node_ip :: integer(),
+  res_bytes :: integer()
+}).
+
+-type optical_node_attribute_tlv() :: #optical_node_attribute_tlv{}.
 
 -record(ls_object_tlvs,{
   actn_link_tlv :: optical_link_attribute_tlv(),

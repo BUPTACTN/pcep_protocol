@@ -68,16 +68,23 @@
 -record(lsp_object,{
   plsp_id::integer(),
   flag::integer(),
+  c::integer(),
   o::integer(),
   a::boolean(),
   r::boolean(),
   s::boolean(),
   d::boolean(),
-  tlvs::list()
+  lsp_object_tlvs::lsp_object_tlvs()
 }).
 
 -type lsp_object()::#lsp_object{}.
 
+-record(lsp_object_tlvs,{
+  lsp_object_symbolic_path_name_tlv :: symbolic_path_name_tlv(),
+  lsp_object_lsp_identifier_tlv :: ipv4_lsp_identifiers_tlv()
+}).
+
+-type lsp_object_tlvs() :: lsp_object_tlvs().
 %% subobject, not tlvs,
 -record(ipv4_subobject,{
   ipv4_subobject_type=1 ::integer(),%%8bits
