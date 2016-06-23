@@ -245,12 +245,13 @@ encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ip
   ValueBin1 = list_to_binary([encode_sub_tlv11(Ipv4_router_id_of_local_Node) || Ipv4_router_id_of_local_Node <- Ipv4_router_id_of_local_Nodes]),
   Length = byte_size(ValueBin1),
   <<Type:16,Length:16,ValueBin1/bytes>>.
-encode_tlv16(#optical_node_attribute_tlv{node_ip = Node_ip}) ->
+encode_tlv16(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
   Type = 10002,
   Length = 8,
   Pre = 32,
   Res_bytes = 0,
-  <<Type:16,Length:16,Pre:8,Node_ip:32,Res_bytes:24>>.
+  Optical_node_attribute1 = encode_sub_tlv13(Optical_node_attribute),
+  list_to_binary([<<Type:16,Length:16,Pre:8>>,Optical_node_attribute1,<<Res_bytes:24>>]).
 
 encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
   link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
@@ -306,6 +307,10 @@ encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_n
 encode_sub_tlv12(#available_labels_field_sub_tlv{available_labels_field_sub_tlv_type = Available_labels_field_sub_tlv_type,
 available_labels_field_sub_tlv_length = Available_labels_field_sub_tlv_Length,pri = Pri,res = Res, label_set_field = Label_set_field}) ->
   <<Available_labels_field_sub_tlv_type:16,Available_labels_field_sub_tlv_Length:16,Pri:8,Res:24,Label_set_field:32>>.
+
+encode_sub_tlv13(#actn_node_sub_tlv{actn_node_sub_tlv_type = Actn_node_sub_tlv_type,actn_node_sub_tlv_length = Actn_node_sub_tlv_length,
+  prefix = Prefix,ipv4_prefix = Ipv4_prefix,res_bytes = Res_bytes}) ->
+  <<Actn_node_sub_tlv_type:16,Actn_node_sub_tlv_length:16,Prefix:8,Ipv4_prefix:32,Res_bytes:24>>.
 %% -spec encode_tlv(Tlv::tlv()) -> binary().
 %% encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   case Type of

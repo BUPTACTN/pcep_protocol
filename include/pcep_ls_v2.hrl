@@ -77,13 +77,19 @@
 -record(optical_node_attribute_tlv,{
   optical_node_attribute_tlv_type :: integer(),
   optical_node_attribute_tlv_length :: integer(),
-  node_pre ::integer(),
-  node_ip :: integer(),
-  res_bytes :: integer()
+  optical_node_attribute :: actn_node_sub_tlv
 }).
 
 -type optical_node_attribute_tlv() :: #optical_node_attribute_tlv{}.
+-record(actn_node_sub_tlv,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix ::integer(),
+  ipv4_prefix :: integer(),
+  res_bytes :: integer()
+}).
 
+-type actn_node_sub_tlv() :: #actn_node_sub_tlv{}.
 -record(ls_object_tlvs,{
   actn_link_tlv :: optical_link_attribute_tlv(),
   link_descriptor_tlv :: link_descriptors_tlv()
@@ -244,3 +250,4 @@ available_labels_field_sub_tlv_body :: any()
 %% }).
 %%
 %% -type ls_rpt_msg()::#ls_rpt_msg{}.
+%% -record(label_field,)
