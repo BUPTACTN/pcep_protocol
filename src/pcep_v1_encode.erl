@@ -223,6 +223,7 @@ encode_tlv13(#optical_link_attribute_tlv{
   ValueBin8 = encode_sub_tlv7(Port_label_res),
   io:format("Port_label_res is ~p~n",[ValueBin8]),
   ValueBin9 = encode_sub_tlv12(Available_labels_field),
+  io:format("Available_labels_field is ~p~n",[ValueBin9]),
   Type = 10001,
   Length = 116, %% TODO
   Resbytes = 0,
