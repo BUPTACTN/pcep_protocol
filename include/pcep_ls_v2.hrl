@@ -215,7 +215,7 @@
   remote_interface_ip_add_sub_tlv_body :: any(),
   te_metric_body :: any(),
   interface_switching_cap_des_sub_tlv_body :: any(),
-  shared_risk_link_group_sub_tlv_body :: any(),
+%%   shared_risk_link_group_sub_tlv_body :: any(),
   port_label_res_sub_tlv_body ::any(),
 available_labels_field_sub_tlv_body :: any()
 }).

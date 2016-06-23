@@ -202,7 +202,8 @@ encode_tlv13(#optical_link_attribute_tlv{
   link_type_sub_tlv_body = Link_type,
   link_id_sub_tlv_body = Link_id, local_interface_ip_add_sub_tlv_body = Local_interface_ip_add,
   remote_interface_ip_add_sub_tlv_body = Remote_interface_ip_add,te_metric_body = Te_metric,
-  interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_des, shared_risk_link_group_sub_tlv_body = Shared_risk_link_group,
+  interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_des,
+%%   shared_risk_link_group_sub_tlv_body = Shared_risk_link_group,
   port_label_res_sub_tlv_body = Port_label_res,available_labels_field_sub_tlv_body = Available_labels_field}) ->
   io:format("encode_actn_link_tlv start~n"),
   ValueBin1 = encode_sub_tlv10(Link_type),
@@ -217,15 +218,15 @@ encode_tlv13(#optical_link_attribute_tlv{
   io:format("Te_metric is ~p~n",[ValueBin5]),
   ValueBin6 = encode_sub_tlv5(Interface_switching_cap_des),
   io:format("Interface_switching_cap_des is ~p~n",[ValueBin6]),
-  ValueBin7 = encode_sub_tlv6(Shared_risk_link_group),
-  io:format("Shared_risk_link_group is ~p~n",[ValueBin7]),
+%%   ValueBin7 = encode_sub_tlv6(Shared_risk_link_group),
+%%   io:format("Shared_risk_link_group is ~p~n",[ValueBin7]),
   ValueBin8 = encode_sub_tlv7(Port_label_res),
   io:format("Port_label_res is ~p~n",[ValueBin8]),
   ValueBin9 = encode_sub_tlv12(Available_labels_field),
   Type = 10001,
-  Length = 112, %% TODO
+  Length = 104, %% TODO
   Resbytes = 0,
-  list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin7,ValueBin8,ValueBin9]).
+  list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin8,ValueBin9]).
 encode_tlv14(#link_descriptors_tlv{
 %%   link_descriptors_tlv_type = Type,link_descriptors_tlv_length = Length,
   ipv4_interface_add_sub_tlv_body = Ipv4_interface_add,
