@@ -224,7 +224,7 @@ encode_tlv13(#optical_link_attribute_tlv{
   io:format("Port_label_res is ~p~n",[ValueBin8]),
   ValueBin9 = encode_sub_tlv12(Available_labels_field),
   Type = 10001,
-  Length = 104, %% TODO
+  Length = 116, %% TODO
   Resbytes = 0,
   list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin8,ValueBin9]).
 encode_tlv14(#link_descriptors_tlv{
@@ -283,7 +283,7 @@ encode_sub_tlv7(#port_label_restrictions_sub_tlv{port_label_restrictions_sub_tlv
   matrix_ID = Matrix_ID,res_type = Res_type,switching_cap = Switching_cap,encoding = Encoding,additional_res = Additional_res}) ->
   %% TODO after defined.
 
-  <<Type:16,Length:16,Matrix_ID:8,Res_type:8,Switching_cap:8,Encoding:8,Additional_res:32>>.
+  <<Type:16,Length:16,Matrix_ID:8,Res_type:8,Switching_cap:8,Encoding:8,Additional_res:128>>.
 
 encode_sub_tlv8(#ipv4_interface_address_sub_tlv{ipv4_interface_address_sub_tlv_type = Ipv4_interface_add_type,
   ipv4_interface_address_sub_tlv_length = Ipv4_interface_add_length,ipv4_interface_address = Ipv4_interface_address}) ->
