@@ -222,7 +222,7 @@ encode_tlv13(#optical_link_attribute_tlv{
   ValueBin8 = encode_sub_tlv7(Port_label_res),
   io:format("Port_label_res is ~p~n",[ValueBin8]),
   Type = 10001,
-  Length = 1, %% TODO
+  Length = 100, %% TODO
   Resbytes = 0,
   list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin7,ValueBin8]).
 encode_tlv14(#link_descriptors_tlv{
