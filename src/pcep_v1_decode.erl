@@ -120,17 +120,17 @@ decode_object_body(close_ob_type,Binary) ->
 decode_object_body(ls_link_ob_type,Binary) ->
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = DTlvs};
+  #ls_link_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlv = DTlvs};
 
 decode_object_body(ls_node_ob_type,Binary) ->
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = DTlvs};
+  #ls_node_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_node_object_tlv = DTlvs};
 
 decode_object_body(ls_ipv4_topo_prefix_ob_type,Binary) ->
   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #ls_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlvs = DTlvs};
+  #ls_link_object{ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlv = DTlvs};
 
 %% decode_object_body(ls_ipv6_topo_prefix_ob_type,Binary) ->
 %%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,Tlvs/bytes>> = Binary,
@@ -140,7 +140,7 @@ decode_object_body(ls_ipv4_topo_prefix_ob_type,Binary) ->
 decode_object_body(lsp_ob_type,Binary) ->
   <<Plsp_id:20,Flag:5,O:3,A:1,R:1,S:1,D:1,Tlvs/bytes>> = Binary,
   DTlvs = decode_tlvs(1,Tlvs),
-  #lsp_object{plsp_id = Plsp_id,flag = Flag,o = O,a = A,r = R,s = S,d =D,tlvs = DTlvs};
+  #lsp_object{plsp_id = Plsp_id,flag = Flag,o = O,a = A,r = R,s = S,d =D,lsp_object_tlvs = DTlvs};
 
 %% TODO 不存在于encode的object，部分在encode也需要补充
 decode_object_body(srp_ob_type,Binary) ->
