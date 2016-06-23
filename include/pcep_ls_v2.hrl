@@ -158,10 +158,20 @@
   res_type :: integer(),
   switching_cap :: integer(),
   encoding :: integer(),
-  additional_res :: any
+  additional_res :: any()
 }).
 
 -type port_label_restrictions_sub_tlv_value() :: #port_label_restrictions_sub_tlv{}.
+
+-record(available_labels_field_sub_tlv,{
+  available_labels_field_sub_tlv_type :: integer(),
+  available_labels_field_sub_tlv_length :: integer(),
+  pri :: integer(),
+  res :: integer(),
+  label_set_field ::integer()
+}).
+
+-type available_labels_field_sub_tlv() :: #available_labels_field_sub_tlv{}.
 
 -record(ipv4_interface_address_sub_tlv, {
   ipv4_interface_address_sub_tlv_type :: integer(),
@@ -206,7 +216,8 @@
   te_metric_body :: any(),
   interface_switching_cap_des_sub_tlv_body :: any(),
   shared_risk_link_group_sub_tlv_body :: any(),
-  port_label_res_sub_tlv_body ::any()
+  port_label_res_sub_tlv_body ::any(),
+available_labels_field_sub_tlv_body :: any()
 }).
 
 -type optical_link_attribute_tlv() :: #optical_link_attribute_tlv{}.

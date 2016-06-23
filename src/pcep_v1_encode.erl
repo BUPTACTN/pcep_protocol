@@ -203,7 +203,7 @@ encode_tlv13(#optical_link_attribute_tlv{
   link_id_sub_tlv_body = Link_id, local_interface_ip_add_sub_tlv_body = Local_interface_ip_add,
   remote_interface_ip_add_sub_tlv_body = Remote_interface_ip_add,te_metric_body = Te_metric,
   interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_des, shared_risk_link_group_sub_tlv_body = Shared_risk_link_group,
-  port_label_res_sub_tlv_body = Port_label_res}) ->
+  port_label_res_sub_tlv_body = Port_label_res,available_labels_field_sub_tlv_body = Available_labels_field}) ->
   io:format("encode_actn_link_tlv start~n"),
   ValueBin1 = encode_sub_tlv10(Link_type),
   io:format("Link_type is ~p~n",[ValueBin1]),
@@ -221,10 +221,11 @@ encode_tlv13(#optical_link_attribute_tlv{
   io:format("Shared_risk_link_group is ~p~n",[ValueBin7]),
   ValueBin8 = encode_sub_tlv7(Port_label_res),
   io:format("Port_label_res is ~p~n",[ValueBin8]),
+  ValueBin9 = encode_sub_tlv12(Available_labels_field),
   Type = 10001,
-  Length = 100, %% TODO
+  Length = 112, %% TODO
   Resbytes = 0,
-  list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin7,ValueBin8]).
+  list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin7,ValueBin8,ValueBin9]).
 encode_tlv14(#link_descriptors_tlv{
 %%   link_descriptors_tlv_type = Type,link_descriptors_tlv_length = Length,
   ipv4_interface_add_sub_tlv_body = Ipv4_interface_add,
@@ -299,6 +300,10 @@ encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_n
   ipv4_router_id_of_local_node_sub_tlv_length = Ipv4_router_id_of_local_node_length,
   ipv4_router_id_of_local_node = Ipv4_router_id_of_local_node}) ->
   <<Ipv4_router_id_of_local_node_type:16,Ipv4_router_id_of_local_node_length:16,Ipv4_router_id_of_local_node:32>>.
+
+encode_sub_tlv12(#available_labels_field_sub_tlv{available_labels_field_sub_tlv_type = Available_labels_field_sub_tlv_type,
+available_labels_field_sub_tlv_length = Available_labels_field_sub_tlv_Length,pri = Pri,res = Res, label_set_field = Label_set_field}) ->
+  <<Available_labels_field_sub_tlv_type:16,Available_labels_field_sub_tlv_Length:16,Pri:8,Res:24,Label_set_field:32>>.
 %% -spec encode_tlv(Tlv::tlv()) -> binary().
 %% encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   case Type of
