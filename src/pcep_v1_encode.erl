@@ -247,11 +247,9 @@ encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ip
   <<Type:16,Length:16,ValueBin1/bytes>>.
 encode_tlv16(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
   Type = 10002,
-  Length = 8,
-  Pre = 32,
-  Res_bytes = 0,
+  Length = 12,
   Optical_node_attribute1 = encode_sub_tlv13(Optical_node_attribute),
-  list_to_binary([<<Type:16,Length:16,Pre:8>>,Optical_node_attribute1,<<Res_bytes:24>>]).
+  list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
 
 encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
   link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
