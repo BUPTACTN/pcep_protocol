@@ -805,10 +805,14 @@ end
 
 -type pcep_pclrresv_msg() :: #pcep_pclrresv_msg{}.
 
--record(pcep_lsrpt_msg, {
-  pcep_lsrpt_ls_object :: ls_object()
+-record(pcep_lsrpt_link_msg, {
+  pcep_lsrpt_ls_object :: ls_link_object()
 }).
 
--type pcep_lsrpt_msg() :: #pcep_lsrpt_msg{}.
+-type pcep_lsrpt_msg() :: #pcep_lsrpt_link_msg{} | #pcep_lsrpt_node_msg{}.
+
+-record(pcep_lsrpt_node_msg, {
+  pcep_lsrpt_ls_object :: ls_node_object()
+}).
 
 
