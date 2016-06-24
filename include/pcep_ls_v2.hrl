@@ -90,6 +90,35 @@
 }).
 
 -type actn_node_sub_tlv() :: #actn_node_sub_tlv{}.
+%% PCEP DEMO
+-record(actn_node_sub_tlv_2,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix ::integer(),
+  ipv4_prefix1 :: integer(),
+  ipv4_prefix2 :: integer(),
+%%   ipv4_prefix3 :: integer(),
+  res_bytes :: integer()
+}).
+
+-type actn_node_sub_tlv_1() :: #actn_node_sub_tlv_1{}.
+
+-record(actn_node_sub_tlv_4,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix ::integer(),
+  ipv4_prefix1 :: integer(),
+  ipv4_prefix2 :: integer(),
+  ipv4_prefix3 :: integer(),
+  ipv4_prefix4 :: integer(),
+  res_bytes :: integer()
+}).
+
+-type actn_node_sub_tlv_4() :: #actn_node_sub_tlv_4{}.
+-type actn_node_sub_tlv_2() :: #actn_node_sub_tlv_2{}.
+
+
+%% @end
 -record(ls_object_tlvs,{
   actn_link_tlv :: optical_link_attribute_tlv(),
   link_descriptor_tlv :: link_descriptors_tlv()

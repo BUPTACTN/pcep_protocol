@@ -304,7 +304,7 @@ encode_sub_tlv11(#ipv4_router_id_of_local_node_sub_tlv{ipv4_router_id_of_local_n
 
 encode_sub_tlv12(#available_labels_field_sub_tlv{available_labels_field_sub_tlv_type = Available_labels_field_sub_tlv_type,
 available_labels_field_sub_tlv_length = Available_labels_field_sub_tlv_Length,pri = Pri,res = Res, label_set_field = Label_set_field}) ->
-  <<Available_labels_field_sub_tlv_type:16,Available_labels_field_sub_tlv_Length:16,Pri:8,Res:24,Label_set_field:32>>.
+  <<Available_labels_field_sub_tlv_type:16,Available_labels_field_sub_tlv_Length:16,Pri:8,Res:24,Label_set_field:128>>.
 
 encode_sub_tlv13(#actn_node_sub_tlv{actn_node_sub_tlv_type = Actn_node_sub_tlv_type,actn_node_sub_tlv_length = Actn_node_sub_tlv_length,
   prefix = Prefix,ipv4_prefix = Ipv4_prefix,res_bytes = Res_bytes}) ->
