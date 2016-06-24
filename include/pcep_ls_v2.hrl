@@ -101,7 +101,7 @@
   res_bytes :: integer()
 }).
 
--type actn_node_sub_tlv_1() :: #actn_node_sub_tlv_1{}.
+%% -type actn_node_sub_tlv_1() :: #actn_node_sub_tlv_{}.
 
 -record(actn_node_sub_tlv_4,{
   actn_node_sub_tlv_type :: integer(),
