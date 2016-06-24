@@ -225,7 +225,7 @@ encode_tlv13(#optical_link_attribute_tlv{
   ValueBin9 = encode_sub_tlv12(Available_labels_field),
   io:format("Available_labels_field is ~p~n",[ValueBin9]),
   Type = 10001,
-  Length = 116, %% TODO
+  Length = 128, %% TODO
   Resbytes = 0,
   list_to_binary([<<Type:16,Length:16>>,ValueBin1,<<Resbytes:24>>,ValueBin2,ValueBin3,ValueBin4,ValueBin5,ValueBin6,ValueBin8,ValueBin9]).
 encode_tlv14(#link_descriptors_tlv{
