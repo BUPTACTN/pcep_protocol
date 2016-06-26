@@ -251,6 +251,24 @@ encode_tlv16(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_a
   Optical_node_attribute1 = encode_sub_tlv13(Optical_node_attribute),
   list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
 
+encode_tlv17(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+  Type = 10002,
+  Length = 16,
+  Optical_node_attribute1 = encode_sub_tlv14(Optical_node_attribute),
+  list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
+
+encode_tlv18(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+  Type = 10002,
+  Length = 20,
+  Optical_node_attribute1 = encode_sub_tlv15(Optical_node_attribute),
+  list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
+
+encode_tlv19(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+  Type = 10002,
+  Length = 24,
+  Optical_node_attribute1 = encode_sub_tlv16(Optical_node_attribute),
+  list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
+
 encode_sub_tlv1(#link_id_sub_tlv{link_id_sub_tlv_type = Link_id_type,
   link_id_sub_tlv_length = Link_id_length,link_id = Link_id}) ->
   <<Link_id_type:16,Link_id_length:16,Link_id:32>>.
@@ -309,6 +327,21 @@ available_labels_field_sub_tlv_length = Available_labels_field_sub_tlv_Length,pr
 encode_sub_tlv13(#actn_node_sub_tlv{actn_node_sub_tlv_type = Actn_node_sub_tlv_type,actn_node_sub_tlv_length = Actn_node_sub_tlv_length,
   prefix = Prefix,ipv4_prefix = Ipv4_prefix,res_bytes = Res_bytes}) ->
   <<Actn_node_sub_tlv_type:16,Actn_node_sub_tlv_length:16,Prefix:8,Ipv4_prefix:32,Res_bytes:24>>.
+
+encode_sub_tlv14(#actn_node_sub_tlv_2{actn_node_sub_tlv_type = Actn_node_sub_tlv_2_type,
+  actn_node_sub_tlv_length = Actn_node_sub_tlv_2_length,prefix = Prefix,
+  ipv4_prefix1 = Ipv4_prefix_1,ipv4_prefix2 = Ipv4_prefix_2,res_bytes = Res_bytes}) ->
+  <<Actn_node_sub_tlv_2_type:16,Actn_node_sub_tlv_2_length:16,Prefix:8,Ipv4_prefix_1:32,Ipv4_prefix_2:32,Res_bytes:24>>.
+
+encode_sub_tlv15(#actn_node_sub_tlv_3{actn_node_sub_tlv_type = Actn_node_sub_tlv_3_type,
+  actn_node_sub_tlv_length = Actn_node_sub_tlv_3_length,prefix = Prefix,
+  ipv4_prefix1 = Ipv4_prefix_1,ipv4_prefix2 = Ipv4_prefix_2,ipv4_prefix3 = Ipv4_prefix_3,res_bytes = Res_bytes}) ->
+  <<Actn_node_sub_tlv_3_type:16,Actn_node_sub_tlv_3_length:16,Prefix:8,Ipv4_prefix_1:32,Ipv4_prefix_2:32,Ipv4_prefix_3:32,Res_bytes:24>>.
+
+encode_sub_tlv16(#actn_node_sub_tlv_4{actn_node_sub_tlv_type = Actn_node_sub_tlv_4_type,
+  actn_node_sub_tlv_length = Actn_node_sub_tlv_4_length,prefix = Prefix, ipv4_prefix1 = Ipv4_prefix_1,
+  ipv4_prefix2 = Ipv4_prefix_2,ipv4_prefix3 = Ipv4_prefix_3,ipv4_prefix4 = Ipv4_prefix_4,res_bytes = Res_bytes}) ->
+  <<Actn_node_sub_tlv_4_type:16,Actn_node_sub_tlv_4_length:16,Prefix:8,Ipv4_prefix_1:32,Ipv4_prefix_2:32,Ipv4_prefix_3:32,Ipv4_prefix_4:32,Res_bytes:24>>.
 %% -spec encode_tlv(Tlv::tlv()) -> binary().
 %% encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   case Type of
@@ -527,7 +560,26 @@ encode_object_body(ls_link_ob_type,#ls_link_object{
 encode_object_body(ls_node_ob_type,#ls_node_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_node_object_tlv = Tlvs
 }) ->
-  TlvsBin=encode_tlv16(Tlvs),
+  Q = #ls_node_object{
+    ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_node_object_tlv = Tlvs},
+  io:format("Q is ~p~n",[Q]),
+  E = element(7,Q),
+  io:format("E is ~p~n",[E]),
+  Ip_num = tuple_size(element(4,E)),
+  case Ip_num of
+    6 ->
+      TlvsBin=encode_tlv16(Tlvs);
+%%       list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
+    7 ->
+      TlvsBin = encode_tlv17(Tlvs);
+    8 ->
+      TlvsBin = encode_tlv18(Tlvs);
+    9 ->
+      TlvsBin = encode_tlv19(Tlvs);
+    _ ->
+      io:format("unsupported length~n")
+  end,
+%%   TlvsBin=encode_tlv16(Tlvs),
   list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 
 encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_link_object{
