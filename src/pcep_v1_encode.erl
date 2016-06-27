@@ -568,19 +568,24 @@ encode_object_body(ls_node_ob_type,#ls_node_object{
   Ip_num = tuple_size(element(4,E)),
   case Ip_num of
     6 ->
-      TlvsBin=encode_tlv16(Tlvs);
-%%       list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
+      TlvsBin1=encode_tlv16(Tlvs),
+      list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin1]);
     7 ->
-      TlvsBin = encode_tlv17(Tlvs);
+      TlvsBin2 = encode_tlv17(Tlvs),
+      list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin2]);
     8 ->
-      TlvsBin = encode_tlv18(Tlvs);
+      TlvsBin3 = encode_tlv18(Tlvs),
+      list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin3]);
+
     9 ->
-      TlvsBin = encode_tlv19(Tlvs);
+      TlvsBin4 = encode_tlv19(Tlvs),
+      list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin4]);
+
     _ ->
       io:format("unsupported length~n")
-  end,
+  end;
 %%   TlvsBin=encode_tlv16(Tlvs),
-  list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
+%%   list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 
 encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_link_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlv = Tlvs
