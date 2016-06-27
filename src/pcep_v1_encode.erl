@@ -329,19 +329,19 @@ encode_sub_tlv13(#actn_node_sub_tlv{actn_node_sub_tlv_type = Actn_node_sub_tlv_t
   <<Actn_node_sub_tlv_type:16,Actn_node_sub_tlv_length:16,Prefix:8,Ipv4_prefix:32,Res_bytes:24>>.
 
 encode_sub_tlv14(#actn_node_sub_tlv_2{actn_node_sub_tlv_type = Actn_node_sub_tlv_2_type,
-  actn_node_sub_tlv_length = Actn_node_sub_tlv_2_length,prefix = Prefix,
-  ipv4_prefix1 = Ipv4_prefix_1,ipv4_prefix2 = Ipv4_prefix_2,res_bytes = Res_bytes}) ->
-  <<Actn_node_sub_tlv_2_type:16,Actn_node_sub_tlv_2_length:16,Prefix:8,Ipv4_prefix_1:32,Ipv4_prefix_2:32,Res_bytes:24>>.
+  actn_node_sub_tlv_length = Actn_node_sub_tlv_2_length,prefix1 = Prefix1,
+  ipv4_prefix1 = Ipv4_prefix_1,prefix2 = Prefix2,ipv4_prefix2 = Ipv4_prefix_2,res_bytes = Res_bytes}) ->
+  <<Actn_node_sub_tlv_2_type:16,Actn_node_sub_tlv_2_length:16,Prefix1:8,Ipv4_prefix_1:32,Prefix2:8,Ipv4_prefix_2:32,Res_bytes:16>>.
 
 encode_sub_tlv15(#actn_node_sub_tlv_3{actn_node_sub_tlv_type = Actn_node_sub_tlv_3_type,
-  actn_node_sub_tlv_length = Actn_node_sub_tlv_3_length,prefix = Prefix,
-  ipv4_prefix1 = Ipv4_prefix_1,ipv4_prefix2 = Ipv4_prefix_2,ipv4_prefix3 = Ipv4_prefix_3,res_bytes = Res_bytes}) ->
-  <<Actn_node_sub_tlv_3_type:16,Actn_node_sub_tlv_3_length:16,Prefix:8,Ipv4_prefix_1:32,Ipv4_prefix_2:32,Ipv4_prefix_3:32,Res_bytes:24>>.
+  actn_node_sub_tlv_length = Actn_node_sub_tlv_3_length,prefix1 = Prefix1,
+  ipv4_prefix1 = Ipv4_prefix_1,prefix2 = Prefix2,ipv4_prefix2 = Ipv4_prefix_2,prefix3 = Prefix3,ipv4_prefix3 = Ipv4_prefix_3,res_bytes = Res_bytes}) ->
+  <<Actn_node_sub_tlv_3_type:16,Actn_node_sub_tlv_3_length:16,Prefix1:8,Ipv4_prefix_1:32,Prefix2:8,Ipv4_prefix_2:32,Prefix3:8,Ipv4_prefix_3:32,Res_bytes:8>>.
 
 encode_sub_tlv16(#actn_node_sub_tlv_4{actn_node_sub_tlv_type = Actn_node_sub_tlv_4_type,
-  actn_node_sub_tlv_length = Actn_node_sub_tlv_4_length,prefix = Prefix, ipv4_prefix1 = Ipv4_prefix_1,
-  ipv4_prefix2 = Ipv4_prefix_2,ipv4_prefix3 = Ipv4_prefix_3,ipv4_prefix4 = Ipv4_prefix_4,res_bytes = Res_bytes}) ->
-  <<Actn_node_sub_tlv_4_type:16,Actn_node_sub_tlv_4_length:16,Prefix:8,Ipv4_prefix_1:32,Ipv4_prefix_2:32,Ipv4_prefix_3:32,Ipv4_prefix_4:32,Res_bytes:24>>.
+  actn_node_sub_tlv_length = Actn_node_sub_tlv_4_length,prefix1 = Prefix1, ipv4_prefix1 = Ipv4_prefix_1,prefix2 = Prefix2,
+  ipv4_prefix2 = Ipv4_prefix_2,prefix3 = Prefix3,ipv4_prefix3 = Ipv4_prefix_3,prefix4 = Prefix4,ipv4_prefix4 = Ipv4_prefix_4}) ->
+  <<Actn_node_sub_tlv_4_type:16,Actn_node_sub_tlv_4_length:16,Prefix1:8,Ipv4_prefix_1:32,Prefix2:8,Ipv4_prefix_2:32,Prefix3:8,Ipv4_prefix_3:32,Prefix4:8,Ipv4_prefix_4:32>>.
 %% -spec encode_tlv(Tlv::tlv()) -> binary().
 %% encode_tlv(#tlv{type = Type, length = Length, value = Value}) ->
 %%   case Type of
@@ -570,14 +570,14 @@ encode_object_body(ls_node_ob_type,#ls_node_object{
     6 ->
       TlvsBin1=encode_tlv16(Tlvs),
       list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin1]);
-    7 ->
+    8 ->
       TlvsBin2 = encode_tlv17(Tlvs),
       list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin2]);
-    8 ->
+    10 ->
       TlvsBin3 = encode_tlv18(Tlvs),
       list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin3]);
 
-    9 ->
+    11 ->
       TlvsBin4 = encode_tlv19(Tlvs),
       list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin4]);
 

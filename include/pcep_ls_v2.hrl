@@ -96,8 +96,9 @@
 -record(actn_node_sub_tlv_2,{
   actn_node_sub_tlv_type :: integer(),
   actn_node_sub_tlv_length :: integer(),
-  prefix ::integer(),
+  prefix1 ::integer(),
   ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
   ipv4_prefix2 :: integer(),
 %%   ipv4_prefix3 :: integer(),
   res_bytes :: integer()
@@ -108,20 +109,25 @@
 -record(actn_node_sub_tlv_4,{
   actn_node_sub_tlv_type :: integer(),
   actn_node_sub_tlv_length :: integer(),
-  prefix ::integer(),
+  prefix1 ::integer(),
   ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
   ipv4_prefix2 :: integer(),
+  prefix3 :: integer(),
   ipv4_prefix3 :: integer(),
-  ipv4_prefix4 :: integer(),
-  res_bytes :: integer()
+  prefix4 :: integer(),
+  ipv4_prefix4 :: integer()
+%%   res_bytes :: integer()
 }).
 
 -record(actn_node_sub_tlv_3,{
   actn_node_sub_tlv_type :: integer(),
   actn_node_sub_tlv_length :: integer(),
-  prefix ::integer(),
+  prefix1 ::integer(),
   ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
   ipv4_prefix2 :: integer(),
+  prefix3 :: integer(),
   ipv4_prefix3 :: integer(),
 %%   ipv4_prefix4 :: integer(),
   res_bytes :: integer()
