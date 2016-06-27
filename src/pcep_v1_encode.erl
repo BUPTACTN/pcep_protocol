@@ -245,27 +245,27 @@ encode_tlv15(#node_attributes_tlv{ipv4_router_id_of_local_Node_sub_tlv_body = Ip
   ValueBin1 = list_to_binary([encode_sub_tlv11(Ipv4_router_id_of_local_Node) || Ipv4_router_id_of_local_Node <- Ipv4_router_id_of_local_Nodes]),
   Length = byte_size(ValueBin1),
   <<Type:16,Length:16,ValueBin1/bytes>>.
-encode_tlv16(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+encode_tlv16(#optical_node_attribute_tlv{optical_node_attribute_tlv_length = Length,optical_node_attribute = Optical_node_attribute}) ->
   Type = 10002,
-  Length = 12,
+%%   Length = 12,
   Optical_node_attribute1 = encode_sub_tlv13(Optical_node_attribute),
   list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
 
-encode_tlv17(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+encode_tlv17(#optical_node_attribute_tlv{optical_node_attribute_tlv_length = Length,optical_node_attribute = Optical_node_attribute}) ->
   Type = 10002,
-  Length = 16,
+%%   Length = 16,
   Optical_node_attribute1 = encode_sub_tlv14(Optical_node_attribute),
   list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
 
-encode_tlv18(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+encode_tlv18(#optical_node_attribute_tlv{optical_node_attribute_tlv_length = Length,optical_node_attribute = Optical_node_attribute}) ->
   Type = 10002,
-  Length = 20,
+%%   Length = 20,
   Optical_node_attribute1 = encode_sub_tlv15(Optical_node_attribute),
   list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
 
-encode_tlv19(#optical_node_attribute_tlv{optical_node_attribute = Optical_node_attribute}) ->
+encode_tlv19(#optical_node_attribute_tlv{optical_node_attribute_tlv_length = Length,optical_node_attribute = Optical_node_attribute}) ->
   Type = 10002,
-  Length = 24,
+%%   Length = 24,
   Optical_node_attribute1 = encode_sub_tlv16(Optical_node_attribute),
   list_to_binary([<<Type:16,Length:16>>,Optical_node_attribute1]).
 
