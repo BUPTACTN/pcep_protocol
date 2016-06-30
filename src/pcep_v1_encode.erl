@@ -471,7 +471,7 @@ encode_open_object_tlvs(#open_object_tlvs{open_gmpls_cap_tlv = Gmpls_cap_tlv,ope
 encode_lsp_object_tlvs(#lsp_object_tlvs{lsp_object_lsp_identifier_tlv = Lsp_identifier_tlv,lsp_object_symbolic_path_name_tlv = Symbolic_path_name_tlv}) ->
   Lsp_identifier_tlv1 = encode_tlv8(Lsp_identifier_tlv),
   Symbolic_path_name_tlv1 = encode_tlv7(Symbolic_path_name_tlv),
-  list_to_binary([<<Lsp_identifier_tlv1,Symbolic_path_name_tlv1>>]).
+  list_to_binary([Lsp_identifier_tlv1,Symbolic_path_name_tlv1]).
 encode_ls_object_tlvs(#ls_object_tlvs{actn_link_tlv = Actn_link_tlv,link_descriptor_tlv = Link_des_tlv}) ->
   io:format("encode_ls_object_tlvs start~n"),
   Actn_link_tlv1 = encode_tlv13(Actn_link_tlv),
@@ -505,6 +505,7 @@ encode_object_body(open_ob_type, #open_object{version = Version}) when Version /
 encode_object_body(lsp_ob_type,#lsp_object{
   plsp_id = Plsp_id,flag = Flag,c = C,o = O,a = A,r = R,s = S,d =D,lsp_object_tlvs = Tlvs
 }) ->
+  io:format("encode lsp object body start~n"),
   TlvsBin=encode_lsp_object_tlvs(Tlvs),
   list_to_binary([<<Plsp_id:20,Flag:4,C:1,O:3,A:1,R:1,S:1,D:1>>,TlvsBin]);
 
