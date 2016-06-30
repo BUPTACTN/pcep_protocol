@@ -162,15 +162,17 @@ encode_tlv6(#label_db_version_tlv{
 encode_tlv7(#symbolic_path_name_tlv{
 %%   symbolic_path_name_tlv_type = Type,symbolic_path_name_tlv_length = Length,
   symbolic_path_name = Symbolic_path_name}) ->
+  io:format("encode symbolic path name tlv start~n"),
   Type = 17,
   Length = 4,  %% TODO ???
-  <<Type:16,Length:16,Symbolic_path_name/bytes>>.
+  <<Type:16,Length:16,Symbolic_path_name:32>>.
 encode_tlv8(#ipv4_lsp_identifiers_tlv{
 %%   ipv4_lsp_identifiers_tlv_type = Type,ipv4_lsp_identifiers_tlv_length = Length,
   ipv4_lsp_identifiers_tlv_tunnel_sender_add = Ipv4_lsp_tunnel_sender_add,
 ipv4_lsp_identifiers_tlv_lsp_id = Ipv4_lsp_lsp_id,ipv4_lsp_identifiers_tlv_tunnel_id = Ipv4_lsp_tunnel_id,
   ipv4_lsp_identifiers_tlv_exrended_tunnel_id = Ipv4_exrended_tunnel_id,
   ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = Ipv4_lsp_tunnel_endpoint_add}) ->
+  io:format("encode ipv4 lsp identifiers tlv start~n"),
   Type = 18,
   Length = 16,
   <<Type:16,Length:16,Ipv4_lsp_tunnel_sender_add:32,Ipv4_lsp_lsp_id:16,Ipv4_lsp_tunnel_id:16,Ipv4_exrended_tunnel_id:32,Ipv4_lsp_tunnel_endpoint_add:32>>.
