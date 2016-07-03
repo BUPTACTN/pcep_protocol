@@ -39,10 +39,10 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
 %%   when MessageLength =:= erlang:byte_size(msg) ->
 %%   io:format("do start11111111111~n"),
 %%   BodyBin = encode_objects(Body),  %% one msg can include many objects
-  Tuple_object = element(2,Body),
-  Object_num = tuple_size(Tuple_object),
+%%   Tuple_object = element(2,Body),
+  Object_num = tuple_size(Body),
   io:format("Body in do is ~p~n",[Body]),
-  io:format("Tuple_object in do is ~p~n",[Tuple_object]),
+%%   io:format("Tuple_object in do is ~p~n",[Tuple_object]),
   io:format("Object_num is ~p~n",[Object_num]),
   case Object_num of
     3 ->
