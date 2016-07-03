@@ -9,7 +9,8 @@
 -author("Xinfeng").
 
 -record(ero_object,{
-  ero_subobjects::list()
+  ero_subobject1::ero_ipv4_subobject(),
+  ero_subobject2::ero_ipv4_subobject()
 }).
 
 -type ero_object()::#ero_object{}.

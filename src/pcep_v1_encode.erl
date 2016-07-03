@@ -39,10 +39,22 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
 %%   when MessageLength =:= erlang:byte_size(msg) ->
 %%   io:format("do start11111111111~n"),
 %%   BodyBin = encode_objects(Body),  %% one msg can include many objects
-  BodyBin = encode_object_msg(Body),
+  Tuple_object = element(2,Body),
+  Object_num = tuple_size(Tuple_object),
+  case Object_num of
+    2 ->
+      io:format("encode rpt msg object start9999999999999999~n"),
+      BodyBin2 = encode_object_msg_2(Body),
+      list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin2]);
+    _ ->
+      BodyBin1 = encode_object_msg(Body),
+      list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin1])
+
+  end.
+%%   BodyBin = encode_object_msg(Body),
 %%   io:format("BodyBin in do is ~p~n",[BodyBin]),
 %%   MessageLength = ?PCEP_OBJECT_MESSAGE_HEADER_SIZE + byte_size(BodyBin),
-  list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin]).
+%%   list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin]).
 %% do(#pcep_message{message_length=MessageLength}=msg)
 %%   when MessageLength /= erlang:byte_size(msg) ->
 %%   ?ERROR("message length doesn't math the field message_length"),
@@ -73,7 +85,9 @@ encode_subobject(#subobject{subobject_type = Type,subobject_length = Length,subo
       ?ERROR("Other Subobject Type,but cannot be recognized")
   end.
 
-
+encode_ipv4_sub_object(#ipv4_subobject{ipv4_subobject_type = Type, ipv4_subobject_len = Length, ipv4_subobject_add = Ipv4_add,
+  ipv4_subobject_prefix_len = Prefix_len,ipv4_subobject_flags = Flags}) ->
+  <<Type:8,Length:8,Ipv4_add:32,Prefix_len:8,Flags:8>>.
 %% LS Report SubTlvs encoded
 %% encode_sub_tlvs([#tlv{}=Sub_Tlv | T]) ->
 %%   T4 = encode_sub_tlvs(T),
@@ -437,6 +451,10 @@ encode_subobjects([#subobject{}=Subobject | T]) ->
 encode_subobjects([]) ->
   <<>>.
 
+encode_object_msg_2(#pcep_object_2{pcep_object1 = Object_1,pcep_object2 = Object_2}) ->
+  Object1 = encode_object_msg(Object_1),
+  Object2 = encode_object_msg(Object_2),
+  list_to_binary([Object1,Object2]).
 
 %% encode common body, which is object related message -------------------------------------------------------------------
 -spec encode_object_msg(ObjectMessage::pcep_object_message()) -> binary().
@@ -602,7 +620,10 @@ encode_object_body(ls_ipv4_topo_prefix_ob_type,#ls_link_object{
 %%   TlvsBin=encode_tlv1(Tlvs),
 %%   <<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64,TlvsBin/bytes>>;
 
-
+encode_object_body(ero_ob_type,#ero_object{ero_subobject1 = Subobject1,ero_subobject2 = Subobject2}) ->
+  Sub_object1 = encode_ipv4_sub_object(Subobject1),
+  Sub_object2 = encode_ipv4_sub_object(Subobject2),
+  list_to_binary([Sub_object1,Sub_object2]);
 
 %% encode rro object
 %% TODO for fxf 2016-03-30

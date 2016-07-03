@@ -24,6 +24,12 @@
 
 -type pcep_object_message()::#pcep_object_message{}.
 
+-record(pcep_object_2,{
+  pcep_object1 :: pcep_object_message(),
+  pcep_object2 :: pcep_object_message()
+}).
+
+-type pcep_object_2() :: #pcep_object_2{}.
 
 %% PCEP Message Common Header ----------------------------------------------------------------------
 
