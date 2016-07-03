@@ -45,7 +45,7 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
   io:format("Tuple_object in do is ~p~n",[Tuple_object]),
   io:format("Object_num is ~p~n",[Object_num]),
   case Object_num of
-    2 ->
+    3 ->
       io:format("encode rpt msg object start9999999999999999~n"),
       BodyBin2 = encode_object_msg_2(Body),
       list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin2]);
