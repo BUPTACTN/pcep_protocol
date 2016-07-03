@@ -193,8 +193,9 @@ decode_object_body(label_range_ob_type,Binary) ->
 
 decode_object_body(ero_ob_type,Binary) ->
   <<SubObjects/bytes>> = Binary,
-  DSubObjects = decode_tlvs(2,SubObjects),
-  #ero_object{ero_subobjects = DSubObjects};
+  %% TODO 2016-07-03
+  decode_tlvs(2,SubObjects);
+%%   #ero_object{ero_subobjects = DSubObjects};
 
 decode_object_body(rro_ob_type,Binary) ->
   <<SubObjects/bytes>> = Binary,
