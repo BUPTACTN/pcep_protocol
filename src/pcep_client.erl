@@ -626,9 +626,9 @@ reconnect(Timeout) ->
 
 
 %% create_msg 模块
-create_open() ->
-  Body = #pcep_open{},
-  #pcep_message{version = 1, flags = 0, message_type = 1, message_length = 30, body = Body}.  %% TODO open msg length
+%% create_open() ->
+%%   Body = #pcep_open{},
+%%   #pcep_message{version = 1, flags = 0, message_type = 1, message_length = 30, body = Body}.  %% TODO open msg length
 
 %% create_keepalive 模块
 %% create_keepalive() ->
