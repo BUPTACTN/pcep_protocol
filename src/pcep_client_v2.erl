@@ -12,7 +12,7 @@
 
 
 -include("pcep_protocol.hrl").
--include("pcep_v1.hrl").
+%% -include("pcep_v1.hrl").
 %% -include("pcep_ls_v2.hrl").
 %% -include("pcep_stateful_pce_v2.hrl").
 %% -include("pcep_onos.hrl").

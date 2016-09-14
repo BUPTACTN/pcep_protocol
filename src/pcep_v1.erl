@@ -11,7 +11,7 @@
 -author("root").
 
 -include("pcep_protocol.hrl").
--include("pcep_v1.hrl").
+%% -include("pcep_v1.hrl").
 
 -behaviour(gen_pcep_protocol).
 
