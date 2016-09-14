@@ -2,7 +2,7 @@
 %% @author Boyuan Yan <yanliuzhangyan@gmail.com>
 %% @doc Common header file for all protocol versions.
 
-
+-include("pcep_v1.hrl").
 %% 4bytes
 -define(PCEP_COMMON_HEADER_SIZE, 4).
 -define(PCEP_OBJECT_MESSAGE_HEADER_SIZE, 4).
@@ -112,12 +112,46 @@
   h_addr_list = [] :: [inet:ip_address()]%% list of addresses from name server
 }).
 
--record(pcep_open, {
+%% -record(pcep_open, {
+%%
+%% }).
+%% -type pcep_open() :: #pcep_open{}.
+%%
+%% -record(pcep_keepalive, {
+%%
+%% }).
+%% -type pcep_keepalive() :: #pcep_keepalive{}.
 
-}).
--type pcep_open() :: #pcep_open{}.
+-type pcep_message_body() :: pcep_open_msg() |
+                             pcep_error_msg() |
+                             pcep_keepalive_msg() |
+                             pcep_pcinitiate_msg() |
+                             pcep_pcupd_msg() |
+                             pcep_pcrpt_msg() |
+%%                              pcep_pclabelupd_msg() |
+                             pcep_lsrpt_link_msg() |
+                             pcep_lsrpt_node_msg().
+%%                              pcep_pclrresv_msg().
 
--record(pcep_keepalive, {
-
-}).
--type pcep_keepalive() :: #pcep_keepalive{}.
+%% -type pcep_message_body() :: pcep_error_msg() |
+%%                              %% Open Message handle
+%%                              pcep_open_request() |
+%%                              pcep_open_reply() |
+%%                              %% Keepalive Message handle
+%%                              pcep_keepalive_request() |
+%%                              pcep_keepalive_reply() |
+%%                              %% PCInitiate Message handle
+%%                              pcep_pcinitiate_request() |
+%%                              pcep_pcinitiate_reply() |
+%%
+%%                              pcep_report_msg() |
+%%                              pcep_lsrpt_msg() |
+%%                              %% PCUpd Message handle
+%%                              pcep_pcupd_request() |
+%%                              pcep_pcupd_reply() |
+%%                              %% PCLabelUpd Message handle
+%%                              pcep_pclabelupd_request() |
+%%                              pcep_pclabelupd_reply() |
+%%                              %% PCLRResv Message handle
+%%                              pcep_pclrresv_request() |
+%%                              pcep_pclrresv_reply().
