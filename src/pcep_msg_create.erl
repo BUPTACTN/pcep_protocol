@@ -82,6 +82,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
   P = trunc(4294967295*math:pow(2,32)+4278190080),
   M = P+N,
   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
+  io:format("Link_Config in create is ~p~n",[Link_Config]),
   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
 %%   linc_pcep_config:for(1,Link_Num)
   %% S = 1 Msg
