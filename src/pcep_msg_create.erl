@@ -86,7 +86,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
 %%   linc_pcep_config:for(1,Link_Num)
   %% S = 1 Msg
-  {ok,LS_Report_Link_Msgs_1} = linc_pcep_config:for(1,Link_Num-1,fun(I) ->
+  LS_Report_Link_Msgs_1 = linc_pcep_config:for(1,Link_Num-1,fun(I) ->
     io:format("for function start1111111111111~n"),
     Link_Config_I = lists:nth(I,Link_Config),
     Link_Id = element(1,Link_Config_I),
