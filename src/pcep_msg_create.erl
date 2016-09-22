@@ -106,7 +106,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
         object_length = ?LSReport_MSG_LENGTH-4,
         body = #ls_link_object{ls_object_protocol_id = 4,
           ls_object_flag = 0,
-          ls_object_r = 1,
+          ls_object_r = 0,
           ls_object_s = 1,
           ls_object_ls_id = 12,
           ls_object_tlv = #optical_link_attribute_tlv{
@@ -202,7 +202,7 @@ ls_report_link_msg_0_creating(SwitchId) ->
       object_length = ?LSReport_MSG_LENGTH-4,
       body = #ls_link_object{ls_object_protocol_id = 4,
         ls_object_flag = 0,
-        ls_object_r = 1,
+        ls_object_r = 0,
         ls_object_s = 0,
         ls_object_ls_id = 12,
         ls_object_tlv = #optical_link_attribute_tlv{
@@ -290,7 +290,7 @@ ls_report_node_msg_creating(SwitchId) ->
       object_length = Node_Msg_Length-4,
       body = #ls_node_object{ls_object_protocol_id = 4,
         ls_object_flag = 0,
-        ls_object_r = 1,
+        ls_object_r = 0,
         ls_object_s = 1,
         ls_object_ls_id = 1,
         ls_node_object_tlv = #optical_node_attribute_tlv{
