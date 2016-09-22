@@ -82,12 +82,12 @@ ls_report_link_msg_1_creating(SwitchId) ->
   P = trunc(4294967295*math:pow(2,32)+4278190080),
   M = P+N,
   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
-  io:format("Link_Config in create is ~p~n",[Link_Config]),
+%%   io:format("Link_Config in create is ~p~n",[Link_Config]),
   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
 %%   linc_pcep_config:for(1,Link_Num)
   %% S = 1 Msg
   LS_Report_Link_Msgs_1 = linc_pcep_config:for(1,Link_Num-1,fun(I) ->
-    io:format("for function start1111111111111~n"),
+%%     io:format("for function start1111111111111~n"),
     Link_Config_I = lists:nth(I,Link_Config),
     Link_Id = element(1,Link_Config_I),
     Link_IP = element(2,Link_Config_I),
@@ -169,7 +169,8 @@ ls_report_link_msg_1_creating(SwitchId) ->
         }
       }
     },
-    pcep_protocol:encode(LS_Report_Link_Msg_1)
+    Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_1),
+    io:format("Link_Msg in for is ~p~n",[Link_Msg])
   end),
   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
   list_to_binary(LS_Report_Link_Msgs_1).
