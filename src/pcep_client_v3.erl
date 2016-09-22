@@ -12,10 +12,13 @@
 -define(PCEP_PORT,4189).
 
 %% API
--export([start/1,timer_stop/1]).
+-export([start_link/1,start/1,timer_stop/1]).
+
+start_link(SwitchId) ->
+  spawn(pcep_client_v3,start,[SwitchId]).
 
 start(SwitchId) ->
-  Host = "10.108.48.172",
+  Host = "10.108.66.142",
   Port = ?PCEP_PORT,
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   {ok,KeepaliveMessage} = pcep_msg_create:keepalive_msg_creating(),
