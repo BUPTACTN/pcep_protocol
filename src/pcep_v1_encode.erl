@@ -41,12 +41,12 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
 %%   BodyBin = encode_objects(Body),  %% one msg can include many objects
 %%   Tuple_object = element(2,Body),
   Object_num = tuple_size(Body),
-  io:format("Body in do is ~p~n",[Body]),
+%%   io:format("Body in do is ~p~n",[Body]),
 %%   io:format("Tuple_object in do is ~p~n",[Tuple_object]),
   io:format("Object_num is ~p~n",[Object_num]),
   case Object_num of
     3 ->
-      io:format("encode rpt msg object start9999999999999999~n"),
+%%       io:format("encode rpt msg object start9999999999999999~n"),
       BodyBin2 = encode_object_msg_2(Body),
       list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin2]);
     _ ->
@@ -179,7 +179,7 @@ encode_tlv6(#label_db_version_tlv{
 encode_tlv7(#symbolic_path_name_tlv{
 %%   symbolic_path_name_tlv_type = Type,symbolic_path_name_tlv_length = Length,
   symbolic_path_name = Symbolic_path_name}) ->
-  io:format("encode symbolic path name tlv start~n"),
+%%   io:format("encode symbolic path name tlv start~n"),
   Type = 17,
   Length = 4,  %% TODO ???
   <<Type:16,Length:16,Symbolic_path_name:32>>.
@@ -189,7 +189,7 @@ encode_tlv8(#ipv4_lsp_identifiers_tlv{
 ipv4_lsp_identifiers_tlv_lsp_id = Ipv4_lsp_lsp_id,ipv4_lsp_identifiers_tlv_tunnel_id = Ipv4_lsp_tunnel_id,
   ipv4_lsp_identifiers_tlv_exrended_tunnel_id = Ipv4_exrended_tunnel_id,
   ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = Ipv4_lsp_tunnel_endpoint_add}) ->
-  io:format("encode ipv4 lsp identifiers tlv start~n"),
+%%   io:format("encode ipv4 lsp identifiers tlv start~n"),
   Type = 18,
   Length = 16,
   <<Type:16,Length:16,Ipv4_lsp_tunnel_sender_add:32,Ipv4_lsp_lsp_id:16,Ipv4_lsp_tunnel_id:16,Ipv4_exrended_tunnel_id:32,Ipv4_lsp_tunnel_endpoint_add:32>>.
@@ -224,25 +224,25 @@ encode_tlv13(#optical_link_attribute_tlv{
   interface_switching_cap_des_sub_tlv_body = Interface_switching_cap_des,
 %%   shared_risk_link_group_sub_tlv_body = Shared_risk_link_group,
   port_label_res_sub_tlv_body = Port_label_res,available_labels_field_sub_tlv_body = Available_labels_field}) ->
-  io:format("encode_actn_link_tlv start~n"),
+%%   io:format("encode_actn_link_tlv start~n"),
   ValueBin1 = encode_sub_tlv10(Link_type),
-  io:format("Link_type is ~p~n",[ValueBin1]),
+%%   io:format("Link_type is ~p~n",[ValueBin1]),
   ValueBin2 = encode_sub_tlv1(Link_id),
-  io:format("Link_id is ~p~n",[ValueBin2]),
+%%   io:format("Link_id is ~p~n",[ValueBin2]),
   ValueBin3 = encode_sub_tlv2(Local_interface_ip_add),
-  io:format("Local_interface_ip_add is ~p~n",[ValueBin3]),
+%%   io:format("Local_interface_ip_add is ~p~n",[ValueBin3]),
   ValueBin4 = encode_sub_tlv3(Remote_interface_ip_add),
-  io:format("Remote_interface_ip_add is ~p~n",[ValueBin4]),
+%%   io:format("Remote_interface_ip_add is ~p~n",[ValueBin4]),
   ValueBin5 = encode_sub_tlv4(Te_metric),
-  io:format("Te_metric is ~p~n",[ValueBin5]),
+%%   io:format("Te_metric is ~p~n",[ValueBin5]),
   ValueBin6 = encode_sub_tlv5(Interface_switching_cap_des),
-  io:format("Interface_switching_cap_des is ~p~n",[ValueBin6]),
+%%   io:format("Interface_switching_cap_des is ~p~n",[ValueBin6]),
 %%   ValueBin7 = encode_sub_tlv6(Shared_risk_link_group),
 %%   io:format("Shared_risk_link_group is ~p~n",[ValueBin7]),
   ValueBin8 = encode_sub_tlv7(Port_label_res),
-  io:format("Port_label_res is ~p~n",[ValueBin8]),
+%%   io:format("Port_label_res is ~p~n",[ValueBin8]),
   ValueBin9 = encode_sub_tlv12(Available_labels_field),
-  io:format("Available_labels_field is ~p~n",[ValueBin9]),
+%%   io:format("Available_labels_field is ~p~n",[ValueBin9]),
   Type = 10001,
   Length = 128, %% TODO
   Resbytes = 0,
@@ -470,9 +470,9 @@ encode_object_msg(#pcep_object_message{
     unsupported_class ->
       ?ERROR(Ct),<<>>;
     _ ->
-      io:format("5555555555555~n"),
+%%       io:format("5555555555555~n"),
       BodyBin=encode_object_body(Ct, Body),%% TODO
-      io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
+%%       io:format("BodyBin in the encode_object_msg888888888888 is ~p~n", [BodyBin]),
       list_to_binary([<<Class:8, Type:4, Flags:2, P:1, I:1, Ob_length:16>>, BodyBin])
   end.
 %% encode_object_msg(#pcep_object_message{object_length=_Ob_length}=Object_msg) ->
@@ -496,9 +496,9 @@ encode_lsp_object_tlvs(#lsp_object_tlvs{lsp_object_lsp_identifier_tlv = Lsp_iden
   Symbolic_path_name_tlv1 = encode_tlv7(Symbolic_path_name_tlv),
   list_to_binary([Lsp_identifier_tlv1,Symbolic_path_name_tlv1]).
 encode_ls_object_tlvs(#ls_object_tlvs{actn_link_tlv = Actn_link_tlv,link_descriptor_tlv = Link_des_tlv}) ->
-  io:format("encode_ls_object_tlvs start~n"),
+%%   io:format("encode_ls_object_tlvs start~n"),
   Actn_link_tlv1 = encode_tlv13(Actn_link_tlv),
-  io:format("Actn_link_tlv1 in encode_ls_object_tlvs is ~p~n", [Actn_link_tlv1]),
+%%   io:format("Actn_link_tlv1 in encode_ls_object_tlvs is ~p~n", [Actn_link_tlv1]),
   Link_des_tlv1 = encode_tlv14(Link_des_tlv),
   list_to_binary([Actn_link_tlv1,Link_des_tlv1]).
 
@@ -528,7 +528,7 @@ encode_object_body(open_ob_type, #open_object{version = Version}) when Version /
 encode_object_body(lsp_ob_type,#lsp_object{
   plsp_id = Plsp_id,flag = Flag,c = C,o = O,a = A,r = R,s = S,d =D,lsp_object_tlvs = Tlvs
 }) ->
-  io:format("encode lsp object body start~n"),
+%%   io:format("encode lsp object body start~n"),
   TlvsBin=encode_lsp_object_tlvs(Tlvs),
   list_to_binary([<<Plsp_id:20,Flag:4,C:1,O:3,A:1,R:1,S:1,D:1>>,TlvsBin]);
 
@@ -569,9 +569,9 @@ encode_object_body(close_ob_type,#close_object{
 encode_object_body(ls_link_ob_type,#ls_link_object{
   ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_object_tlv = Tlvs
 }) ->
-  io:format("encode_ls_object_body start~n"),
+%%   io:format("encode_ls_object_body start~n"),
   TlvsBin=encode_tlv13(Tlvs),
-  io:format("TlvsBin in encode_ls_object_body is ~p~n",[TlvsBin]),
+%%   io:format("TlvsBin in encode_ls_object_body is ~p~n",[TlvsBin]),
   list_to_binary([<<Protocol_id:8,Flag:22,R:1,S:1,Ls_id:64>>,TlvsBin]);
 %% ls object protocol id
 %%| 1 | IS-IS Level 1
@@ -586,9 +586,9 @@ encode_object_body(ls_node_ob_type,#ls_node_object{
 }) ->
   Q = #ls_node_object{
     ls_object_protocol_id = Protocol_id,ls_object_flag = Flag,ls_object_r = R,ls_object_s = S,ls_object_ls_id = Ls_id,ls_node_object_tlv = Tlvs},
-  io:format("Q is ~p~n",[Q]),
+%%   io:format("Q is ~p~n",[Q]),
   E = element(7,Q),
-  io:format("E is ~p~n",[E]),
+%%   io:format("E is ~p~n",[E]),
   Ip_num = tuple_size(element(4,E)),
   case Ip_num of
     6 ->
