@@ -170,7 +170,8 @@ ls_report_link_msg_1_creating(SwitchId) ->
       }
     },
     Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_1),
-    io:format("Link_Msg in for is ~p~n",[Link_Msg])
+    element(2,Link_Msg)
+%%     io:format("Link_Msg in for is ~p~n",[Link_Msg])
   end),
   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
   list_to_binary(LS_Report_Link_Msgs_1).
