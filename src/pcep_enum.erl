@@ -10,6 +10,9 @@
 -author("Xinfeng").
 
 %% API
--export([]).
+-export([test/0]).
 -enum({type,[
 open]}).
+
+test() ->
+  io:format("algjoajdgoajsgfjdoasjofo").

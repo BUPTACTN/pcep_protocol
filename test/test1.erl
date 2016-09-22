@@ -10,7 +10,7 @@
 -author("Xinfeng").
 
 %% API
--export([test/0,tuple_test/1,ip_to_int/1,switch_filter/1,switch_find/1]).
+-export([test/0,tuple_test/1,ip_to_int/1,switch_filter/1,switch_find/1,switch_ip/1,get_link_ip/2,link_ip_extract/1]).
 
 
 test() ->
@@ -19,37 +19,22 @@ test() ->
   b},
   io:format("agag is ~p~n",[O]).
 tuple_test(PP) ->
-  Links = [{{1,6},{2,5}},
-    {{1,5},{4,6}},
-    {{2,7},{3,4}},
-    {{4,1},{1,4}},
-    {{2,6},{4,5}},
-    {{4,4},{3,3}}],
+  Links = [{{0,1},{1,1}}, {{1,2},{2,1}}, {{1,3},{3,1}}, {{2,2},{3,2}}],
   N = length(Links),
   for(1,N,fun(I) -> LinkI = lists:nth(I,Links),
     Switch = element(1,LinkI),
     SwitchI = element(1,Switch),
+    PortI = element(2,Switch),
     Switch1 = element(2,LinkI),
     SwitchJ = element(1,Switch1),
+    PortJ = element(2,Switch1),
     if SwitchI == PP ->
-      R = element(2,LinkI),
-      {S,D} = R,
-      if S > PP ->
-        R;
-        true ->
-          {error,unfinded}
-            end;
+      {{SwitchI,PortI},{SwitchJ,PortJ}};
       SwitchJ == PP ->
-        T = element(1,LinkI),
-        {S1,D1} = T,
-        if S1 > PP ->
-          T;
-          true ->
-            {error,unfinded}
-        end;
+        {{SwitchJ,PortJ},{SwitchI,PortI}};
       true ->
-        {error,unfinded}
-      end
+            {{error,unfinded},{error,unfinded}}
+        end
     end).
 
 switch_find(N) ->
@@ -86,12 +71,129 @@ switch_find(N) ->
 switch_filter(N) ->
   A = tuple_test(N),
 %%   io:format("A is ~p~n",[A]),
-  B = delete({error,unfinded},A),
+  B = delete({{error,unfinded},{error,unfinded}},A),
   lists:reverse(B,[]).   %% Output is [{SwitchId,Port_no}]
 %%   F = fun(E) -> E =:= {error,unfinded} end,
 %%   lists:dropwhile(F,A).
 
+link_ip_extract(N) ->
+  Links = switch_filter(N),
+  Link_Num = length(Links),
+  for(1,Link_Num,fun(I) ->
+    Link_I = lists:nth(I,Links),
+    {{S1_I,P1_I},{S2_I,P2_I}} = Link_I,
+    Sour_IP = get_link_ip(S1_I,P1_I),
+    Dest_IP = get_link_ip(S2_I,P2_I),
+    Link_Id = lists:min(switch_ip(S2_I)),
+    {Link_Id,{Sour_IP,Dest_IP}}
+  end).
 
+get_link_ip(Switch_Id,Port_No) ->
+  SwitchLists = [
+    {switch, 0,
+      [{ports, [
+        {port,1,[{queues,[]},{port_no,1}]},
+        {port,9,[{queues,[]},{port_no,2}]}
+      ]}
+      ]},
+    {switch,1,
+      [{ports, [
+        {port,2,[{queues,[]},{port_no,1}]},
+        {port,3,[{queues,[]},{port_no,2}]},
+        {port,4,[{queues,[]},{port_no,3}]},
+        {port,10,[{queues,[]},{port_no,4}]}
+      ]}]},
+    {switch,2,
+      [{ports, [
+        {port,5,[{queues,[]},{port_no,1}]},
+        {port,6,[{queues,[]},{port_no,2}]},
+        {port,11,[{queues,[]},{port_no,3}]}
+      ]}]},
+    {switch,3,
+      [{ports, [
+        {port,7,[{queues,[]},{port_no,1}]},
+        {port,8,[{queues,[]},{port_no,2}]},
+        {port,12,[{queues,[]},{port_no,3}]}
+      ]}]}],
+  Capable_Switch_Ports =
+    [{port,1,[{interface,"opt1"},{type,optical},{ip,"10.0.1.1"}]},
+      {port,2,[{interface,"opt2"},{type,optical},{ip,"10.0.2.1"}]},
+      {port,3,[{interface,"opt3"},{type,optical},{ip,"10.0.2.2"}]},
+      {port,4,[{interface,"opt4"},{type,optical},{ip,"10.0.2.3"}]},
+      {port,5,[{interface,"opt5"},{type,optical},{ip,"10.0.3.1"}]},
+      {port,6,[{interface,"opt6"},{type,optical},{ip,"10.0.3.2"}]},
+      {port,7,[{interface,"opt7"},{type,optical},{ip,"10.0.4.1"}]},
+      {port,8,[{interface,"opt1"},{type,optical},{ip,"10.0.4.2"}]},
+      {port,9,[{interface,"tap1"},{type,tap},{ip,"10.0.1.10"}]},
+      {port,10,[{interface,"tap1"},{type,tap},{ip,"10.0.2.10"}]},
+      {port,11,[{interface,"tap1"},{type,tap},{ip,"10.0.3.10"}]},
+      {port,12,[{interface,"tap1"},{type,tap},{ip,"10.0.4.10"}]}],
+  Switch_Config = lists:nth((Switch_Id+1),SwitchLists),
+  Ports_Config = element(3,Switch_Config),
+  Ports_Config1 = lists:nth(1,Ports_Config),
+  Ports_List = element(2,Ports_Config1),
+  Port_Config_I = lists:nth(Port_No,Ports_List),
+  Port_No1 = element(2,Port_Config_I),
+%%     for(1,Port_Num,fun(J) ->
+  Logical_Port_Config = element(3,lists:nth(Port_No1,Capable_Switch_Ports)),
+  IP_Config = lists:nth(3,Logical_Port_Config),
+  IP_Add = element(2,IP_Config),
+  ip_to_int(IP_Add).
+switch_ip(N) ->
+  SwitchLists = [
+    {switch, 0,
+      [{ports, [
+          {port,1,[{queues,[]},{port_no,1}]},
+          {port,9,[{queues,[]},{port_no,2}]}
+        ]}
+      ]},
+    {switch,1,
+      [{ports, [
+          {port,2,[{queues,[]},{port_no,1}]},
+          {port,3,[{queues,[]},{port_no,2}]},
+          {port,4,[{queues,[]},{port_no,3}]},
+          {port,10,[{queues,[]},{port_no,4}]}
+        ]}]},
+    {switch,2,
+      [{ports, [
+          {port,5,[{queues,[]},{port_no,1}]},
+          {port,6,[{queues,[]},{port_no,2}]},
+          {port,11,[{queues,[]},{port_no,3}]}
+        ]}]},
+    {switch,3,
+      [{ports, [
+          {port,7,[{queues,[]},{port_no,1}]},
+          {port,8,[{queues,[]},{port_no,2}]},
+          {port,12,[{queues,[]},{port_no,3}]}
+        ]}]}],
+  Capable_Switch_Ports =
+    [{port,1,[{interface,"opt1"},{type,optical},{ip,"10.0.1.1"}]},
+    {port,2,[{interface,"opt2"},{type,optical},{ip,"10.0.2.1"}]},
+    {port,3,[{interface,"opt3"},{type,optical},{ip,"10.0.2.2"}]},
+    {port,4,[{interface,"opt4"},{type,optical},{ip,"10.0.2.3"}]},
+    {port,5,[{interface,"opt5"},{type,optical},{ip,"10.0.3.1"}]},
+    {port,6,[{interface,"opt6"},{type,optical},{ip,"10.0.3.2"}]},
+    {port,7,[{interface,"opt7"},{type,optical},{ip,"10.0.4.1"}]},
+    {port,8,[{interface,"opt1"},{type,optical},{ip,"10.0.4.2"}]},
+    {port,9,[{interface,"tap1"},{type,tap},{ip,"10.0.1.10"}]},
+    {port,10,[{interface,"tap1"},{type,tap},{ip,"10.0.2.10"}]},
+    {port,11,[{interface,"tap1"},{type,tap},{ip,"10.0.3.10"}]},
+    {port,12,[{interface,"tap1"},{type,tap},{ip,"10.0.4.10"}]}],
+  Switch_Config = lists:nth(N+1,SwitchLists),
+  Ports_Config = element(3,Switch_Config),
+  Ports_Config1 = lists:nth(1,Ports_Config),
+  Ports_List = element(2,Ports_Config1),
+  Switch_Port_Num = length(Ports_List),
+  Port_Num = length(Capable_Switch_Ports),
+  for(1,Switch_Port_Num,fun(I) ->
+    Port_Config_I = lists:nth(I,Ports_List),
+    Port_No = element(2,Port_Config_I),
+%%     for(1,Port_Num,fun(J) ->
+    Logical_Port_Config = element(3,lists:nth(Port_No,Capable_Switch_Ports)),
+    IP_Config = lists:nth(3,Logical_Port_Config),
+    IP_Add = element(2,IP_Config),
+    ip_to_int(IP_Add)
+  end).
 
 
 
