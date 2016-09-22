@@ -21,7 +21,7 @@ start(SwitchId) ->
   Host = "10.108.66.142",
   Port = ?PCEP_PORT,
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
-  {ok,KeepaliveMessage} = pcep_msg_create:keepalive_msg_creating(),
+  KeepaliveMessage = <<32,2,0,4>>,
   {ok,Ls_report_node_Message} = pcep_msg_create:ls_report_node_msg_creating(SwitchId),
   {ok,Ls_report_link_1_Message} = pcep_msg_create:ls_report_link_msg_1_creating(SwitchId),
   {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
