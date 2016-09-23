@@ -23,22 +23,41 @@ start(SwitchId) ->
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   io:format("OpenMsg in v3 is ~p~n",[OpenMessage]),
   KeepaliveMessage = <<32,2,0,4>>,
+  Link_Num = linc_pcep_config:link_ip_num(SwitchId),
   {ok,Ls_report_node_Message} = pcep_msg_create:ls_report_node_msg_creating(SwitchId),
   io:format("NodeMsg in v3 is ~p~n",[Ls_report_node_Message]),
-  Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchId),
-  io:format("LinkMsg in v3 is ~p~n",[Ls_report_link_1_Message]),
-  {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
-  {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
-  gen_tcp:send(Socket,OpenMessage),
-  receive_data(Socket,[]),
-  gen_tcp:send(Socket,KeepaliveMessage),
-  receive_data(Socket,[]),
-  gen_tcp:send(Socket,Ls_report_node_Message),
-  gen_tcp:send(Socket,Ls_report_link_1_Message),
-  gen_tcp:send(Socket,Ls_report_link_0_Message),
-  Pid = spawn(fun() -> receive_data1(Socket,[]) end),
-  gen_tcp:controlling_process(Socket,Pid),
-  timer_start(30000,fun() -> gen_tcp:send(Socket,KeepaliveMessage) end).
+  case Link_Num of
+    0 ->
+      io:format("No Link exist on the switch~n");
+    1 ->
+      {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
+      {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
+      gen_tcp:send(Socket,OpenMessage),
+      receive_data(Socket,[]),
+      gen_tcp:send(Socket,KeepaliveMessage),
+      receive_data(Socket,[]),
+      gen_tcp:send(Socket,Ls_report_node_Message),
+%%       gen_tcp:send(Socket,Ls_report_link_1_Message),
+      gen_tcp:send(Socket,Ls_report_link_0_Message),
+      Pid = spawn(fun() -> receive_data1(Socket,[]) end),
+      gen_tcp:controlling_process(Socket,Pid),
+      timer_start(30000,fun() -> gen_tcp:send(Socket,KeepaliveMessage) end);
+    _ ->
+      Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchId),
+      io:format("LinkMsg in v3 is ~p~n",[Ls_report_link_1_Message]),
+      {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
+      {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
+      gen_tcp:send(Socket,OpenMessage),
+      receive_data(Socket,[]),
+      gen_tcp:send(Socket,KeepaliveMessage),
+      receive_data(Socket,[]),
+      gen_tcp:send(Socket,Ls_report_node_Message),
+      gen_tcp:send(Socket,Ls_report_link_1_Message),
+      gen_tcp:send(Socket,Ls_report_link_0_Message),
+      Pid = spawn(fun() -> receive_data1(Socket,[]) end),
+      gen_tcp:controlling_process(Socket,Pid),
+      timer_start(30000,fun() -> gen_tcp:send(Socket,KeepaliveMessage) end)
+  end.
 
 receive_data(Socket,SoFar) ->
   receive
