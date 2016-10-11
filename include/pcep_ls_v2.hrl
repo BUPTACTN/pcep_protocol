@@ -120,6 +120,82 @@
 %%   res_bytes :: integer()
 }).
 
+-record(actn_node_sub_tlv_5,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix1 ::integer(),
+  ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
+  ipv4_prefix2 :: integer(),
+  prefix3 :: integer(),
+  ipv4_prefix3 :: integer(),
+  prefix4 :: integer(),
+  ipv4_prefix4 :: integer(),
+  prefix5 :: integer(),
+  ipv4_prefix5 :: integer(),
+  res_bytes :: integer()
+}).
+
+-record(actn_node_sub_tlv_6,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix1 ::integer(),
+  ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
+  ipv4_prefix2 :: integer(),
+  prefix3 :: integer(),
+  ipv4_prefix3 :: integer(),
+  prefix4 :: integer(),
+  ipv4_prefix4 :: integer(),
+  prefix5 :: integer(),
+  ipv4_prefix5 :: integer(),
+  prefix6 :: integer(),
+  ipv4_prefix6 :: integer(),
+  res_bytes :: integer()
+}).
+
+-record(actn_node_sub_tlv_7,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix1 ::integer(),
+  ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
+  ipv4_prefix2 :: integer(),
+  prefix3 :: integer(),
+  ipv4_prefix3 :: integer(),
+  prefix4 :: integer(),
+  ipv4_prefix4 :: integer(),
+  prefix5 :: integer(),
+  ipv4_prefix5 :: integer(),
+  prefix6 :: integer(),
+  ipv4_prefix6 :: integer(),
+  prefix7 :: integer(),
+  ipv4_prefix7 :: integer(),
+  res_bytes :: integer()
+}).
+
+-record(actn_node_sub_tlv_8,{
+  actn_node_sub_tlv_type :: integer(),
+  actn_node_sub_tlv_length :: integer(),
+  prefix1 ::integer(),
+  ipv4_prefix1 :: integer(),
+  prefix2 :: integer(),
+  ipv4_prefix2 :: integer(),
+  prefix3 :: integer(),
+  ipv4_prefix3 :: integer(),
+  prefix4 :: integer(),
+  ipv4_prefix4 :: integer(),
+  prefix5 :: integer(),
+  ipv4_prefix5 :: integer(),
+  prefix6 :: integer(),
+  ipv4_prefix6 :: integer(),
+  prefix7 :: integer(),
+  ipv4_prefix7 :: integer(),
+  prefix8 :: integer(),
+  ipv4_prefix8 :: integer()
+%%   res_bytes :: integer()
+}).
+
 -record(actn_node_sub_tlv_3,{
   actn_node_sub_tlv_type :: integer(),
   actn_node_sub_tlv_length :: integer(),
@@ -136,6 +212,11 @@
 -type actn_node_sub_tlv_4() :: #actn_node_sub_tlv_4{}.
 -type actn_node_sub_tlv_2() :: #actn_node_sub_tlv_2{}.
 -type actn_node_sub_tlv_3() :: #actn_node_sub_tlv_3{}.
+-type actn_node_sub_tlv_5() :: #actn_node_sub_tlv_5{}.
+-type actn_node_sub_tlv_6() :: #actn_node_sub_tlv_6{}.
+-type actn_node_sub_tlv_7() :: #actn_node_sub_tlv_7{}.
+-type actn_node_sub_tlv_8() :: #actn_node_sub_tlv_8{}.
+
 
 %% @end
 -record(ls_object_tlvs,{

@@ -181,7 +181,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
     element(2,Link_Msg)
 %%     io:format("Link_Msg in for is ~p~n",[Link_Msg])
   end),
-  io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
+%%   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
   list_to_binary(LS_Report_Link_Msgs_1).
 
 ls_report_link_msg_0_creating(SwitchId) ->
@@ -343,7 +343,78 @@ ls_report_node_msg_creating(SwitchId) ->
                                          prefix3 = 32,
                                          ipv4_prefix3 = lists:nth(3,linc_pcep_config:switch_ip(SwitchId)),
                                          prefix4 = 32,
-                                         ipv4_prefix4 = lists:nth(3,linc_pcep_config:switch_ip(SwitchId))
+                                         ipv4_prefix4 = lists:nth(4,linc_pcep_config:switch_ip(SwitchId))
+                                       };
+                                     5 ->
+                                       #actn_node_sub_tlv_5{actn_node_sub_tlv_type = 1,
+                                         actn_node_sub_tlv_length = Num*5,
+                                         prefix1 = 32,
+                                         ipv4_prefix1 = lists:nth(1,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix2 = 32,
+                                         ipv4_prefix2 = lists:nth(2,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix3 = 32,
+                                         ipv4_prefix3 = lists:nth(3,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix4 = 32,
+                                         ipv4_prefix4 = lists:nth(4,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix5 = 32,
+                                         ipv4_prefix5 = lists:nth(5,linc_pcep_config:switch_ip(SwitchId)),
+                                         res_bytes = 0
+                                       };
+                                     6 ->
+                                       #actn_node_sub_tlv_6{actn_node_sub_tlv_type = 1,
+                                         actn_node_sub_tlv_length = Num*5,
+                                         prefix1 = 32,
+                                         ipv4_prefix1 = lists:nth(1,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix2 = 32,
+                                         ipv4_prefix2 = lists:nth(2,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix3 = 32,
+                                         ipv4_prefix3 = lists:nth(3,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix4 = 32,
+                                         ipv4_prefix4 = lists:nth(4,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix5 = 32,
+                                         ipv4_prefix5 = lists:nth(5,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix6 = 32,
+                                         ipv4_prefix6 = lists:nth(6,linc_pcep_config:switch_ip(SwitchId)),
+                                         res_bytes = 0
+                                       };
+                                     7 ->
+                                       #actn_node_sub_tlv_7{actn_node_sub_tlv_type = 1,
+                                         actn_node_sub_tlv_length = Num*5,
+                                         prefix1 = 32,
+                                         ipv4_prefix1 = lists:nth(1,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix2 = 32,
+                                         ipv4_prefix2 = lists:nth(2,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix3 = 32,
+                                         ipv4_prefix3 = lists:nth(3,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix4 = 32,
+                                         ipv4_prefix4 = lists:nth(4,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix5 = 32,
+                                         ipv4_prefix5 = lists:nth(5,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix6 = 32,
+                                         ipv4_prefix6 = lists:nth(6,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix7 = 32,
+                                         ipv4_prefix7 = lists:nth(7,linc_pcep_config:switch_ip(SwitchId)),
+                                         res_bytes = 0
+                                       };
+                                     8 ->
+                                       #actn_node_sub_tlv_8{actn_node_sub_tlv_type = 1,
+                                         actn_node_sub_tlv_length = Num*5,
+                                         prefix1 = 32,
+                                         ipv4_prefix1 = lists:nth(1,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix2 = 32,
+                                         ipv4_prefix2 = lists:nth(2,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix3 = 32,
+                                         ipv4_prefix3 = lists:nth(3,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix4 = 32,
+                                         ipv4_prefix4 = lists:nth(4,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix5 = 32,
+                                         ipv4_prefix5 = lists:nth(5,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix6 = 32,
+                                         ipv4_prefix6 = lists:nth(6,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix7 = 32,
+                                         ipv4_prefix7 = lists:nth(7,linc_pcep_config:switch_ip(SwitchId)),
+                                         prefix8 = 32,
+                                         ipv4_prefix8 = lists:nth(8,linc_pcep_config:switch_ip(SwitchId))
                                        }
                                    end
 

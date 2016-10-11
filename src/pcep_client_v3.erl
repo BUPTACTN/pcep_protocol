@@ -12,7 +12,24 @@
 -define(PCEP_PORT,4189).
 
 %% API
--export([start_link/1,start/1,timer_stop/1]).
+-export([start_link/1,start/1,timer_stop/1,pid_init/0,resource_init/0,pid_add/1]).
+
+pid_init() ->
+  ets:new(pid,[named_table,public]).
+
+resource_init() ->
+  ets:new(link_resource,[named_table,public]),
+  Link_Num = linc_pcep_config:link_num(),
+  {ok,Links} = linc_pcep_config:get_link(),
+  linc_pcep_config:for(1,Link_Num, fun(I) ->
+    Link_I = lists:nth(I,Links),
+    ets:insert(link_resource,{Link_I,400})
+  end
+  ).
+
+pid_add(SwitchId) ->
+  Pid = start_link(SwitchId),
+  ets:insert(pid,{SwitchId,Pid}).
 
 start_link(SwitchId) ->
   spawn(pcep_client_v3,start,[SwitchId]).
