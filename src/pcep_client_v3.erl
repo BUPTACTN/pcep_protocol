@@ -110,8 +110,9 @@ start(SwitchId) ->
       timer_start(30000,fun() -> gen_tcp:send(Socket,KeepaliveMessage) end);
     _ ->
       Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchId),
-      io:format("LinkMsg in v3 is ~p~n",[Ls_report_link_1_Message]),
+      io:format("LinkMsg_1 in v3 is ~p~n",[Ls_report_link_1_Message]),
       {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
+      io:format("LinkMsg_0 in v3 is ~p~n",[Ls_report_link_0_Message]),
       {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
       gen_tcp:send(Socket,OpenMessage),
       receive_data(Socket,[]),
