@@ -150,7 +150,7 @@ receive_data1(Socket,SoFar) ->   %% TODO
   end.
 
 timer_start(Time,Fun) ->
-  register(keepalive,spawn(fun() -> tick(Time,Fun) end)).
+  spawn(fun() -> tick(Time,Fun) end).
 
 timer_stop(Process_name) ->
   Pid = whereis(Process_name),
