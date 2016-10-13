@@ -734,7 +734,7 @@ ls_link_add_local_msg_creating(Add_Info) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = 12,
+          ls_object_ls_id = (Remote_SwitchId+1)*100+Remote_Port_No,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
@@ -843,7 +843,7 @@ ls_link_add_remote_msg_1_creating(Add_Info) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = 12,
+          ls_object_ls_id = (Remote_SwitchId+1)*100+Remote_Port_No*10,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
