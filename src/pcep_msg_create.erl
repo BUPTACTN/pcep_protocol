@@ -121,7 +121,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = 12,
+          ls_object_ls_id = SwitchId*10+I,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
@@ -219,7 +219,7 @@ ls_report_link_msg_0_creating(SwitchId) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 0,
-        ls_object_ls_id = 12,
+        ls_object_ls_id = SwitchId*10,
         ls_object_tlv = #optical_link_attribute_tlv{
           optical_link_attribute_tlv_type = 10001,
           optical_link_attribute_tlv_length = 128,
