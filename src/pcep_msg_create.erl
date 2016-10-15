@@ -103,6 +103,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
     Link_Config_I = lists:nth(I,Link_Config),
     Link_Id = element(1,Link_Config_I),
     Link_IP = element(2,Link_Config_I),
+    _Link_Resource = element(3,Link_Config_I),   %%  TODO Resource
     Link_Local_IP = element(1,Link_IP),
     Link_Remote_IP  = element(2,Link_IP),
     io:format("Local_IP is ~p,Remote_IP is ~p,Link_Id is ~p~n",[Link_Local_IP,Link_Remote_IP,Link_Id]),
@@ -198,6 +199,7 @@ ls_report_link_msg_0_creating(SwitchId) ->
   Link_Config_Num = lists:nth(Link_Num,Link_Config),
   Link_Id = element(1,Link_Config_Num),
   Link_IP = element(2,Link_Config_Num),
+  _Link_Resource = element(3,Link_Config_Num),   %%  TODO Resource
   Link_Local_IP = element(1,Link_IP),
   Link_Remote_IP  = element(2,Link_IP),
   io:format("Local_IP is ~p,Remote_IP is ~p,Link_Id is ~p~n",[Link_Local_IP,Link_Remote_IP,Link_Id]),
@@ -699,7 +701,7 @@ ls_node_add_msg_creating(Add_Info) ->
   },
   pcep_protocol:encode(Ls_node_msg).
 
-%% @doc Add node message is as follow. Add_Info is a lists of {IP="10.0.0.1",{DesSwitchId,Port_No}={1,2}}.
+%% @doc Add node message is as follow. Add_Info is a tuple of {IP="10.0.0.1",{DesSwitchId,Port_No}={1,2},Resource = 400}.
 %% Local Node is Add Node, all links are created with S Flag is 1.
 
 ls_link_add_local_msg_creating(Add_Info) ->
@@ -802,7 +804,7 @@ ls_link_add_local_msg_creating(Add_Info) ->
 %%   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
   list_to_binary(LS_Report_Link_Msgs_1).
 
-%% @doc Add node message is as follow. Add_Info is a lists of {IP="10.0.0.1",{DesSwitchId,Port_No}={1,2}}.
+%% @doc Add node message is as follow. Add_Info is a tuple of {IP="10.0.0.1",{DesSwitchId,Port_No}={1,2},Resource = 400}.
 %% Remote Node is Add Node, Num-1 links are created with S Flag is 1.
 
 ls_link_add_remote_msg_1_creating(Add_Info) ->
