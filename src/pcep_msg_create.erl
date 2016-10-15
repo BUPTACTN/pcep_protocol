@@ -537,7 +537,7 @@ ls_node_add_msg_creating(Add_Info) ->
   end,
   Node_Msg_Length = (7+C) * 4,
   Port_ip_list = linc_pcep_config:for(1,Port_Num,fun(I) ->
-    Port_I = lists:nth(I,Add_Info),
+    Port_I = element(I,Add_Info),
     Port_IP_I = element(1,Port_I),
     linc_pcep_config:ip_to_int(Port_IP_I)
   end),
