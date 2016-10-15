@@ -186,6 +186,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
     Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_1),
     element(2,Link_Msg)
 %%     io:format("Link_Msg in for is ~p~n",[Link_Msg])
+%%     io:format("Link_Msg in for is ~p~n",[Link_Msg])
   end),
 %%   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
   list_to_binary(LS_Report_Link_Msgs_1).
@@ -309,7 +310,7 @@ ls_report_node_msg_creating(SwitchId) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 1,
-        ls_object_ls_id = 1,
+        ls_object_ls_id = SwitchId*100,
         ls_node_object_tlv = #optical_node_attribute_tlv{
           optical_node_attribute_tlv_type = 10002,
           optical_node_attribute_tlv_length = Node_Msg_Length-24,
