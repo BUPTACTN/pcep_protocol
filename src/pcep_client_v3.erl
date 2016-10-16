@@ -44,7 +44,7 @@ add(Add_Info) ->
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   io:format("OpenMsg in v3 is ~p~n",[OpenMessage]),
   KeepaliveMessage = <<32,2,0,4>>,
-  Link_Num = lists:length(Add_Info),
+  Link_Num = tuple_size(Add_Info),
   {ok,Ls_report_node_Message} = pcep_msg_create:ls_node_add_msg_creating(Add_Info),
   io:format("NodeMsg in v3 is ~p~n",[Ls_report_node_Message]),
   case Link_Num of
