@@ -183,9 +183,10 @@ ls_report_link_msg_1_creating(SwitchId) ->
         }
       }
     },
+    io:format("Ls_Id in for is ~p~n",[SwitchId*10+I]),
     Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_1),
     element(2,Link_Msg)
-%%     io:format("Link_Msg in for is ~p~n",[Link_Msg])
+
 %%     io:format("Link_Msg in for is ~p~n",[Link_Msg])
   end),
 %%   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_1]),
@@ -283,6 +284,7 @@ ls_report_link_msg_0_creating(SwitchId) ->
       }
     }
   },
+  io:format("Ls_Id in for is ~p~n",[SwitchId*10]),
   pcep_protocol:encode(LS_Report_Link_Msg_0).
 
 ls_report_node_msg_creating(SwitchId) ->
@@ -454,6 +456,7 @@ ls_report_node_msg_creating(SwitchId) ->
       }
     }
   },
+  io:format("Ls_Id in for is ~p~n",[SwitchId*100]),
   pcep_protocol:encode(Ls_node_msg).
 
 pcrpt_msg_creating(IP_1,IP_2) ->
