@@ -717,7 +717,7 @@ ls_link_add_local_msg_creating(Add_Info) ->
   Link_Num = tuple_size(Add_Info),
   LS_Report_Link_Msgs_1 = linc_pcep_config:for(1,Link_Num,fun(I) ->
 %%     io:format("for function start1111111111111~n"),
-    Link_Config_I = lists:nth(I,Add_Info),
+    Link_Config_I = element(I,Add_Info),
 %%     Link_Id = element(1,Link_Config_I),
 %%     Link_IP = element(2,Link_Config_I),
     Link_Local_IP = element(1,Link_Config_I),
@@ -817,16 +817,16 @@ ls_link_add_remote_msg_1_creating(Add_Info) ->
   M = P+N,
 %%   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
 %%   io:format("Link_Config in create is ~p~n",[Link_Config]),
-  Link_Num = lists:length(Add_Info),
+  Link_Num = tuple_size(Add_Info),
   Port_ip_list = linc_pcep_config:for(1,Link_Num,fun(I) ->
-    Port_I = lists:nth(I,Add_Info),
+    Port_I = element(I,Add_Info),
     Port_IP_I = element(1,Port_I),
     linc_pcep_config:ip_to_int(Port_IP_I)
   end),
   Link_Id = lists:min(Port_ip_list),
   LS_Report_Link_Msgs_1 = linc_pcep_config:for(1,Link_Num-1,fun(I) ->
 %%     io:format("for function start1111111111111~n"),
-    Link_Config_I = lists:nth(I,Add_Info),
+    Link_Config_I = element(I,Add_Info),
 %%     Link_Id = element(1,Link_Config_I),
 %%     Link_IP = element(2,Link_Config_I),
     Link_Remote_IP = element(1,Link_Config_I),
@@ -921,16 +921,16 @@ ls_link_add_remote_msg_0_creating(Add_Info) ->
   N = trunc(1076363280*math:pow(2,96)),
   P = trunc(4294967295*math:pow(2,32)+4278190080),
   M = P+N,
-  Link_Num = lists:length(Add_Info),
+  Link_Num = tuple_size(Add_Info),
   Port_ip_list = linc_pcep_config:for(1,Link_Num,fun(I) ->
-    Port_I = lists:nth(I,Add_Info),
+    Port_I = element(I,Add_Info),
     Port_IP_I = element(1,Port_I),
     linc_pcep_config:ip_to_int(Port_IP_I)
   end),
   Link_Id = lists:min(Port_ip_list),
 %%   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
 %%   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
-  Link_Config_Num = lists:nth(Link_Num,Add_Info),
+  Link_Config_Num = element(Link_Num,Add_Info),
 %%   Link_Id = element(1,Link_Config_Num),
   Link_Remote_IP = linc_pcep_config:ip_to_int(element(1,Link_Config_Num)),
   Local_SwitchId = element(1,element(2,Link_Config_Num)),
