@@ -13,7 +13,7 @@
 -define(Controller_Host,"10.108.66.142").
 
 %% API
--export([start_link/1,start/1,timer_stop/1,pid_init/0,resource_init/0,pid_add/1,start_add/1]).
+-export([start_link/1,start/1,timer_stop/1,pid_init/0,resource_init/0,pid_add/1,start_add/1,add/1]).
 
 pid_init() ->
   ets:new(pid,[named_table,public]).
