@@ -530,7 +530,7 @@ pcrpt_msg_creating(IP_1,IP_2) ->
 %% {IP,{DesSwitchId,Port_No}},for example,[{IP,{DesSwitchId,Port_No}}].
 
 ls_node_add_msg_creating(Add_Info) ->
-  Port_Num = length(Add_Info),
+  Port_Num = tuple_size(Add_Info),
   A = Port_Num div 4,
   B = Port_Num rem 4,
   if B /= 0 ->
