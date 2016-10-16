@@ -714,7 +714,7 @@ ls_link_add_local_msg_creating(Add_Info) ->
   M = P+N,
 %%   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
 %%   io:format("Link_Config in create is ~p~n",[Link_Config]),
-  Link_Num = lists:length(Add_Info),
+  Link_Num = tuple_size(Add_Info),
   LS_Report_Link_Msgs_1 = linc_pcep_config:for(1,Link_Num,fun(I) ->
 %%     io:format("for function start1111111111111~n"),
     Link_Config_I = lists:nth(I,Add_Info),
