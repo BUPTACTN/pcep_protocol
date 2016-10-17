@@ -26,9 +26,8 @@
   pcrpt_msg_creating/2,
   ls_node_add_msg_creating/1,
   ls_link_add_local_msg_creating/1,
-  ls_link_add_remote_msg_1_creating/1
-%%   ls_link_add_remote_msg_0_creating/1
-]).
+  ls_link_add_remote_msg_1_creating/1,
+  ls_link_add_local_msg_0_creating/1]).
 
 open_msg_creating() ->
   Open_Message = #pcep_message{
@@ -928,11 +927,11 @@ ls_link_add_local_msg_1_creating(Add_Info) ->
   P = trunc(4294967295*math:pow(2,32)+4278190080),
   M = P+N,
   Link_Num = tuple_size(Add_Info),
-  Port_ip_list = linc_pcep_config:for(1,Link_Num,fun(I) ->
-    Port_I = element(I,Add_Info),
-    Port_IP_I = element(1,Port_I),
-    linc_pcep_config:ip_to_int(Port_IP_I)
-  end),
+%%   Port_ip_list = linc_pcep_config:for(1,Link_Num,fun(I) ->
+%%     Port_I = element(I,Add_Info),
+%%     Port_IP_I = element(1,Port_I),
+%%     linc_pcep_config:ip_to_int(Port_IP_I)
+%%   end),
   LS_Report_Link_Msgs_0 = linc_pcep_config:for(1,Link_Num-1,fun(I) ->
     Link_Config_I = element(I,Add_Info),
 %%   Link_Id = element(1,Link_Config_Num),
@@ -1024,104 +1023,92 @@ ls_link_add_local_msg_1_creating(Add_Info) ->
   io:format("LS_Report_Link_Msgs_1 is ~p~n",[LS_Report_Link_Msgs_0]),
   list_to_binary(LS_Report_Link_Msgs_0).
 
-%% ls_link_add_local_msg_0_creating(Add_Info) ->
-%%   N = trunc(1076363280*math:pow(2,96)),
-%%   P = trunc(4294967295*math:pow(2,32)+4278190080),
-%%   M = P+N,
-%%   Link_Num = tuple_size(Add_Info),
-%%   Port_ip_list = linc_pcep_config:for(1,Link_Num,fun(I) ->
-%%     Port_I = element(I,Add_Info),
-%%     Port_IP_I = element(1,Port_I),
-%%     linc_pcep_config:ip_to_int(Port_IP_I)
-%%   end),
-%% %%   Link_Id = lists:min(Port_ip_list),
-%% %%   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
-%% %%   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
-%%   Link_Config_Num = element(Link_Num,Add_Info),
-%% %%   Link_Id = element(1,Link_Config_Num),
-%%   Link_Remote_IP = linc_pcep_config:ip_to_int(element(1,Link_Config_Num)),
-%%   Local_SwitchId = element(1,element(2,Link_Config_Num)),
-%%   Local_Port_No = element(2,element(2,Link_Config_Num)),
-%%   Link_Local_IP = linc_pcep_config:get_link_ip(Local_SwitchId,Local_Port_No),
-%% %%   Link_Remote_IP  = element(2,Link_IP),
-%% %%   linc_pcep_config:for(1,Link_Num)
-%%   %% S = 1 Msg
-%%
-%%   LS_Report_Link_Msg_0 = linc_pcep_config:for(1,Link_Num-1,fun(I) ->
-%%     #pcep_message{
-%%     version = 1,
-%%     flags = 0,
-%%     message_type = 224,
-%%     message_length = ?LSReport_MSG_LENGTH,
-%%     body = #pcep_object_message{object_class = 224,
-%%       object_type = 2,
-%%       res_flags = 0,
-%%       p = 1,
-%%       i = 1,
-%%       object_length = ?LSReport_MSG_LENGTH-4,
-%%       body = #ls_link_object{ls_object_protocol_id = 4,
-%%         ls_object_flag = 0,
-%%         ls_object_r = 0,
-%%         ls_object_s = 0,
-%%         ls_object_ls_id = 12,
-%%         ls_object_tlv = #optical_link_attribute_tlv{
-%%           optical_link_attribute_tlv_type = 10001,
-%%           optical_link_attribute_tlv_length = 128,
-%%           link_type_sub_tlv_body = #link_type_sub_tlv{
-%%             link_type_sub_tlv_type = 1,
-%%             link_type_sub_tlv_length = 1,
-%%             link_type = 1},
-%%           res_bytes = 0,
-%%           link_id_sub_tlv_body = #link_id_sub_tlv{
-%%             link_id_sub_tlv_type = 2,
-%%             link_id_sub_tlv_length = 4,
-%%             link_id = Link_Id
-%%           },
-%%           local_interface_ip_add_sub_tlv_body = #local_interface_ip_address_sub_tlv{
-%%             local_interface_ip_address_sub_tlv_type = 3,
-%%             local_interface_ip_address_sub_tlv_length = 4,
-%%             local_interface_address = Link_Local_IP
-%%           },
-%%           remote_interface_ip_add_sub_tlv_body = #remote_interface_ip_address_sub_tlv{
-%%             remote_interface_ip_address_sub_tlv_type = 4,
-%%             remote_interface_ip_address_sub_tlv_length = 4,
-%%             remote_interface_address = Link_Remote_IP
-%%           },
-%%           te_metric_body = #te_metric_sub_tlv{
-%%             te_metric_sub_tlv_type = 5,
-%%             te_metric_sub_tlv_length = 4,
-%%             te_link_metric = 1},
-%%           interface_switching_cap_des_sub_tlv_body = #interface_switching_capability_descriptor_sub_tlv{
-%%             interface_switching_capability_descriptor_sub_tlv_type = 15,
-%%             interface_switching_capability_descriptor_sub_tlv_length = 36,
-%%             switching_cap = 150,
-%%             encoding = 8,
-%%             reserved = 0,
-%%             priority_0 = 1,
-%%             priority_1 = 0,
-%%             priority_2 = 0,
-%%             priority_3 = 0,
-%%             priority_4 = 0,
-%%             priority_5 = 0,
-%%             priority_6 = 0,
-%%             priority_7 = 0},
-%%           port_label_res_sub_tlv_body = #port_label_restrictions_sub_tlv{
-%%             port_label_restrictions_sub_tlv_type = 34,
-%%             port_label_restrictions_sub_tlv_length = 20,
-%%             matrix_ID = 255,
-%%             res_type = 2,
-%%             switching_cap = 150,
-%%             encoding = 8,
-%%             additional_res = M},
-%%           available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
-%%             available_labels_field_sub_tlv_type = 10004,
-%%             available_labels_field_sub_tlv_length = 20,
-%%             pri = 255,
-%%             res = 0,
-%%             label_set_field = M
-%%           }
-%%         }
-%%       }
-%%     }
-%%   },
-%%   pcep_protocol:encode(LS_Report_Link_Msg_0).
+ls_link_add_local_msg_0_creating(Add_Info) ->
+  N = trunc(1076363280*math:pow(2,96)),
+  P = trunc(4294967295*math:pow(2,32)+4278190080),
+  M = P+N,
+  Link_Num = tuple_size(Add_Info),
+  Link_Config_I = element(Link_Num,Add_Info),
+%%   Link_Id = element(1,Link_Config_Num),
+  Link_Local_IP = linc_pcep_config:ip_to_int(element(1,Link_Config_I)),
+  Remote_SwitchId = element(1,element(2,Link_Config_I)),
+  Remote_Port_No = element(2,element(2,Link_Config_I)),
+  Link_Remote_IP = linc_pcep_config:get_link_ip(Remote_SwitchId,Remote_Port_No),
+  Link_Id = linc_pcep_config:get_link_id(Remote_SwitchId),
+  LS_Report_Link_Msg_0 = #pcep_message{
+    version = 1,
+    flags = 0,
+    message_type = 224,
+    message_length = ?LSReport_MSG_LENGTH,
+    body = #pcep_object_message{object_class = 224,
+      object_type = 2,
+      res_flags = 0,
+      p = 1,
+      i = 1,
+      object_length = ?LSReport_MSG_LENGTH-4,
+      body = #ls_link_object{ls_object_protocol_id = 4,
+        ls_object_flag = 0,
+        ls_object_r = 0,
+        ls_object_s = 1,
+        ls_object_ls_id = 12,
+        ls_object_tlv = #optical_link_attribute_tlv{
+          optical_link_attribute_tlv_type = 10001,
+          optical_link_attribute_tlv_length = 128,
+          link_type_sub_tlv_body = #link_type_sub_tlv{
+            link_type_sub_tlv_type = 1,
+            link_type_sub_tlv_length = 1,
+            link_type = 1},
+          res_bytes = 0,
+          link_id_sub_tlv_body = #link_id_sub_tlv{
+            link_id_sub_tlv_type = 2,
+            link_id_sub_tlv_length = 4,
+            link_id = Link_Id
+          },
+          local_interface_ip_add_sub_tlv_body = #local_interface_ip_address_sub_tlv{
+            local_interface_ip_address_sub_tlv_type = 3,
+            local_interface_ip_address_sub_tlv_length = 4,
+            local_interface_address = Link_Local_IP
+          },
+          remote_interface_ip_add_sub_tlv_body = #remote_interface_ip_address_sub_tlv{
+            remote_interface_ip_address_sub_tlv_type = 4,
+            remote_interface_ip_address_sub_tlv_length = 4,
+            remote_interface_address = Link_Remote_IP
+          },
+          te_metric_body = #te_metric_sub_tlv{
+            te_metric_sub_tlv_type = 5,
+            te_metric_sub_tlv_length = 4,
+            te_link_metric = 1},
+          interface_switching_cap_des_sub_tlv_body = #interface_switching_capability_descriptor_sub_tlv{
+            interface_switching_capability_descriptor_sub_tlv_type = 15,
+            interface_switching_capability_descriptor_sub_tlv_length = 36,
+            switching_cap = 150,
+            encoding = 8,
+            reserved = 0,
+            priority_0 = 1,
+            priority_1 = 0,
+            priority_2 = 0,
+            priority_3 = 0,
+            priority_4 = 0,
+            priority_5 = 0,
+            priority_6 = 0,
+            priority_7 = 0},
+          port_label_res_sub_tlv_body = #port_label_restrictions_sub_tlv{
+            port_label_restrictions_sub_tlv_type = 34,
+            port_label_restrictions_sub_tlv_length = 20,
+            matrix_ID = 255,
+            res_type = 2,
+            switching_cap = 150,
+            encoding = 8,
+            additional_res = M},
+          available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
+            available_labels_field_sub_tlv_type = 10004,
+            available_labels_field_sub_tlv_length = 20,
+            pri = 255,
+            res = 0,
+            label_set_field = M
+          }
+        }
+      }
+    }
+  },
+  Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_0).

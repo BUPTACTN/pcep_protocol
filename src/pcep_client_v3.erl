@@ -86,6 +86,7 @@ add(Add_Info) ->
 start(SwitchId) ->
   Host = ?Controller_Host,
   Port = ?PCEP_PORT,
+  io:format("Host IP is ~p~n",[Host]),
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   io:format("OpenMsg in v3 is ~p~n",[OpenMessage]),
   KeepaliveMessage = <<32,2,0,4>>,
