@@ -312,7 +312,7 @@ ls_report_node_msg_creating(SwitchId) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 1,
-        ls_object_ls_id = SwitchId*100,
+        ls_object_ls_id = SwitchId*100+5,
         ls_node_object_tlv = #optical_node_attribute_tlv{
           optical_node_attribute_tlv_type = 10002,
           optical_node_attribute_tlv_length = Node_Msg_Length-24,
@@ -559,7 +559,7 @@ ls_node_add_msg_creating(Add_Info) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 1,
-        ls_object_ls_id = 1,
+        ls_object_ls_id = lists:nth(1,Port_ip_list),
         ls_node_object_tlv = #optical_node_attribute_tlv{
           optical_node_attribute_tlv_type = 10002,
           optical_node_attribute_tlv_length = Node_Msg_Length-24,
@@ -832,10 +832,10 @@ ls_link_add_remote_msg_creating(Add_Info) ->
 %%     Link_IP = element(2,Link_Config_I),
     Remote_IP = element(1,Link_Config_I),
     Link_Remote_IP = linc_pcep_config:ip_to_int(Remote_IP),
-    Remote_SwitchId = element(1,element(2,Link_Config_I)),
-    Remote_Port_No = element(2,element(2,Link_Config_I)),
+    Local_SwitchId = element(1,element(2,Link_Config_I)),
+    Local_Port_No = element(2,element(2,Link_Config_I)),
 %%     Link_Id = lists:min(linc_pcep_config:switch_ip(Remote_SwitchId)),
-    Link_Local_IP = linc_pcep_config:get_link_ip(Remote_SwitchId,Remote_Port_No),
+    Link_Local_IP = linc_pcep_config:get_link_ip(Local_SwitchId,Local_Port_No),
     LS_Report_Link_Msg_1 = #pcep_message{
       version = 1,
       flags = 0,
@@ -851,7 +851,7 @@ ls_link_add_remote_msg_creating(Add_Info) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = (Remote_SwitchId+1)*100+Remote_Port_No*10,
+          ls_object_ls_id = (Local_SwitchId+1)*100+Local_Port_No*10,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
@@ -955,7 +955,7 @@ ls_link_add_local_msg_1_creating(Add_Info) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = 12,
+          ls_object_ls_id = (Remote_SwitchId+1)*1000+Remote_Port_No*10,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
@@ -1050,7 +1050,7 @@ ls_link_add_local_msg_0_creating(Add_Info) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 1,
-        ls_object_ls_id = 12,
+        ls_object_ls_id = (Remote_SwitchId+1)*1000+Remote_Port_No*100,
         ls_object_tlv = #optical_link_attribute_tlv{
           optical_link_attribute_tlv_type = 10001,
           optical_link_attribute_tlv_length = 128,
