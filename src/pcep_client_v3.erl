@@ -67,7 +67,7 @@ add(Add_Info) ->
     _ ->
       Ls_link_add_local_Message = pcep_msg_create:ls_link_add_remote_msg_creating(Add_Info),
       io:format("LinkMsg in v3 is ~p~n",[Ls_link_add_local_Message]),
-      {ok,Ls_link_add_remote_1_Message} = pcep_msg_create:ls_link_add_local_msg_1_creating(Add_Info),
+      Ls_link_add_remote_1_Message = pcep_msg_create:ls_link_add_local_msg_1_creating(Add_Info),
       {ok,Ls_link_add_remote_0_Message} = pcep_msg_create:ls_link_add_local_msg_0_creating(Add_Info),
       {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
       gen_tcp:send(Socket,OpenMessage),
