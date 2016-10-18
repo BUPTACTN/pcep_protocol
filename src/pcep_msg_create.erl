@@ -1049,7 +1049,7 @@ ls_link_add_local_msg_0_creating(Add_Info) ->
       body = #ls_link_object{ls_object_protocol_id = 4,
         ls_object_flag = 0,
         ls_object_r = 0,
-        ls_object_s = 1,
+        ls_object_s = 0,
         ls_object_ls_id = (Remote_SwitchId+1)*1000+Remote_Port_No*100,
         ls_object_tlv = #optical_link_attribute_tlv{
           optical_link_attribute_tlv_type = 10001,
