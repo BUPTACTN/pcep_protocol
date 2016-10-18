@@ -9,8 +9,8 @@
 -module(pcep_client_v3).
 -author("Xinfeng").
 
-%% -define(PCEP_PORT,4189).
-%% -define(Controller_Host,"127.0.0.1").
+-define(PCEP_PORT,4189).
+-define(Controller_Host,"10.108.66.142").
 
 %% API
 -export([start_link/1,start/1,timer_stop/1,pid_init/0,resource_init/0,pid_add/1,start_add/1,add/1]).
@@ -39,8 +39,8 @@ start_add(Add_Info) ->
   spawn(pcep_client_v3,add,[Add_Info]).
 
 add(Add_Info) ->
-  Host = linc_pcep_config:get_controller_ip(),
-  Port = linc_pcep_config:get_controller_port(),
+  Host = ?Controller_Host,
+  Port = ?PCEP_PORT,
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   io:format("OpenMsg in v3 is ~p~n",[OpenMessage]),
   KeepaliveMessage = <<32,2,0,4>>,
@@ -84,8 +84,8 @@ add(Add_Info) ->
   end.
 
 start(SwitchId) ->
-  Host = linc_pcep_config:get_controller_ip(),
-  Port = linc_pcep_config:get_controller_port(),
+  Host = ?Controller_Host,
+  Port = ?PCEP_PORT,
   io:format("Host IP is ~p~n",[Host]),
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   io:format("OpenMsg in v3 is ~p~n",[OpenMessage]),
