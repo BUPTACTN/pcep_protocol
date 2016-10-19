@@ -143,6 +143,7 @@ receive_data1(Socket,SoFar) ->   %% TODO
     {tcp,Socket,Bin} ->
       {H,_L} = split_binary(Bin,2),
       if H =:= <<32,12>> ->
+        io:format("PCIn Msg is ~p~n",[Bin]),
         {ok,PcrptMsg} = pcep_msg_create:pcrpt_msg_creating(1,2),
         gen_tcp:send(Socket,PcrptMsg),
         receive_data1(Socket,[]);
