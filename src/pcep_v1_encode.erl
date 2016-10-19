@@ -49,6 +49,18 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
 %%       io:format("encode rpt msg object start9999999999999999~n"),
       BodyBin2 = encode_object_msg_2(Body),
       list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin2]);
+    4 ->
+      BodyBin3 = encode_object_msg_3(Body),
+      list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin3]);
+    7 ->
+      BodyBin6 = encode_object_msg_6(Body),
+      list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin6]);
+    10 ->
+      BodyBin9 = encode_object_msg_9(Body),
+      list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin9]);
+    13 ->
+      BodyBin12 = encode_object_msg_12(Body),
+      list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin12]);
     _ ->
       BodyBin1 = encode_object_msg(Body),
       list_to_binary([<<?VERSION:3, Flags:5, MessageType:8, MessageLength:16>>, BodyBin1])
@@ -522,6 +534,56 @@ encode_object_msg_2(#pcep_object_2{pcep_object1 = Object_1,pcep_object2 = Object
   Object2 = encode_object_msg(Object_2),
   list_to_binary([Object1,Object2]).
 
+encode_object_msg_3(#pcep_object_3{pcep_object1 = Object_1,pcep_object2 = Object_2,pcep_object3 = Object_3}) ->
+  Object1 = encode_object_msg(Object_1),
+  Object2 = encode_object_msg(Object_2),
+  Object3 = encode_object_msg(Object_3),
+  list_to_binary([Object1,Object2,Object3]).
+
+encode_object_msg_6(#pcep_object_6{pcep_object1 = Object_1,pcep_object2 = Object_2,pcep_object3 = Object_3,
+  pcep_object4 = Object_4,pcep_object5 = Object_5,pcep_object6 = Object_6}) ->
+  Object1 = encode_object_msg(Object_1),
+  Object2 = encode_object_msg(Object_2),
+  Object3 = encode_object_msg(Object_3),
+  Object4 = encode_object_msg(Object_4),
+  Object5 = encode_object_msg(Object_5),
+  Object6 = encode_object_msg(Object_6),
+  list_to_binary([Object1,Object2,Object3,Object4,Object5,Object6]).
+
+encode_object_msg_9(#pcep_object_9{pcep_object1 = Object_1,pcep_object2 = Object_2,pcep_object3 = Object_3,
+  pcep_object4 = Object_4,pcep_object5 = Object_5,pcep_object6 = Object_6,pcep_object7 = Object_7,
+  pcep_object8 = Object_8,pcep_object9 = Object_9}) ->
+  Object1 = encode_object_msg(Object_1),
+  Object2 = encode_object_msg(Object_2),
+  Object3 = encode_object_msg(Object_3),
+  Object4 = encode_object_msg(Object_4),
+  Object5 = encode_object_msg(Object_5),
+  Object6 = encode_object_msg(Object_6),
+  Object7 = encode_object_msg(Object_7),
+  Object8 = encode_object_msg(Object_8),
+  Object9 = encode_object_msg(Object_9),
+  list_to_binary([Object1,Object2,Object3,Object4,Object5,Object6,Object7,Object8,Object9]).
+
+encode_object_msg_12(#pcep_object_12{pcep_object1 = Object_1,pcep_object2 = Object_2,pcep_object3 = Object_3,
+  pcep_object4 = Object_4,pcep_object5 = Object_5,pcep_object6 = Object_6,pcep_object7 = Object_7,
+  pcep_object8 = Object_8,pcep_object9 = Object_9,pcep_object10 = Object_10,pcep_object11 = Object_11,pcep_object12 = Object_12}) ->
+  Object1 = encode_object_msg(Object_1),
+  Object2 = encode_object_msg(Object_2),
+  Object3 = encode_object_msg(Object_3),
+  Object4 = encode_object_msg(Object_4),
+  Object5 = encode_object_msg(Object_5),
+  Object6 = encode_object_msg(Object_6),
+  Object7 = encode_object_msg(Object_7),
+  Object8 = encode_object_msg(Object_8),
+  Object9 = encode_object_msg(Object_9),
+  Object7 = encode_object_msg(Object_7),
+  Object8 = encode_object_msg(Object_8),
+  Object9 = encode_object_msg(Object_9),
+  Object10 = encode_object_msg(Object_10),
+  Object11 = encode_object_msg(Object_11),
+  Object12 = encode_object_msg(Object_12),
+  list_to_binary([Object1,Object2,Object3,Object4,Object5,Object6,Object7,Object8,Object9,Object10,Object11,Object12]).
+
 %% encode common body, which is object related message -------------------------------------------------------------------
 -spec encode_object_msg(ObjectMessage::pcep_object_message()) -> binary().
 encode_object_msg(#pcep_object_message{
@@ -703,6 +765,10 @@ encode_object_body(ero_ob_type,#ero_object{ero_subobject1 = Subobject1,ero_subob
   Sub_object1 = encode_ipv4_sub_object(Subobject1),
   Sub_object2 = encode_ipv4_sub_object(Subobject2),
   list_to_binary([Sub_object1,Sub_object2]);
+
+encode_object_body(srp_ob_type,#srp_object{flags = Flags,r = R,srp_id_number = Srp_Id,tlvs = Tlvs}) ->
+  TlvsBin=encode_tlv7(Tlvs),
+  list_to_binary([<<Flags:31,R:1,Srp_Id:32>>,TlvsBin]);
 
 %% encode rro object
 %% TODO for fxf 2016-03-30

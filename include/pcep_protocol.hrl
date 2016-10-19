@@ -31,6 +31,55 @@
 
 -type pcep_object_2() :: #pcep_object_2{}.
 
+-record(pcep_object_3,{
+  pcep_object1 :: pcep_object_message(),
+  pcep_object2 :: pcep_object_message(),
+  pcep_object3 :: pcep_object_message()
+}).
+
+-type pcep_object_3() :: #pcep_object_3{}.
+
+-record(pcep_object_6,{
+  pcep_object1 :: pcep_object_message(),
+  pcep_object2 :: pcep_object_message(),
+  pcep_object3 :: pcep_object_message(),
+  pcep_object4 :: pcep_object_message(),
+  pcep_object5 :: pcep_object_message(),
+  pcep_object6 :: pcep_object_message()
+}).
+
+-type pcep_object_6() :: #pcep_object_6{}.
+
+-record(pcep_object_9,{
+  pcep_object1 :: pcep_object_message(),
+  pcep_object2 :: pcep_object_message(),
+  pcep_object3 :: pcep_object_message(),
+  pcep_object4 :: pcep_object_message(),
+  pcep_object5 :: pcep_object_message(),
+  pcep_object6 :: pcep_object_message(),
+  pcep_object7 :: pcep_object_message(),
+  pcep_object8 :: pcep_object_message(),
+  pcep_object9 :: pcep_object_message()
+}).
+
+-type pcep_object_9() :: #pcep_object_9{}.
+
+-record(pcep_object_12,{
+  pcep_object1 :: pcep_object_message(),
+  pcep_object2 :: pcep_object_message(),
+  pcep_object3 :: pcep_object_message(),
+  pcep_object4 :: pcep_object_message(),
+  pcep_object5 :: pcep_object_message(),
+  pcep_object6 :: pcep_object_message(),
+  pcep_object7 :: pcep_object_message(),
+  pcep_object8 :: pcep_object_message(),
+  pcep_object9 :: pcep_object_message(),
+  pcep_object10 :: pcep_object_message(),
+  pcep_object11 :: pcep_object_message(),
+  pcep_object12 :: pcep_object_message()
+}).
+
+-type pcep_object_12() :: #pcep_object_12{}.
 %% PCEP Message Common Header ----------------------------------------------------------------------
 
 -record(pcep_message, {

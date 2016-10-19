@@ -21,6 +21,7 @@
 
 -record(srp_object,{
   flags = <<0:32>> ::integer(),   %% 32bits
+  r ::boolean(),
   srp_id_number::integer(),  %% 32bits
 %%  srp_object_tlv_symbolic_path_name_tlv::symbolic_path_name_tlv()
   tlvs::list()

@@ -123,7 +123,6 @@ start(SwitchId) ->
       gen_tcp:send(Socket,Ls_report_node_Message),
       gen_tcp:send(Socket,Ls_report_link_1_Message),
       gen_tcp:send(Socket,Ls_report_link_0_Message),
-
       Pid = spawn(fun() -> receive_data1(Socket,[]) end),
       io:format("Pid in v3 is~p~n",[Pid]),
       gen_tcp:controlling_process(Socket,Pid),
@@ -141,10 +140,18 @@ receive_data(Socket,SoFar) ->
 receive_data1(Socket,SoFar) ->   %% TODO
   receive
     {tcp,Socket,Bin} ->
-      {H,_L} = split_binary(Bin,2),
+      {H,L} = split_binary(Bin,2),
       if H =:= <<32,12>> ->
         io:format("PCIn Msg is ~p~n",[Bin]),
-        {ok,PcrptMsg} = pcep_msg_create:pcrpt_msg_creating(1,2),
+%%         {B,O1} = split_binary(L,2),
+%%         <<Length:16>> = B,
+%%         if (Length-4) rem 152 =:= 0 ->
+%%           Num = (Length-4) div 152,
+%%           case Num of
+%%               1->
+%%
+%%           end
+        {ok,PcrptMsg} = pcep_msg_create:pcrpt_msg_creating(0,1,2),
         gen_tcp:send(Socket,PcrptMsg),
         receive_data1(Socket,[]);
         true ->
