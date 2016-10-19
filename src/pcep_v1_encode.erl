@@ -43,7 +43,7 @@ do(#pcep_message{version = ?VERSION, flags=Flags, message_type=MessageType,messa
   Object_num = tuple_size(Body),
 %%   io:format("Body in do is ~p~n",[Body]),
 %%   io:format("Tuple_object in do is ~p~n",[Tuple_object]),
-%%   io:format("Object_num is ~p~n",[Object_num]),
+  io:format("Object_num is ~p~n",[Object_num]),
   case Object_num of
     3 ->
 %%       io:format("encode rpt msg object start9999999999999999~n"),

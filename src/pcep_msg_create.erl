@@ -459,7 +459,7 @@ ls_report_node_msg_creating(SwitchId) ->
 %%   io:format("Ls_Id in for is ~p~n",[SwitchId*100]),
   pcep_protocol:encode(Ls_node_msg).
 
-pcrpt_msg_creating(IP_1,IP_2) ->
+pcrpt_msg_creating(R,IP_1,IP_2) ->
   Pcrpt_msg = #pcep_message{
     version = 1,
     flags = 0,
@@ -479,7 +479,7 @@ pcrpt_msg_creating(IP_1,IP_2) ->
           c = 1,
           o = 1,
           a = 1,
-          r = 1,
+          r = R,
           s = 1,
           d = 1,
           lsp_object_tlvs = #lsp_object_tlvs{
