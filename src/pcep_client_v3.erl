@@ -10,10 +10,10 @@
 -author("Xinfeng").
 
 -define(PCEP_PORT,4189).
--define(Controller_Host,"10.108.66.142").
+%% -define(Controller_Host,"10.108.66.142").
 
 %% API
--export([start_link/1,start/1,timer_stop/1,pid_init/0,resource_init/0,pid_add/1,start_add/1,add/1]).
+-export([start_link/2,start/2,timer_stop/1,pid_init/0,resource_init/0,pid_add/2,start_add/2,add/2]).
 
 pid_init() ->
   ets:new(pid,[named_table,public]).
@@ -28,18 +28,18 @@ resource_init() ->
   end
   ).
 
-pid_add(SwitchId) ->
-  Pid = start_link(SwitchId),
+pid_add(Host,SwitchId) ->
+  Pid = start_link(Host,SwitchId),
   ets:insert(pid,{SwitchId,Pid}).
 
-start_link(SwitchId) ->
-  spawn(pcep_client_v3,start,[SwitchId]).
+start_link(Host,SwitchId) ->
+  spawn(pcep_client_v3,start,[Host,SwitchId]).
 
-start_add(Add_Info) ->
-  spawn(pcep_client_v3,add,[Add_Info]).
+start_add(Host,Add_Info) ->
+  spawn(pcep_client_v3,add,[Host,Add_Info]).
 
-add(Add_Info) ->
-  Host = ?Controller_Host,
+add(Host,Add_Info) ->
+%%   Host = ?Controller_Host,
   Port = ?PCEP_PORT,
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
 %%   io:format("OpenMsg in v3 is ~p~n",[OpenMessage]),
@@ -83,8 +83,8 @@ add(Add_Info) ->
       timer_start(30000,fun() -> gen_tcp:send(Socket,KeepaliveMessage) end)
   end.
 
-start(SwitchId) ->
-  Host = ?Controller_Host,
+start(Host,SwitchId) ->
+%%   Host = ?Controller_Host,
   Port = ?PCEP_PORT,
 %%   io:format("Host IP is ~p~n",[Host]),
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
