@@ -143,6 +143,7 @@ receive_data1(Socket,SoFar) ->   %% TODO
       {H,L} = split_binary(Bin,2),
       if H =:= <<32,12>> ->
         io:format("PCIn Msg is ~p~n",[Bin]),
+        
 %%         {B,O1} = split_binary(L,2),
 %%         <<Length:16>> = B,
 %%         if (Length-4) rem 152 =:= 0 ->

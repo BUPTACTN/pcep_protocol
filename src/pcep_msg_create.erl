@@ -103,7 +103,8 @@ ls_report_link_msg_1_creating(SwitchId) ->
     Link_Config_I = lists:nth(I,Link_Config),
     Link_Id = element(1,Link_Config_I),
     Link_IP = element(2,Link_Config_I),
-    _Link_Resource = element(3,Link_Config_I),   %%  TODO Resource
+    Link_Resource1 = element(3,Link_Config_I),   %%  TODO Resource
+    Link_Resource = linc_pcep_config:get_resource(Link_Resource1),
     Link_Local_IP = element(1,Link_IP),
     Link_Remote_IP  = element(2,Link_IP),
 %%     io:format("Local_IP is ~p,Remote_IP is ~p,Link_Id is ~p~n",[Link_Local_IP,Link_Remote_IP,Link_Id]),
@@ -171,13 +172,13 @@ ls_report_link_msg_1_creating(SwitchId) ->
               res_type = 2,
               switching_cap = 150,
               encoding = 8,
-              additional_res = M},
+              additional_res = Link_Resource},
             available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
               available_labels_field_sub_tlv_type = 10004,
               available_labels_field_sub_tlv_length = 20,
               pri = 255,
               res = 0,
-              label_set_field = M
+              label_set_field = Link_Resource
             }
           }
         }
@@ -193,15 +194,16 @@ ls_report_link_msg_1_creating(SwitchId) ->
   list_to_binary(LS_Report_Link_Msgs_1).
 
 ls_report_link_msg_0_creating(SwitchId) ->
-  N = trunc(1076363280*math:pow(2,96)),
-  P = trunc(4294967295*math:pow(2,32)+4278190080),
-  M = P+N,
+%%   N = trunc(1076363280*math:pow(2,96)),
+%%   P = trunc(4294967295*math:pow(2,32)+4278190080),
+%%   M = P+N,
   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
   Link_Config_Num = lists:nth(Link_Num,Link_Config),
   Link_Id = element(1,Link_Config_Num),
   Link_IP = element(2,Link_Config_Num),
-  _Link_Resource = element(3,Link_Config_Num),   %%  TODO Resource
+  Link_Resource1 = element(3,Link_Config_Num),   %%  TODO Resource
+  Link_Resource = linc_pcep_config:get_resource(Link_Resource1),
   Link_Local_IP = element(1,Link_IP),
   Link_Remote_IP  = element(2,Link_IP),
 %%   io:format("Local_IP is ~p,Remote_IP is ~p,Link_Id is ~p~n",[Link_Local_IP,Link_Remote_IP,Link_Id]),
@@ -272,13 +274,13 @@ ls_report_link_msg_0_creating(SwitchId) ->
             res_type = 2,
             switching_cap = 150,
             encoding = 8,
-            additional_res = M},
+            additional_res = Link_Resource},
           available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
             available_labels_field_sub_tlv_type = 10004,
             available_labels_field_sub_tlv_length = 20,
             pri = 255,
             res = 0,
-            label_set_field = M
+            label_set_field = Link_Resource
           }
         }
       }
@@ -746,15 +748,16 @@ ls_node_add_msg_creating(Add_Info) ->
 %% Remote Node is Add Node, Num-1 links are created with S Flag is 1.
 
 ls_link_add_remote_msg_creating(Add_Info) ->
-  N = trunc(1076363280*math:pow(2,96)),
-  P = trunc(4294967295*math:pow(2,32)+4278190080),
-  M = P+N,
+%%   N = trunc(1076363280*math:pow(2,96)),
+%%   P = trunc(4294967295*math:pow(2,32)+4278190080),
+%%   M = P+N,
 %%   Link_Config = linc_pcep_config:link_ip_extract(SwitchId),
 %%   io:format("Link_Config in create is ~p~n",[Link_Config]),
   Link_Num = tuple_size(Add_Info),
   Port_ip_list = linc_pcep_config:for(1,Link_Num,fun(I) ->
     Port_I = element(I,Add_Info),
     Port_IP_I = element(1,Port_I),
+%%     Link_Resource = element
     linc_pcep_config:ip_to_int(Port_IP_I)
   end),
   Link_Id = lists:min(Port_ip_list),
@@ -767,6 +770,8 @@ ls_link_add_remote_msg_creating(Add_Info) ->
     Link_Remote_IP = linc_pcep_config:ip_to_int(Remote_IP),
     Local_SwitchId = element(1,element(2,Link_Config_I)),
     Local_Port_No = element(2,element(2,Link_Config_I)),
+    Link_Resource1 = element(3,Link_Config_I),
+    Link_Resource = linc_pcep_config:get_resource(Link_Resource1),
 %%     Link_Id = lists:min(linc_pcep_config:switch_ip(Remote_SwitchId)),
     Link_Local_IP = linc_pcep_config:get_link_ip(Local_SwitchId,Local_Port_No),
     LS_Report_Link_Msg_1 = #pcep_message{
@@ -833,13 +838,13 @@ ls_link_add_remote_msg_creating(Add_Info) ->
               res_type = 2,
               switching_cap = 150,
               encoding = 8,
-              additional_res = M},
+              additional_res = Link_Resource},
             available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
               available_labels_field_sub_tlv_type = 10004,
               available_labels_field_sub_tlv_length = 20,
               pri = 255,
               res = 0,
-              label_set_field = M
+              label_set_field = Link_Resource
             }
           }
         }
@@ -871,6 +876,8 @@ ls_link_add_local_msg_1_creating(Add_Info) ->
     Link_Local_IP = linc_pcep_config:ip_to_int(element(1,Link_Config_I)),
     Remote_SwitchId = element(1,element(2,Link_Config_I)),
     Remote_Port_No = element(2,element(2,Link_Config_I)),
+    Link_Resource1 = element(3,Link_Config_I),
+    Link_Resource = linc_pcep_config:get_resource(Link_Resource1),
     Link_Remote_IP = linc_pcep_config:get_link_ip(Remote_SwitchId,Remote_Port_No),
     Link_Id = linc_pcep_config:get_link_id(Remote_SwitchId),
     LS_Report_Link_Msg_0 = #pcep_message{
@@ -937,13 +944,13 @@ ls_link_add_local_msg_1_creating(Add_Info) ->
               res_type = 2,
               switching_cap = 150,
               encoding = 8,
-              additional_res = M},
+              additional_res = Link_Resource},
             available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
               available_labels_field_sub_tlv_type = 10004,
               available_labels_field_sub_tlv_length = 20,
               pri = 255,
               res = 0,
-              label_set_field = M
+              label_set_field = Link_Resource
             }
           }
         }
@@ -966,6 +973,8 @@ ls_link_add_local_msg_0_creating(Add_Info) ->
   Link_Local_IP = linc_pcep_config:ip_to_int(element(1,Link_Config_I)),
   Remote_SwitchId = element(1,element(2,Link_Config_I)),
   Remote_Port_No = element(2,element(2,Link_Config_I)),
+  Link_Resource1 = element(3,Link_Config_I),
+  Link_Resource = linc_pcep_config:get_resource(Link_Resource1),
   Link_Remote_IP = linc_pcep_config:get_link_ip(Remote_SwitchId,Remote_Port_No),
   Link_Id = linc_pcep_config:get_link_id(Remote_SwitchId),
   LS_Report_Link_Msg_0 = #pcep_message{
@@ -1032,13 +1041,13 @@ ls_link_add_local_msg_0_creating(Add_Info) ->
             res_type = 2,
             switching_cap = 150,
             encoding = 8,
-            additional_res = M},
+            additional_res = Link_Resource},
           available_labels_field_sub_tlv_body = #available_labels_field_sub_tlv{
             available_labels_field_sub_tlv_type = 10004,
             available_labels_field_sub_tlv_length = 20,
             pri = 255,
             res = 0,
-            label_set_field = M
+            label_set_field = Link_Resource
           }
         }
       }
@@ -1112,7 +1121,6 @@ pcrpt_msg_creating(R,IP_1,IP_2) ->
     }
   },
   pcep_protocol:encode(Pcrpt_msg).
-
 
 
 %% pcrpt_msg_creating_3(R,IP_1,IP_2) ->
