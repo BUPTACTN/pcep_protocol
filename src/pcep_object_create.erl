@@ -11,8 +11,9 @@
 -include("pcep_protocol.hrl").
 
 %% API
--export([]).
-
+%% -export([test/0]).
+%% test()->
+%%   pcep_msg_create:pcrpt_msg_creating(<<1:8>>).
 %% lsp_object_create() ->
 %%   Lsp_Object = #pcep_object_message{
 %%     object_class = 32,

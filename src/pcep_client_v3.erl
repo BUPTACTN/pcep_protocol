@@ -152,7 +152,7 @@ receive_data1(Socket,SoFar) ->   %% TODO
 %%               1->
 %%
 %%           end
-        {ok,PcrptMsg} = pcep_msg_create:pcrpt_msg_creating(0,1,2),
+        PcrptMsg = pcep_msg_create:pcrpt_msg_creating(L),
         gen_tcp:send(Socket,PcrptMsg),
         receive_data1(Socket,[]);
         true ->

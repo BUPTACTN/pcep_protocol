@@ -23,7 +23,7 @@
   ls_report_link_msg_1_creating/1,
   ls_report_node_msg_creating/1,
   ls_report_link_msg_0_creating/1,
-  pcrpt_msg_creating/3,
+  pcrpt_msg_creating/1,
   ls_node_add_msg_creating/1,
   ls_link_add_local_msg_1_creating/1,
   ls_link_add_remote_msg_creating/1,
@@ -1055,72 +1055,73 @@ ls_link_add_local_msg_0_creating(Add_Info) ->
   },
   pcep_protocol:encode(LS_Report_Link_Msg_0).
 
-pcrpt_msg_creating(R,IP_1,IP_2) ->
-  Pcrpt_msg = #pcep_message{
-    version = 1,
-    flags = 0,
-    message_type = 10,
-    message_length = ?Report_MSG_LENGTH,
-    body = #pcep_object_2{
-      pcep_object1 = #pcep_object_message{
-        object_class = 32,
-        object_type = 1,
-        res_flags = 0,
-        p = 1,
-        i = 1,
-        object_length = ?LSP_OBJECT_LENGTH,
-        body = #lsp_object{
-          plsp_id = 1,
-          flag = 0,
-          c = 1,
-          o = 1,
-          a = 1,
-          r = R,
-          s = 1,
-          d = 1,
-          lsp_object_tlvs = #lsp_object_tlvs{
-            lsp_object_lsp_identifier_tlv = #ipv4_lsp_identifiers_tlv{
-              ipv4_lsp_identifiers_tlv_type = 18,
-              ipv4_lsp_identifiers_tlv_length = 16,
-              ipv4_lsp_identifiers_tlv_tunnel_sender_add = 1,
-              ipv4_lsp_identifiers_tlv_lsp_id = 1,
-              ipv4_lsp_identifiers_tlv_tunnel_id = 1,
-              ipv4_lsp_identifiers_tlv_exrended_tunnel_id = 2,
-              ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = 3},
-            lsp_object_symbolic_path_name_tlv = #symbolic_path_name_tlv{
-              symbolic_path_name_tlv_type = 17,
-              symbolic_path_name_tlv_length = 4,
-              symbolic_path_name = 1
-            }
-          }
-        }
-      },
-      pcep_object2 = #pcep_object_message{
-        object_class = 7,
-        object_type = 1,
-        res_flags = 0,
-        p = 1,
-        i = 1,
-        object_length = ?ERO_OBJECT_LENGTH,
-        body = #ero_object{
-          ero_subobject1 = #ipv4_subobject{
-            ipv4_subobject_type = 1,
-            ipv4_subobject_len = 8,
-            ipv4_subobject_add = IP_1,
-            ipv4_subobject_prefix_len = 32,
-            ipv4_subobject_flags = 0},
-          ero_subobject2 = #ipv4_subobject{
-            ipv4_subobject_type = 1,
-            ipv4_subobject_len = 8,
-            ipv4_subobject_add = IP_2,
-            ipv4_subobject_prefix_len = 32,
-            ipv4_subobject_flags = 0
-          }
-        }
-      }
-    }
-  },
-  pcep_protocol:encode(Pcrpt_msg).
+pcrpt_msg_creating(Body) ->
+  list_to_binary([<<32:8,10:8>>,Body]).
+%%   Pcrpt_msg = #pcep_message{
+%%     version = 1,
+%%     flags = 0,
+%%     message_type = 10,
+%%     message_length = ?Report_MSG_LENGTH,
+%%     body = #pcep_object_2{
+%%       pcep_object1 = #pcep_object_message{
+%%         object_class = 32,
+%%         object_type = 1,
+%%         res_flags = 0,
+%%         p = 1,
+%%         i = 1,
+%%         object_length = ?LSP_OBJECT_LENGTH,
+%%         body = #lsp_object{
+%%           plsp_id = 1,
+%%           flag = 0,
+%%           c = 1,
+%%           o = 1,
+%%           a = 1,
+%%           r = R,
+%%           s = 1,
+%%           d = 1,
+%%           lsp_object_tlvs = #lsp_object_tlvs{
+%%             lsp_object_lsp_identifier_tlv = #ipv4_lsp_identifiers_tlv{
+%%               ipv4_lsp_identifiers_tlv_type = 18,
+%%               ipv4_lsp_identifiers_tlv_length = 16,
+%%               ipv4_lsp_identifiers_tlv_tunnel_sender_add = 1,
+%%               ipv4_lsp_identifiers_tlv_lsp_id = 1,
+%%               ipv4_lsp_identifiers_tlv_tunnel_id = 1,
+%%               ipv4_lsp_identifiers_tlv_exrended_tunnel_id = 2,
+%%               ipv4_lsp_identifiers_tlv_tunnel_endpoint_add = 3},
+%%             lsp_object_symbolic_path_name_tlv = #symbolic_path_name_tlv{
+%%               symbolic_path_name_tlv_type = 17,
+%%               symbolic_path_name_tlv_length = 4,
+%%               symbolic_path_name = 1
+%%             }
+%%           }
+%%         }
+%%       },
+%%       pcep_object2 = #pcep_object_message{
+%%         object_class = 7,
+%%         object_type = 1,
+%%         res_flags = 0,
+%%         p = 1,
+%%         i = 1,
+%%         object_length = ?ERO_OBJECT_LENGTH,
+%%         body = #ero_object{
+%%           ero_subobject1 = #ipv4_subobject{
+%%             ipv4_subobject_type = 1,
+%%             ipv4_subobject_len = 8,
+%%             ipv4_subobject_add = IP_1,
+%%             ipv4_subobject_prefix_len = 32,
+%%             ipv4_subobject_flags = 0},
+%%           ero_subobject2 = #ipv4_subobject{
+%%             ipv4_subobject_type = 1,
+%%             ipv4_subobject_len = 8,
+%%             ipv4_subobject_add = IP_2,
+%%             ipv4_subobject_prefix_len = 32,
+%%             ipv4_subobject_flags = 0
+%%           }
+%%         }
+%%       }
+%%     }
+%%   },
+%%   pcep_protocol:encode(Pcrpt_msg).
 
 
 %% pcrpt_msg_creating_3(R,IP_1,IP_2) ->
