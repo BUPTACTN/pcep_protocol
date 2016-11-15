@@ -42,9 +42,9 @@ start(Host,SwitchNum) ->
 %%     _ ->
       Ls_report_links_1_Message = pcep_msg_create_v2:ls_report_links_msg_1_creating(SwitchNum),
   io:format("LinksMsg_1 is ~p~n",[Ls_report_links_1_Message]),
-      Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchNum),
+      Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchNum-1),
       io:format("LinkMsg_1 in v3 is ~p~n",[Ls_report_link_1_Message]),
-  {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchNum),
+  {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchNum-1),
       io:format("LinkMsg_0 in v3 is ~p~n",[Ls_report_link_0_Message]),
       {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
 %%       io:format("connect start~n"),

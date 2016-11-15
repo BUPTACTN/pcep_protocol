@@ -24,7 +24,7 @@ ls_report_nodes_msg_creating(SwitchNum) ->
 ls_report_links_msg_1_creating(SwitchNum) ->
   LS_Report_Links_Msgs_1 = linc_pcep_config:for(1,SwitchNum-1,fun(I) ->
 %%     LS_Report_Link_Msgs_1 =
-      pcep_msg_create:ls_report_link_msg_1_creating(I)
+      pcep_msg_create:ls_report_link_msg_1_creating(I-1)
 %%     element(2,LS_Report_Link_Msgs_1)
   end),
   list_to_binary(LS_Report_Links_Msgs_1).
