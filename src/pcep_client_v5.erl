@@ -34,10 +34,10 @@ pid_add(SwitchId) ->
   ets:insert(pid,{SwitchId,Pid}).
 
 start_link(SwitchId) ->
-  spawn(pcep_client_v3,start,[SwitchId]).
+  spawn(pcep_client_v5,start,[SwitchId]).
 
 start_add(Add_Info) ->
-  spawn(pcep_client_v3,add,[Add_Info]).
+  spawn(pcep_client_v5,add,[Add_Info]).
 
 add(Add_Info) ->
   Port = ?PCEP_PORT,
