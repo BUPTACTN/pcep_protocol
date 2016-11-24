@@ -49,7 +49,7 @@ open_msg_creating() ->
         sid = 0,
         open_object_tlvs = #open_object_tlvs{
           open_pcecc_cap_tlv = #pcecc_cap_tlv{
-            pcecc_cap_tlv_type = 32,
+            pcecc_cap_tlv_type = 65287,
             pcecc_cap_tlv_length = 4,
             pcecc_cap_tlv_flag = 0,
             pcecc_cap_tlv_g = 1,
