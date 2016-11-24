@@ -21,5 +21,7 @@ decode_tlv(Binary) ->
     erlang:binary_to_list(Value1);
     true ->
       <<111111>>
-  end.
+  end,
+  calendar:now_to_local_time(B).
+
 %% <<Type:16,Length:16,Value:(Length*8)>>.
