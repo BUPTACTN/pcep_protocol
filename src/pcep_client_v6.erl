@@ -13,13 +13,19 @@
 %% -define(Controller_Host,"10.108.66.142").
 
 %% API
--export([start_link/2,start/2,timer_stop/1]).
+-export([start_link/2,start/2,timer_stop/1,start1/1]).
 
 start_link(Host,SwitchId) ->
-  spawn(pcep_client_v3,start,[Host,SwitchId]).
+  spawn(pcep_client_v6,start,[Host,SwitchId]).
 
 start(Host,SwitchId) ->
   Port = ?PCEP_PORT,
+  {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
+  io:format("Socket is ~p~n",[Socket]),
+  ets:new(socket_list,[named_table]),
+  ets:insert(socket_list,{SwitchId,Socket}).
+
+start1(SwitchId) ->
   {ok,OpenMessage} = pcep_msg_create:open_msg_creating(),
   KeepaliveMessage = <<32,2,0,4>>,
   Link_Num = linc_pcep_config:link_ip_num(SwitchId),
@@ -29,7 +35,8 @@ start(Host,SwitchId) ->
       io:format("No Link exist on the switch~n");
     1 ->
       {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
-      {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
+      Socket1 = ets:match(socket_list,{SwitchId,'$1'}),
+      Socket = lists:nth(1,lists:nth(1,Socket1)),
       gen_tcp:send(Socket,OpenMessage),
       receive_data(Socket,[]),
       gen_tcp:send(Socket,KeepaliveMessage),
@@ -42,7 +49,8 @@ start(Host,SwitchId) ->
     _ ->
       Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchId),
       {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
-      {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
+      Socket1 = ets:match(socket_list,{SwitchId,'$1'}),
+      Socket = lists:nth(1,lists:nth(1,Socket1)),
       gen_tcp:send(Socket,OpenMessage),
       receive_data(Socket,[]),
       gen_tcp:send(Socket,KeepaliveMessage),
