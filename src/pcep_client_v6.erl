@@ -37,7 +37,7 @@ start1(SwitchId) ->
       io:format("No Link exist on the switch~n");
     1 ->
       {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
-      Socket1 = ets:match(socket_list,{SwitchId,'$1'}),
+      Socket1 = ets:lookup(socket_list,SwitchId),
       Socket = element(2,lists:nth(1,Socket1)),
       gen_tcp:send(Socket,OpenMessage),
       receive_data(Socket,[]),
@@ -51,7 +51,7 @@ start1(SwitchId) ->
     _ ->
       Ls_report_link_1_Message = pcep_msg_create:ls_report_link_msg_1_creating(SwitchId),
       {ok,Ls_report_link_0_Message} = pcep_msg_create:ls_report_link_msg_0_creating(SwitchId),
-      Socket1 = ets:match(socket_list,{SwitchId,'$1'}),
+      Socket1 = ets:lookup(socket_list,SwitchId),
       Socket = element(2,lists:nth(1,Socket1)),
       gen_tcp:send(Socket,OpenMessage),
       receive_data(Socket,[]),
