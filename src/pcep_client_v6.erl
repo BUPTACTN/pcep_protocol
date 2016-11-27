@@ -25,6 +25,7 @@ start(Host,SwitchId) ->
   Port = ?PCEP_PORT,
   {ok,Socket} = gen_tcp:connect(Host,Port,[binary,{packet,0}]),
   io:format("Socket is ~p~n",[Socket]),
+  ets:new(socket_list,[named_table]),
   ets:insert(socket_list,{SwitchId,Socket}).
 
 start1(SwitchId) ->
