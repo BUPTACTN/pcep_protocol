@@ -30,7 +30,7 @@
 -define(LSReport_NODE_MSG_LENGTH_4,48).
 
 %% API
--export([timer_stop/1, start/1, receive_data1/2,link_down/2]).
+-export([timer_stop/1, start/1, receive_data1/2,link_down/0]).
 %% make() ->
 %%   {ok,Tree}=epp:parse_file("myheader.hrl",["./"],[])
 %% mutipart_test() ->
@@ -74,7 +74,7 @@ receive_data1(Socket, SoFar) ->
       list_to_binary(SoFar)
   end.
 
-link_down(IP_11,IP_22) ->
+link_down() ->
   Message1 = #pcep_message{
     version = 1,
     flags = 0,
@@ -1310,7 +1310,6 @@ link_down(IP_11,IP_22) ->
     }
   },
   Socket = ets:match(socket_list,{socket,'$1'}),
-  Res = ets:lookup(link_source,{IP_11,IP_22}),
   {ok, OpenMessage} = encode(Message1),
   {ok,Ls_report_node_msg1} = encode(Ls_node_msg1),
   {ok,Ls_report_node_msg2} = encode(Ls_node_msg2),
@@ -1332,21 +1331,6 @@ link_down(IP_11,IP_22) ->
   {ok,Ls_report_link_msg17} = encode(Ls_link_msg17),
   {ok,Ls_report_link_msg18} = encode(Ls_link_msg18),
   KeepaliveMessage = <<32,2,0,4>>,
-  ets:new(link_source,[named_table]),
-  ets:insert(link_source,{{"10.0.1.1","10.0.2.1"},300}),
-  ets:insert(link_source,{{"10.0.2.1","10.0.1.1"},300}),
-  ets:insert(link_source,{{"10.0.2.2","10.0.3.1"},300}),
-  ets:insert(link_source,{{"10.0.3.1","10.0.2.2"},300}),
-  ets:insert(link_source,{{"10.0.5.1","10.0.4.3"},300}),
-  ets:insert(link_source,{{"10.0.4.3","10.0.5.1"},300}),
-  ets:insert(link_source,{{"10.0.1.2","10.0.4.1"},100}),
-  ets:insert(link_source,{{"10.0.4.1","10.0.1.2"},100}),
-  ets:insert(link_source,{{"10.0.4.2","10.0.2.4"},100}),
-  ets:insert(link_source,{{"10.0.2.4","10.0.4.2"},100}),
-  ets:insert(link_source,{{"10.0.2.3","10.0.5.2"},100}),
-  ets:insert(link_source,{{"10.0.5.2","10.0.2.3"},100}),
-  ets:insert(link_source,{{"10.0.3.2","10.0.5.3"},100}),
-  ets:insert(link_source,{{"10.0.5.3","10.0.3.2"},100}),
   gen_tcp:send(Socket, OpenMessage),
   receive_data(Socket, []),
   gen_tcp:send(Socket,KeepaliveMessage),
