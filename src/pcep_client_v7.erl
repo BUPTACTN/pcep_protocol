@@ -1309,7 +1309,8 @@ link_down() ->
       }
     }
   },
-  Socket = ets:match(socket_list,{socket,'$1'}),
+  Socket1 = ets:match(socket_list,{socket,'$1'}),
+  Socket = lists:nth(1,lists:nth(1,Socket1)),
   {ok, OpenMessage} = encode(Message1),
   {ok,Ls_report_node_msg1} = encode(Ls_node_msg1),
   {ok,Ls_report_node_msg2} = encode(Ls_node_msg2),
