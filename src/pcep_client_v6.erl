@@ -16,10 +16,11 @@
 -export([start_link/2,start/2,timer_stop/1,start1/1,ets_init/0]).
 
 start_link(Host,SwitchId) ->
-  spawn(pcep_client_v6,start,[Host,SwitchId]).
+  Pid = spawn(pcep_client_v6,start,[Host,SwitchId]),
+  ets:insert(pid_list,{SwitchId,Pid}).
 
 ets_init() ->
-  ets:new(socket_list,[named_table]).
+  ets:new(pid_list,[named_table]).
 
 start(Host,SwitchId) ->
   Port = ?PCEP_PORT,
