@@ -111,7 +111,7 @@ ls_report_link_msgs_1_creating(SwitchId) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = SwitchId*10+I,
+          ls_object_ls_id = Link_Local_IP,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
@@ -206,7 +206,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
           ls_object_flag = 0,
           ls_object_r = 0,
           ls_object_s = 1,
-          ls_object_ls_id = SwitchId*10+I,
+          ls_object_ls_id = Link_Local_IP,
           ls_object_tlv = #optical_link_attribute_tlv{
             optical_link_attribute_tlv_type = 10001,
             optical_link_attribute_tlv_length = 128,
@@ -304,7 +304,7 @@ ls_report_link_msg_0_creating(SwitchId) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 0,
-        ls_object_ls_id = SwitchId*10,
+        ls_object_ls_id = Link_Local_IP,
         ls_object_tlv = #optical_link_attribute_tlv{
           optical_link_attribute_tlv_type = 10001,
           optical_link_attribute_tlv_length = 128,
@@ -393,7 +393,7 @@ ls_report_node_msg_creating(SwitchId) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 1,
-        ls_object_ls_id = SwitchId*100+5,
+        ls_object_ls_id = (lists:nth(1,linc_pcep_config:switch_ip(SwitchId))-167772160) * 100,
         ls_node_object_tlv = #optical_node_attribute_tlv{
           optical_node_attribute_tlv_type = 10002,
           optical_node_attribute_tlv_length = Node_Msg_Length-24,
