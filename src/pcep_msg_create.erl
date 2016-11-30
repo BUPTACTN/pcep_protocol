@@ -11,6 +11,7 @@
 -module(pcep_msg_create).
 -author("Xinfeng").
 -include("pcep_protocol.hrl").
+-include("pcep_logger.hrl").
 %% -include("pcep_v1.hrl").
 -define(OPEN_MSG_LENGTH,52).
 -define(LSReport_MSG_LENGTH,152).
@@ -172,6 +173,7 @@ ls_report_link_msgs_1_creating(SwitchId) ->
         }
       }
     },
+    ?INFO("Ls_Id in linc is ~p~n",[Link_Local_IP]),
     Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_1),
     element(2,Link_Msg)
   end),
@@ -267,6 +269,7 @@ ls_report_link_msg_1_creating(SwitchId) ->
         }
       }
     },
+    ?INFO("Ls_Id in linc is ~p~n",[Link_Local_IP]),
     Link_Msg = pcep_protocol:encode(LS_Report_Link_Msg_1),
     element(2,Link_Msg)
   end),
@@ -365,7 +368,7 @@ ls_report_link_msg_0_creating(SwitchId) ->
       }
     }
   },
-%%   io:format("Ls_Id in for is ~p~n",[SwitchId*10]),
+  ?INFO("Ls_Id in linc is ~p~n",[Link_Local_IP]),
   pcep_protocol:encode(LS_Report_Link_Msg_0).
 
 ls_report_node_msg_creating(SwitchId) ->
@@ -537,7 +540,7 @@ ls_report_node_msg_creating(SwitchId) ->
       }
     }
   },
-%%   io:format("Ls_Id in Node is ~p~n",[lists:nth(1,linc_pcep_config:switch_ip(SwitchId))]),
+  ?INFO("Ls_Id in Node is ~p~n",[lists:nth(1,linc_pcep_config:switch_ip(SwitchId)) - 33554432]),
   pcep_protocol:encode(Ls_node_msg).
 
 %% @doc Add node message is as follow. Add_Info is a lists of
