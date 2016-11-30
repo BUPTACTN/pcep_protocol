@@ -393,7 +393,7 @@ ls_report_node_msg_creating(SwitchId) ->
         ls_object_flag = 0,
         ls_object_r = 0,
         ls_object_s = 1,
-        ls_object_ls_id = lists:nth(1,linc_pcep_config:switch_ip(SwitchId))-167772160,
+        ls_object_ls_id = lists:nth(1,linc_pcep_config:switch_ip(SwitchId)),
         ls_node_object_tlv = #optical_node_attribute_tlv{
           optical_node_attribute_tlv_type = 10002,
           optical_node_attribute_tlv_length = Node_Msg_Length-24,
@@ -537,7 +537,7 @@ ls_report_node_msg_creating(SwitchId) ->
       }
     }
   },
-%%   io:format("Ls_Id in for is ~p~n",[SwitchId*100]),
+  io:format("Ls_Id in Node is ~p~n",[lists:nth(1,linc_pcep_config:switch_ip(SwitchId))]),
   pcep_protocol:encode(Ls_node_msg).
 
 %% @doc Add node message is as follow. Add_Info is a lists of
