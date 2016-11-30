@@ -537,7 +537,7 @@ ls_report_node_msg_creating(SwitchId) ->
       }
     }
   },
-  io:format("Ls_Id in Node is ~p~n",[lists:nth(1,linc_pcep_config:switch_ip(SwitchId))]),
+%%   io:format("Ls_Id in Node is ~p~n",[lists:nth(1,linc_pcep_config:switch_ip(SwitchId))]),
   pcep_protocol:encode(Ls_node_msg).
 
 %% @doc Add node message is as follow. Add_Info is a lists of
